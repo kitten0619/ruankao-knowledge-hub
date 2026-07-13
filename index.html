@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>软考中项 · 备考知识汇总</title>
+<style>
+/* === Reset & Base === */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#0a0e1a;color:#c8d6e5;font-size:14px;line-height:1.7;overflow-x:hidden}
+a{color:#5dade2;text-decoration:none}
+a:hover{color:#85c1e9;text-decoration:underline}
+::selection{background:#2e86de44;color:#fff}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#0d1117}
+::-webkit-scrollbar-thumb{background:#2a3a4a;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#3a5a7a}
+
+/* === Layout === */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:linear-gradient(135deg,#0d1b2a 0%,#1b2838 100%);border-bottom:1px solid #1e3a5f;display:flex;align-items:center;padding:0 20px;z-index:1000;box-shadow:0 2px 20px rgba(0,0,0,0.5)}
+.topbar .logo{font-size:18px;font-weight:700;color:#5dade2;white-space:nowrap}
+.topbar .logo span{color:#f39c12}
+.search-box{margin-left:24px;flex:1;max-width:400px;position:relative}
+.search-box input{width:100%;padding:8px 16px 8px 36px;border-radius:20px;border:1px solid #1e3a5f;background:#0d1117;color:#c8d6e5;font-size:13px;outline:none;transition:border .3s}
+.search-box input:focus{border-color:#5dade2;box-shadow:0 0 8px #5dade244}
+.search-box::before{content:"🔍";position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px}
+.topbar .nav-links{margin-left:auto;display:flex;gap:6px;flex-wrap:nowrap}
+.topbar .nav-links a{padding:6px 12px;border-radius:16px;font-size:12px;color:#8899aa;transition:all .3s;white-space:nowrap}
+.topbar .nav-links a:hover,.topbar .nav-links a.active{background:#1e3a5f;color:#5dade2;text-decoration:none}
+
+.sidebar{position:fixed;top:56px;left:0;width:260px;height:calc(100vh - 56px);background:#0d1117;border-right:1px solid #1e3a5f;overflow-y:auto;padding:12px 0;z-index:900;transition:transform .3s}
+.sidebar .tree-group{margin:4px 0}
+.sidebar .tree-header{display:flex;align-items:center;padding:8px 16px;cursor:pointer;color:#8899aa;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;transition:all .2s;user-select:none}
+.sidebar .tree-header:hover{color:#5dade2;background:#1e3a5f22}
+.sidebar .tree-header .arrow{margin-right:6px;font-size:10px;transition:transform .2s;display:inline-block;width:12px}
+.sidebar .tree-header.open .arrow{transform:rotate(90deg)}
+.sidebar .tree-items{display:none;padding-left:0}
+.sidebar .tree-header.open + .tree-items{display:block}
+.sidebar .tree-item{padding:6px 16px 6px 34px;font-size:13px;color:#6a7a8a;cursor:pointer;transition:all .2s;border-left:2px solid transparent}
+.sidebar .tree-item:hover{color:#5dade2;background:#1e3a5f22;border-left-color:#5dade2}
+.sidebar .tree-item.active{color:#f39c12;border-left-color:#f39c12}
+.sidebar .tree-item .star{color:#f39c12;font-size:10px;margin-left:4px}
+
+.main{margin-left:260px;margin-top:56px;padding:24px 32px 80px;max-width:1100px}
+
+/* === Section === */
+.section{margin-bottom:48px;scroll-margin-top:72px;display:none}
+.section.active{display:block}
+.section-title{font-size:24px;font-weight:700;color:#5dade2;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid #1e3a5f;display:flex;align-items:center;gap:10px}
+.section-title .icon{font-size:28px}
+.subsection{margin:20px 0;padding:20px;background:#111827;border-radius:12px;border:1px solid #1e3a5f;transition:border-color .3s}
+.subsection:hover{border-color:#2e5a8f}
+.subsection h3{font-size:17px;color:#f39c12;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.subsection h3 .badge{font-size:10px;background:#f39c12;color:#0a0e1a;padding:2px 8px;border-radius:10px;font-weight:600}
+.subsection h4{font-size:15px;color:#5dade2;margin:14px 0 8px}
+
+/* === Table === */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th{background:#1a2744;color:#5dade2;padding:10px 12px;text-align:left;font-weight:600;border:1px solid #1e3a5f;white-space:nowrap}
+td{padding:8px 12px;border:1px solid #1e3a5f44;vertical-align:top}
+tr:nth-child(even){background:#0d111755}
+tr:hover{background:#1e3a5f22}
+table.highlight-table th{position:sticky;top:0;z-index:1}
+
+/* === Tags & Badges === */
+.tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;margin:2px 4px 2px 0;font-weight:500}
+.tag-red{background:#e74c3c22;color:#e74c3c;border:1px solid #e74c3c44}
+.tag-blue{background:#2e86de22;color:#5dade2;border:1px solid #2e86de44}
+.tag-green{background:#27ae6022;color:#27ae60;border:1px solid #27ae6044}
+.tag-orange{background:#f39c1222;color:#f39c12;border:1px solid #f39c1244}
+.tag-purple{background:#8e44ad22;color:#bb6bd9;border:1px solid #8e44ad44}
+
+.star-mark{color:#f39c12;font-weight:700;margin-right:4px}
+.warn-mark{color:#e74c3c;font-weight:700;margin-right:4px}
+
+.formula{background:#1a2744;padding:12px 16px;border-radius:8px;border-left:4px solid #5dade2;margin:10px 0;font-family:"JetBrains Mono",monospace;font-size:13px;color:#85c1e9;overflow-x:auto}
+
+/* === ITTO Matrix === */
+.itto-matrix{overflow-x:auto;margin:16px 0}
+.itto-matrix table{min-width:800px}
+.itto-matrix th{font-size:11px;padding:8px 6px;text-align:center}
+.itto-matrix td{font-size:12px;padding:6px 8px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.itto-matrix td:hover{background:#2e86de33;transform:scale(1.02)}
+.itto-matrix .kh-name{text-align:left;font-weight:600;color:#f39c12;background:#1a2744;white-space:nowrap}
+.itto-cell{position:relative}
+.itto-cell .count{display:block;font-size:10px;color:#6a7a8a}
+
+/* === ITTO Detail Modal === */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:2000;justify-content:center;align-items:center}
+.modal-overlay.show{display:flex}
+.modal{background:#111827;border:1px solid #2e5a8f;border-radius:16px;max-width:800px;width:90%;max-height:80vh;overflow-y:auto;padding:24px;position:relative}
+.modal-close{position:absolute;top:12px;right:16px;font-size:24px;cursor:pointer;color:#6a7a8a;transition:color .2s}
+.modal-close:hover{color:#e74c3c}
+.modal h2{color:#5dade2;margin-bottom:16px;font-size:20px}
+.modal h3{color:#f39c12;margin:12px 0 8px;font-size:15px}
+.modal .itto-section{margin:12px 0}
+.modal .itto-section h4{color:#27ae60;font-size:13px;margin-bottom:6px}
+.modal .itto-list{padding-left:16px;font-size:13px;color:#8899aa}
+
+/* === Search Highlight === */
+.search-highlight{background:#f39c1244;color:#f39c12;padding:1px 3px;border-radius:3px}
+
+/* === Overview Cards === */
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin:16px 0}
+.overview-card{background:#111827;border:1px solid #1e3a5f;border-radius:12px;padding:20px;text-align:center;transition:all .3s}
+.overview-card:hover{border-color:#5dade2;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.overview-card .num{font-size:36px;font-weight:700;color:#5dade2}
+.overview-card .label{font-size:13px;color:#6a7a8a;margin-top:4px}
+.overview-card.progress{border-color:#27ae60}
+.overview-card.progress .num{color:#27ae60}
+
+/* === Radar chart placeholder === */
+.radar-wrap{display:flex;justify-content:center;margin:20px 0}
+.radar-wrap canvas{max-width:400px;max-height:400px}
+
+/* === Case study === */
+.case-item{padding:12px 16px;border-left:3px solid #1e3a5f;margin:8px 0;background:#0d111788;border-radius:0 8px 8px 0;transition:all .2s}
+.case-item:hover{border-left-color:#f39c12;background:#111827}
+.case-item .q{font-weight:600;color:#5dade2;margin-bottom:4px}
+.case-item .a{color:#8899aa;font-size:13px}
+.case-item .meta{font-size:11px;color:#4a5a6a;margin-top:4px}
+
+/* === Vocab === */
+.vocab-search{margin-bottom:16px}
+.vocab-search input{width:100%;max-width:400px;padding:10px 16px;border-radius:8px;border:1px solid #1e3a5f;background:#0d1117;color:#c8d6e5;font-size:14px;outline:none}
+.vocab-search input:focus{border-color:#5dade2}
+.vocab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.vocab-item{padding:8px 12px;background:#0d111788;border-radius:8px;border:1px solid #1e3a5f22;display:flex;justify-content:space-between;align-items:center}
+.vocab-item .zh{color:#5dade2;font-weight:500}
+.vocab-item .en{color:#6a7a8a;font-size:12px;text-align:right}
+
+/* === Mindmap cards === */
+.mm-card{background:#111827;border:1px solid #1e3a5f;border-radius:12px;padding:16px;margin:12px 0}
+.mm-card h4{color:#5dade2;margin-bottom:8px;font-size:14px}
+.mm-node{padding:4px 12px;margin:4px 0;background:#0d1117;border-radius:6px;font-size:13px;border-left:3px solid #2e86de}
+.mm-node.level1{border-left-color:#f39c12;font-weight:600;color:#f39c12}
+.mm-node.level2{border-left-color:#5dade2;margin-left:16px}
+.mm-node.level3{border-left-color:#27ae60;margin-left:32px;font-size:12px;color:#8899aa}
+
+/* === Filter buttons === */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.filter-btn{padding:4px 14px;border-radius:16px;border:1px solid #1e3a5f;background:transparent;color:#6a7a8a;font-size:12px;cursor:pointer;transition:all .2s}
+.filter-btn:hover,.filter-btn.active{background:#2e86de22;color:#5dade2;border-color:#2e86de}
+
+/* === Responsive === */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;padding:16px}
+  .topbar .nav-links{display:none}
+  .menu-toggle{display:block !important}
+}
+.menu-toggle{display:none;background:none;border:none;color:#5dade2;font-size:20px;cursor:pointer;margin-right:12px}
+
+/* === Print === */
+@media print{
+  .topbar,.sidebar{display:none}
+  .main{margin:0;padding:10px}
+  body{background:#fff;color:#333}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+  <div class="logo">软考中项 <span>知识汇总</span></div>
+  <div class="search-box">
+    <input type="text" id="globalSearch" placeholder="搜索关键词..." oninput="handleSearch(this.value)">
+  </div>
+  <div class="nav-links">
+    <a href="javascript:void(0)" onclick="switchSection('overview')" class="active" data-sec="overview">总览</a>
+    <a href="javascript:void(0)" onclick="switchSection('itto-matrix')" data-sec="itto-matrix">至尊图</a>
+    <a href="javascript:void(0)" onclick="switchSection('knowledge')" data-sec="knowledge">知识域</a>
+    <a href="javascript:void(0)" onclick="switchSection('it-tech')" data-sec="it-tech">IT技术</a>
+    <a href="javascript:void(0)" onclick="switchSection('case')" data-sec="case">案例</a>
+    <a href="javascript:void(0)" onclick="switchSection('calc')" data-sec="calc">计算</a>
+    <a href="javascript:void(0)" onclick="switchSection('vocab')" data-sec="vocab">词汇</a>
+    <a href="javascript:void(0)" onclick="switchSection('org-law')" data-sec="org-law">法规</a>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+</div>
+
+<!-- Main Content -->
+<div class="main" id="mainContent">
+
+<!-- SECTION: Overview -->
+<div class="section active" id="overview">
+  <div class="section-title"><span class="icon">📊</span> 备考总览</div>
+  <div class="overview-grid">
+    <div class="overview-card"><div class="num">10</div><div class="label">知识领域</div></div>
+    <div class="overview-card"><div class="num">49</div><div class="label">管理过程</div></div>
+    <div class="overview-card"><div class="num">5</div><div class="label">过程组</div></div>
+    <div class="overview-card"><div class="num">18</div><div class="label">教材章节</div></div>
+    <div class="overview-card progress"><div class="num">49</div><div class="label">核心过程</div></div>
+    <div class="overview-card"><div class="num">12</div><div class="label">管理原则</div></div>
+  </div>
+  <div class="subsection">
+    <h3>📋 十大知识领域 × 五大过程组 过程数分布</h3>
+    <table>
+      <tr><th>知识领域</th><th>启动</th><th>规划</th><th>执行</th><th>监控</th><th>收尾</th><th>合计</th></tr>
+      <tr><td>整合管理</td><td>1</td><td>1</td><td>2</td><td>2</td><td>1</td><td><b>7</b></td></tr>
+      <tr><td>范围管理</td><td>0</td><td>4</td><td>0</td><td>2</td><td>0</td><td><b>6</b></td></tr>
+      <tr><td>进度管理</td><td>0</td><td>6</td><td>0</td><td>1</td><td>0</td><td><b>7</b></td></tr>
+      <tr><td>成本管理</td><td>0</td><td>3</td><td>0</td><td>1</td><td>0</td><td><b>4</b></td></tr>
+      <tr><td>质量管理</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td><b>3</b></td></tr>
+      <tr><td>资源管理</td><td>0</td><td>2</td><td>3</td><td>1</td><td>0</td><td><b>6</b></td></tr>
+      <tr><td>沟通管理</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td><b>3</b></td></tr>
+      <tr><td>风险管理</td><td>0</td><td>6</td><td>1</td><td>1</td><td>0</td><td><b>8</b></td></tr>
+      <tr><td>采购管理</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td><b>3</b></td></tr>
+      <tr><td>干系人管理</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td><b>4</b></td></tr>
+      <tr style="background:#1a2744;font-weight:700"><td>合计</td><td>2</td><td>26</td><td>10</td><td>12</td><td>1</td><td><b style="color:#f39c12">49+2=51*</b></td></tr>
+    </table>
+    <p style="color:#6a7a8a;font-size:12px;margin-top:8px">*注：整合管理含7个过程，总计49个过程（部分资料计为51因整合管理过程拆分方式不同）。规划过程组最多(26个)。</p>
+  </div>
+  <div class="subsection">
+    <h3>🎯 高频考点分布</h3>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterStars('all',this)">全部</button>
+      <button class="filter-btn" onclick="filterStars('star',this)">★ 高频考点</button>
+      <button class="filter-btn" onclick="filterStars('warn',this)">⚠ 易混淆</button>
+    </div>
+    <div id="starList">
+      <p><span class="star-mark">★</span> 挣值分析(EVM)全部公式 — 计算必考</p>
+      <p><span class="star-mark">★</span> 网络图关键路径计算 — 案例分析必考</p>
+      <p><span class="star-mark">★</span> 十五至尊图（49过程ITTO）— 选择题高频</p>
+      <p><span class="star-mark">★</span> 配置管理状态转换与配置库 — 高频选择题</p>
+      <p><span class="star-mark">★</span> 变更管理8步流程 — 案例高频</p>
+      <p><span class="star-mark">★</span> 三点估算(PERT)概率计算 — 计算题</p>
+      <p><span class="star-mark">★</span> 合同类型与计算 — 案例分析</p>
+      <p><span class="star-mark">★</span> 组织结构类型对比 — 选择题</p>
+      <p><span class="star-mark">★</span> 五种生命周期类型 — 选择题</p>
+      <p><span class="star-mark">★</span> 加密技术分类（对称/非对称/Hash）— 选择题</p>
+      <p><span class="star-mark">★</span> OSI七层/TCP四层模型 — 选择题</p>
+      <p><span class="star-mark">★</span> 干系人分类模型 — 选择题</p>
+      <p><span class="warn-mark">⚠</span> 确认范围 vs 控制质量</p>
+      <p><span class="warn-mark">⚠</span> 过程组 vs 项目阶段</p>
+      <p><span class="warn-mark">⚠</span> 项目章程 vs 合同</p>
+      <p><span class="warn-mark">⚠</span> 功能配置审计 vs 物理配置审计</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION: ITTO Matrix (十五至尊图) -->
+<div class="section" id="itto-matrix">
+  <div class="section-title"><span class="icon">🏆</span> 十五至尊图 · 49过程ITTO矩阵</div>
+  <p style="color:#6a7a8a;margin-bottom:12px">点击任意过程名称查看该过程的输入、工具与输出（ITTO）详情</p>
+  <div class="itto-matrix">
+    <table id="ittoTable">
+      <thead>
+        <tr><th>知识领域</th><th>启动过程组</th><th>规划过程组</th><th>执行过程组</th><th>监控过程组</th><th>收尾过程组</th></tr>
+      </thead>
+      <tbody id="ittoBody">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ITTO Detail Modal -->
+<div class="modal-overlay" id="ittoModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <span class="modal-close" onclick="closeModal()">✕</span>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- SECTION: Knowledge Domains -->
+<div class="section" id="knowledge">
+  <div class="section-title"><span class="icon">📚</span> 十大知识领域详解</div>
+  <div id="knowledgeContent"></div>
+</div>
+
+<!-- SECTION: IT Technology -->
+<div class="section" id="it-tech">
+  <div class="section-title"><span class="icon">💻</span> IT基础与技术（第1-8章）</div>
+  <div id="itTechContent"></div>
+</div>
+
+<!-- SECTION: Case Study -->
+<div class="section" id="case">
+  <div class="section-title"><span class="icon">📝</span> 案例分析背记要点</div>
+  <div class="vocab-search">
+    <input type="text" id="caseSearch" placeholder="搜索案例知识点..." oninput="filterCase(this.value)">
+  </div>
+  <div id="caseContent"></div>
+</div>
+
+<!-- SECTION: Calculations -->
+<div class="section" id="calc">
+  <div class="section-title"><span class="icon">🧮</span> 计算速查</div>
+  <div id="calcContent"></div>
+</div>
+
+<!-- SECTION: Vocabulary -->
+<div class="section" id="vocab">
+  <div class="section-title"><span class="icon">📖</span> 中英文词汇表</div>
+  <div class="vocab-search">
+    <input type="text" id="vocabSearch" placeholder="搜索中文或英文..." oninput="filterVocab(this.value)">
+  </div>
+  <div class="vocab-grid" id="vocabGrid"></div>
+</div>
+
+<!-- SECTION: Org & Law -->
+<div class="section" id="org-law">
+  <div class="section-title"><span class="icon">⚖️</span> 组织保障与法规（第15-18章）</div>
+  <div id="orgLawContent"></div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ============================
+// DATA: 49 processes with ITTO
+// ============================
+const PROCESSES = [
+  // 整合管理
+  {kd:"整合管理",group:"启动",name:"制定项目章程",
+   input:"1.商业文件 2.协议 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.数据收集 3.人际关系与团队技能 4.会议",
+   output:"1.项目章程 2.假设日志"},
+  {kd:"整合管理",group:"规划",name:"制定项目管理计划",
+   input:"1.项目章程 2.其他过程的输出 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.数据收集 3.人际关系与团队技能 4.会议",
+   output:"1.项目管理计划"},
+  {kd:"整合管理",group:"执行",name:"指导与管理项目工作",
+   input:"1.项目管理计划 2.项目文件 3.批准的变更请求 4.事业环境因素 5.组织过程资产",
+   tool:"1.专家判断 2.项目管理信息系统 3.会议",
+   output:"1.可交付成果 2.工作绩效数据 3.问题日志 4.变更请求 5.项目管理计划更新 6.项目文件更新 7.组织过程资产更新"},
+  {kd:"整合管理",group:"执行",name:"管理项目知识",
+   input:"1.项目管理计划 2.项目文件 3.可交付成果 4.事业环境因素 5.组织过程资产",
+   tool:"1.专家判断 2.知识管理 3.信息管理 4.人际关系与团队技能",
+   output:"1.经验教训登记册 2.项目管理计划更新 3.组织过程资产更新"},
+  {kd:"整合管理",group:"监控",name:"监控项目工作",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效信息 4.协议 5.事业环境因素 6.组织过程资产",
+   tool:"1.专家判断 2.数据分析 3.决策 4.会议",
+   output:"1.工作绩效报告 2.变更请求 3.项目管理计划更新 4.项目文件更新"},
+  {kd:"整合管理",group:"监控",name:"实施整体变更控制",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效报告 4.变更请求 5.事业环境因素 6.组织过程资产",
+   tool:"1.专家判断 2.变更控制工具 3.数据分析 4.决策 5.会议",
+   output:"1.批准的变更请求 2.项目管理计划更新 3.项目文件更新"},
+  {kd:"整合管理",group:"收尾",name:"结束项目或阶段",
+   input:"1.项目章程 2.项目管理计划 3.项目文件 4.验收的可交付成果 5.商业文件 6.协议 7.采购文档 8.组织过程资产",
+   tool:"1.专家判断 2.数据分析 3.会议",
+   output:"1.项目文件更新 2.最终产品/服务/成果移交 3.最终报告 4.组织过程资产更新"},
+  // 范围管理
+  {kd:"范围管理",group:"规划",name:"规划范围管理",
+   input:"1.项目章程 2.项目管理计划 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.数据分析 3.会议",
+   output:"1.范围管理计划 2.需求管理计划"},
+  {kd:"范围管理",group:"规划",name:"收集需求",
+   input:"1.项目章程 2.项目管理计划 3.项目文件 4.商业文件 5.协议 6.事业环境因素 7.组织过程资产",
+   tool:"1.专家判断 2.数据收集(头脑风暴/访谈/焦点小组/问卷调查/标杆对照) 3.数据分析(文档分析) 4.决策(投票/多标准决策分析) 5.数据表现(亲和图/思维导图) 6.人际关系与团队技能 7.系统交互图 8.原型法",
+   output:"1.需求文件 2.需求跟踪矩阵"},
+  {kd:"范围管理",group:"规划",name:"定义范围",
+   input:"1.项目章程 2.项目管理计划 3.项目文件 4.事业环境因素 5.组织过程资产",
+   tool:"1.专家判断 2.数据分析 3.决策 4.人际关系与团队技能",
+   output:"1.项目范围说明书 2.项目文件更新"},
+  {kd:"范围管理",group:"规划",name:"创建WBS",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.分解",
+   output:"1.范围基准 2.项目文件更新"},
+  {kd:"范围管理",group:"监控",name:"确认范围",
+   input:"1.项目管理计划 2.项目文件 3.核实的可交付成果 4.工作绩效数据",
+   tool:"1.检查 2.决策",
+   output:"1.验收的可交付成果 2.工作绩效信息 3.变更请求 4.项目文件更新"},
+  {kd:"范围管理",group:"监控",name:"控制范围",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效数据 4.组织过程资产",
+   tool:"1.数据分析(偏差分析/趋势分析)",
+   output:"1.工作绩效信息 2.变更请求 3.项目管理计划更新 4.项目文件更新"},
+  // 进度管理
+  {kd:"进度管理",group:"规划",name:"规划进度管理",
+   input:"1.项目章程 2.项目管理计划 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.数据分析 3.会议",
+   output:"1.进度管理计划"},
+  {kd:"进度管理",group:"规划",name:"定义活动",
+   input:"1.项目管理计划 2.事业环境因素 3.组织过程资产",
+   tool:"1.专家判断 2.分解 3.滚动式规划 4.会议",
+   output:"1.活动清单 2.活动属性 3.里程碑清单 4.变更请求 5.项目管理计划更新"},
+  {kd:"进度管理",group:"规划",name:"排列活动顺序",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.紧前关系绘图法(PDM) 2.确定和整合依赖关系 3.提前量与滞后量 4.项目管理信息系统",
+   output:"1.项目进度网络图 2.项目文件更新"},
+  {kd:"进度管理",group:"规划",name:"估算活动持续时间",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.类比估算 3.参数估算 4.三点估算 5.自下而上估算 6.数据分析 7.决策 8.会议",
+   output:"1.持续时间估算 2.估算依据 3.项目文件更新"},
+  {kd:"进度管理",group:"规划",name:"制定进度计划",
+   input:"1.项目管理计划 2.项目文件 3.协议 4.事业环境因素 5.组织过程资产",
+   tool:"1.进度网络分析 2.关键路径法 3.资源优化 4.数据分析(假设情景分析/模拟) 5.提前量与滞后量 6.进度压缩 7.项目管理信息系统 8.敏捷发布规划",
+   output:"1.进度基准 2.项目进度计划 3.进度数据 4.项目日历 5.变更请求 6.项目管理计划更新 7.项目文件更新"},
+  {kd:"进度管理",group:"监控",name:"控制进度",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效数据 4.组织过程资产",
+   tool:"1.数据分析(挣值分析/迭代燃尽图/偏差分析/趋势分析) 2.关键路径法 3.项目管理信息系统 4.资源优化 5.提前量与滞后量 6.进度压缩",
+   output:"1.工作绩效信息 2.进度预测 3.变更请求 4.项目管理计划更新 5.项目文件更新"},
+  // 成本管理
+  {kd:"成本管理",group:"规划",name:"规划成本管理",
+   input:"1.项目章程 2.项目管理计划 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.数据分析 3.会议",
+   output:"1.成本管理计划"},
+  {kd:"成本管理",group:"规划",name:"估算成本",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.类比估算 3.参数估算 4.自下而上估算 5.三点估算 6.数据分析(备选方案分析/质量成本/储备分析) 7.项目管理信息系统 8.决策",
+   output:"1.成本估算 2.估算依据 3.项目文件更新"},
+  {kd:"成本管理",group:"规划",name:"制定预算",
+   input:"1.项目管理计划 2.项目文件 3.商业文件 4.协议 5.事业环境因素 6.组织过程资产",
+   tool:"1.专家判断 2.成本汇总 3.数据分析(储备分析) 4.历史信息审核 5.资金限制平衡 6.融资",
+   output:"1.成本基准 2.项目资金需求 3.项目文件更新"},
+  {kd:"成本管理",group:"监控",name:"控制成本",
+   input:"1.项目管理计划 2.项目文件 3.项目资金需求 4.工作绩效数据 5.组织过程资产",
+   tool:"1.专家判断 2.数据分析(挣值分析/偏差分析/趋势分析/储备分析) 3.完工尚需绩效指数(TCPI) 4.项目管理信息系统",
+   output:"1.工作绩效信息 2.成本预测 3.变更请求 4.项目管理计划更新 5.项目文件更新"},
+  // 质量管理
+  {kd:"质量管理",group:"规划",name:"规划质量管理",
+   input:"1.项目章程 2.项目管理计划 3.项目文件 4.事业环境因素 5.组织过程资产",
+   tool:"1.专家判断 2.数据收集(标杆对照/头脑风暴/访谈) 3.数据分析(成本效益分析/质量成本) 4.决策(多标准决策分析) 5.数据表现(流程图/逻辑数据模型/矩阵图/思维导图) 6.测试与检查的规划 7.会议",
+   output:"1.质量管理计划 2.质量测量指标 3.项目文件更新"},
+  {kd:"质量管理",group:"执行",name:"管理质量",
+   input:"1.项目管理计划 2.项目文件 3.组织过程资产",
+   tool:"1.数据收集(核查表) 2.数据分析(备选方案分析/文件分析/过程分析/根本原因分析) 3.决策(多标准决策分析) 4.数据表现(亲和图/因果图/流程图/直方图/矩阵图/散点图) 5.审计 6.面向X的设计 7.问题解决 8.质量改进方法",
+   output:"1.质量报告 2.测试与评估文件 3.变更请求 4.项目管理计划更新 5.项目文件更新"},
+  {kd:"质量管理",group:"监控",name:"控制质量",
+   input:"1.项目管理计划 2.项目文件 3.批准的变更请求 4.可交付成果 5.工作绩效数据 6.事业环境因素 7.组织过程资产",
+   tool:"1.数据收集(核查表/统计抽样/问卷调查) 2.数据分析(绩效审查) 3.检查 4.测试/产品评估 5.数据表现(因果图/控制图/直方图/散点图) 6.会议",
+   output:"1.质量控制测量结果 2.核实的可交付成果 3.工作绩效信息 4.变更请求 5.项目管理计划更新 6.项目文件更新"},
+  // 资源管理
+  {kd:"资源管理",group:"规划",name:"规划资源管理",
+   input:"1.项目章程 2.项目管理计划 3.项目文件 4.事业环境因素 5.组织过程资产",
+   tool:"1.专家判断 2.数据表现(层级结构图/职责分配矩阵RAM/文本格式) 3.组织理论 4.会议",
+   output:"1.资源管理计划 2.团队章程 3.项目文件更新"},
+  {kd:"资源管理",group:"规划",name:"估算活动资源",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.自下而上估算 3.类比估算 4.参数估算 5.数据分析(备选方案分析) 6.项目管理信息系统 7.会议",
+   output:"1.资源需求 2.估算依据 3.资源分解结构 4.项目文件更新"},
+  {kd:"资源管理",group:"执行",name:"获取资源",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.决策(多标准决策分析) 2.人际关系与团队技能(谈判) 3.预分派 4.虚拟团队",
+   output:"1.物质资源分配单 2.项目团队派工单 3.资源日历 4.变更请求 5.项目管理计划更新 6.项目文件更新 7.事业环境因素更新 8.组织过程资产更新"},
+  {kd:"资源管理",group:"执行",name:"建设团队",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.集中办公 2.虚拟团队 3.沟通技术 4.人际关系与团队技能(冲突管理/影响力/激励/谈判/团队建设) 5.认可与奖励 6.培训 7.个人和团队评估 8.会议",
+   output:"1.团队绩效评价 2.变更请求 3.项目管理计划更新 4.项目文件更新 5.事业环境因素更新 6.组织过程资产更新"},
+  {kd:"资源管理",group:"执行",name:"管理团队",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效报告 4.团队绩效评价 5.事业环境因素 6.组织过程资产",
+   tool:"1.人际关系与团队技能(冲突管理/决策/情商/影响力/领导力) 2.项目管理信息系统",
+   output:"1.变更请求 2.项目管理计划更新 3.项目文件更新 4.事业环境因素更新"},
+  {kd:"资源管理",group:"监控",name:"控制资源",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效数据 4.协议 5.组织过程资产",
+   tool:"1.数据分析(备选方案分析/成本效益分析/绩效审查/趋势分析) 2.问题解决 3.人际关系与团队技能 4.项目管理信息系统",
+   output:"1.工作绩效信息 2.变更请求 3.项目管理计划更新 4.项目文件更新"},
+  // 沟通管理
+  {kd:"沟通管理",group:"规划",name:"规划沟通管理",
+   input:"1.项目章程 2.项目管理计划 3.项目文件 4.事业环境因素 5.组织过程资产",
+   tool:"1.专家判断 2.沟通需求分析 3.沟通技术 4.沟通模型 5.沟通方法 6.人际关系与团队技能 7.数据表现(干系人参与评估矩阵) 8.会议",
+   output:"1.沟通管理计划 2.项目管理计划更新 3.项目文件更新"},
+  {kd:"沟通管理",group:"执行",name:"管理沟通",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效报告 4.事业环境因素 5.组织过程资产",
+   tool:"1.沟通技术 2.沟通方法 3.沟通技能 4.项目管理信息系统 5.项目报告 6.人际关系与团队技能 7.会议",
+   output:"1.项目沟通记录 2.项目管理计划更新 3.项目文件更新 4.组织过程资产更新"},
+  {kd:"沟通管理",group:"监控",name:"监督沟通",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效数据 4.事业环境因素 5.组织过程资产",
+   tool:"1.专家判断 2.项目管理信息系统 3.数据分析(干系人参与度评估矩阵) 4.人际关系与团队技能 5.会议",
+   output:"1.工作绩效信息 2.变更请求 3.项目管理计划更新 4.项目文件更新"},
+  // 风险管理
+  {kd:"风险管理",group:"规划",name:"规划风险管理",
+   input:"1.项目章程 2.项目管理计划 3.项目文件 4.事业环境因素 5.组织过程资产",
+   tool:"1.专家判断 2.数据分析(干系人分析) 3.会议",
+   output:"1.风险管理计划"},
+  {kd:"风险管理",group:"规划",name:"识别风险",
+   input:"1.项目管理计划 2.项目文件 3.协议 4.采购文档 5.事业环境因素 6.组织过程资产",
+   tool:"1.专家判断 2.数据收集(头脑风暴/核查表/访谈) 3.数据分析(根本原因分析/假设条件和制约因素分析/SWOT分析/文件分析) 4.人际关系与团队技能 5.提示清单",
+   output:"1.风险登记册 2.风险报告 3.项目文件更新"},
+  {kd:"风险管理",group:"规划",name:"实施定性风险分析",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.数据收集(访谈) 3.数据分析(风险数据质量评估/风险概率和影响评估/其他风险参数评估) 4.人际关系与团队技能 5.风险分类 6.数据表现(概率和影响矩阵/层级图表) 7.会议",
+   output:"1.项目文件更新"},
+  {kd:"风险管理",group:"规划",name:"实施定量风险分析",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.数据收集(访谈) 3.人际关系与团队技能 4.不确定性表现方式 5.数据分析(模拟/敏感性分析/决策树分析/影响图)",
+   output:"1.项目文件更新"},
+  {kd:"风险管理",group:"规划",name:"规划风险应对",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.数据收集(访谈) 3.数据分析(备选方案分析/成本效益分析) 4.决策(决策树分析/多标准决策分析) 5.人际关系与团队技能 6.威胁应对策略 7.机会应对策略 8.应急应对策略 9.整体项目风险应对策略",
+   output:"1.变更请求 2.项目管理计划更新 3.项目文件更新"},
+  {kd:"风险管理",group:"执行",name:"实施风险应对",
+   input:"1.项目管理计划 2.项目文件 3.组织过程资产",
+   tool:"1.专家判断 2.人际关系与团队技能 3.项目管理信息系统",
+   output:"1.变更请求 2.项目文件更新"},
+  {kd:"风险管理",group:"监控",name:"监督风险",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效数据 4.工作绩效报告",
+   tool:"1.数据分析(技术绩效分析/储备分析) 2.审计 3.会议",
+   output:"1.工作绩效信息 2.变更请求 3.项目管理计划更新 4.项目文件更新 5.组织过程资产更新"},
+  // 采购管理
+  {kd:"采购管理",group:"规划",name:"规划采购管理",
+   input:"1.项目章程 2.项目管理计划 3.项目文件 4.事业环境因素 5.组织过程资产",
+   tool:"1.专家判断 2.数据收集(市场调研) 3.数据分析(自制或外购分析) 4.供方选择分析 5.会议",
+   output:"1.采购管理计划 2.采购策略 3.招标文件 4.采购工作说明书 5.供方选择标准 6.自制或外购决策 7.独立成本估算 8.变更请求 9.项目文件更新 10.组织过程资产更新"},
+  {kd:"采购管理",group:"执行",name:"实施采购",
+   input:"1.项目管理计划 2.项目文件 3.采购文档 4.卖方建议书 5.事业环境因素 6.组织过程资产",
+   tool:"1.专家判断 2.广告 3.投标人会议 4.数据分析(建议书评价) 5.人际关系与团队技能(谈判)",
+   output:"1.选定的卖方 2.协议 3.变更请求 4.项目管理计划更新 5.项目文件更新 6.组织过程资产更新"},
+  {kd:"采购管理",group:"监控",name:"控制采购",
+   input:"1.项目管理计划 2.项目文件 3.协议 4.采购文档 5.批准的变更请求 6.工作绩效数据 7.事业环境因素 8.组织过程资产",
+   tool:"1.专家判断 2.索赔管理 3.数据分析(绩效审查/挣值分析/趋势分析) 4.检查 5.审计",
+   output:"1.工作绩效信息 2.采购关闭 3.变更请求 4.项目管理计划更新 5.项目文件更新 6.组织过程资产更新"},
+  // 干系人管理
+  {kd:"干系人管理",group:"启动",name:"识别干系人",
+   input:"1.项目章程 2.商业文件 3.项目管理计划 4.项目文件 5.协议 6.事业环境因素 7.组织过程资产",
+   tool:"1.专家判断 2.数据收集(问卷调查/头脑风暴) 3.数据分析(干系人分析/文件分析) 4.数据表现(干系人映射分析/表现/干系人参与评估矩阵) 5.会议",
+   output:"1.干系人登记册 2.变更请求 3.项目管理计划更新 4.项目文件更新"},
+  {kd:"干系人管理",group:"规划",name:"规划干系人参与",
+   input:"1.项目章程 2.项目管理计划 3.项目文件 4.协议 5.事业环境因素 6.组织过程资产",
+   tool:"1.专家判断 2.数据收集(标杆对照) 3.数据分析(假设条件和制约因素分析/根本原因分析) 4.决策(优先级排序/分级) 5.数据表现(干系人参与评估矩阵) 6.会议",
+   output:"1.干系人参与计划"},
+  {kd:"干系人管理",group:"执行",name:"管理干系人参与",
+   input:"1.项目管理计划 2.项目文件 3.事业环境因素 4.组织过程资产",
+   tool:"1.专家判断 2.沟通技能 3.人际关系与团队技能(冲突管理/文化意识/谈判/观察和交谈/政治意识) 4.基本规则 5.会议",
+   output:"1.变更请求 2.项目管理计划更新 3.项目文件更新"},
+  {kd:"干系人管理",group:"监控",name:"监督干系人参与",
+   input:"1.项目管理计划 2.项目文件 3.工作绩效数据 4.事业环境因素 5.组织过程资产",
+   tool:"1.数据分析(备选方案分析/根本原因分析/干系人分析) 2.决策(多标准决策分析/投票) 3.数据表现(干系人参与度评估矩阵) 4.沟通技能 5.人际关系与团队技能 6.会议",
+   output:"1.工作绩效信息 2.变更请求 3.项目管理计划更新 4.项目文件更新"}
+];
+
+// ============================
+// DATA: Knowledge domains detail
+// ============================
+const KD_DETAILS = {
+  "整合管理": {
+    core: "统一、合并、协调各项目管理过程组和活动。贯穿项目始终。",
+    points: [
+      "项目章程由发起人签发，授权项目经理使用组织资源",
+      "项目管理计划包含10个子管理计划+3个基准+其他组件",
+      "CCB审批变更请求，项目经理可批准不影响基准的变更",
+      "经验教训登记册贯穿项目始终",
+      "整体变更控制确保综合考虑变更影响"
+    ]
+  },
+  "范围管理": {
+    core: "确保项目做且只做所需的全部工作，以成功完成项目。",
+    points: [
+      "WBS最底层为工作包，是估算成本和进度的基础",
+      "范围基准=项目范围说明书+WBS+WBS词典",
+      "★确认范围=正式验收可交付成果（客户参与）",
+      "⚠控制质量在先，确认范围在后",
+      "范围蔓延=未经控制的范围扩大"
+    ]
+  },
+  "进度管理": {
+    core: "管理项目进度所需的过程。进度计划是活的文件。",
+    points: [
+      "★关键路径=总浮动时间为0的路径，决定项目最短工期",
+      "进度压缩：赶工(加资源加成本) vs 快速跟进(并行执行增风险)",
+      "四种依赖关系：FS/SS/FF/SF，FS最常用",
+      "提前量为负值，滞后量为正值",
+      "资源平衡可能延长关键路径；资源平滑不改变关键路径"
+    ]
+  },
+  "成本管理": {
+    core: "对成本进行规划、估算、预算、融资、筹资、管理和控制。",
+    points: [
+      "★挣值分析核心：CV=EV-AC, SV=EV-PV, CPI=EV/AC, SPI=EV/PV",
+      "★EAC=BAC/CPI(典型偏差), EAC=AC+(BAC-EV)(非典型偏差)",
+      "★TCPI=(BAC-EV)/(BAC-AC)",
+      "管理储备=未知风险；应急储备=已知风险",
+      "成本基准=工作包估算+应急储备；项目预算=成本基准+管理储备"
+    ]
+  },
+  "质量管理": {
+    core: "将质量政策融入项目，确保交付物满足需求。",
+    points: [
+      "质量管理三大过程：规划质量→管理质量(执行)→控制质量(监控)",
+      "★管理质量≠控制质量：管理质量关注过程改进，控制质量关注结果检查",
+      "七种基本质量工具：因果图/流程图/核查表/直方图/帕累托图/控制图/散点图",
+      "质量成本=一致性成本(预防+评估) + 非一致性成本(内部失败+外部失败)",
+      "PDCA循环：计划→执行→检查→行动"
+    ]
+  },
+  "资源管理": {
+    core: "识别、获取和管理完成项目所需的资源。",
+    points: [
+      "RAM/RACI矩阵：负责R/问责A/咨询C/知情I",
+      "团队建设五阶段：形成期→震荡期→规范期→成熟期→解散期（塔克曼模型）",
+      "★冲突解决5种方式：撤退回避/缓和包容/妥协调解/强迫命令/合作解决问题（最优）",
+      "马斯洛需求层次：生理→安全→社交→尊重→自我实现",
+      "权力类型：职位权力/惩罚权力/奖励权力/专家权力/参照权力"
+    ]
+  },
+  "沟通管理": {
+    core: "确保项目信息的及时且恰当的生成、收集、分发和存储。",
+    points: [
+      "★沟通渠道数=n(n-1)/2",
+      "沟通模型：编码→传输→解码→反馈，噪声影响全程",
+      "沟通方法：交互式/推式/拉式",
+      "有效沟通5C：正确Correct/简洁Concise/清晰Clear/连贯Coherent/受控Controlled",
+      "55%肢体语言+38%语调+7%言语内容"
+    ]
+  },
+  "风险管理": {
+    core: "识别、分析和应对项目风险，最大化正面影响、最小化负面影响。",
+    points: [
+      "威胁应对5策略：规避/转移/减轻/接受/上报",
+      "机会应对5策略：开拓/分享/提高/接受/上报",
+      "★定性风险分析：概率×影响矩阵，对风险排序",
+      "★定量风险分析：EMV=概率×价值，决策树分析",
+      "风险登记册→风险报告→风险应对计划"
+    ]
+  },
+  "采购管理": {
+    core: "从项目外部采购产品、服务或成果。",
+    points: [
+      "★合同类型：固定总价(FFP)/总价加激励(FPIF)/工料(T&M)/成本补偿(CPFF/CPIF)",
+      "买方风险：成本加成本补偿最大→工料→固定总价最小（卖方风险反之）",
+      "★合同计算：CPIF实际支付=实际成本+目标费用+(目标成本-实际成本)×买方比例",
+      "采购文件：RFI(信息邀请书)/RFQ(报价邀请书)/RFP(建议邀请书/招标)",
+      "索赔管理：先谈判，后仲裁，最后诉讼"
+    ]
+  },
+  "干系人管理": {
+    core: "识别影响项目的人或组织，分析期望，制定参与策略。",
+    points: [
+      "★权力/利益方格：高权力高利益=重点管理；高权力低利益=令其满意",
+      "凸显模型=权力+紧迫性+合法性（适用于复杂大型群体）",
+      "干系人参与程度：不了解/抵制/中立/支持/领导",
+      "干系人登记册：身份信息+评估信息+分类信息",
+      "干系人参与贯穿整个项目生命周期"
+    ]
+  }
+};
+
+// ============================
+// DATA: Vocabulary
+// ============================
+const VOCAB = [
+  ["活动","Activity"],["活动定义","Activity Definition"],
+  ["实际成本","AC=Actual Cost"],["完工预算","BAC=Budget At Completion"],
+  ["成本绩效指数","CPI=Cost Performance Index"],["成本偏差","CV=Cost Variance"],
+  ["挣值","EV=Earned Value"],["完工估算","EAC=Estimate At Completion"],
+  ["完工尚需估算","ETC=Estimate To Complete"],["自由浮动","FF=Free Float"],
+  ["最早完成","EF=Early Finish"],["最早开始","ES=Early Start"],
+  ["最迟完成","LF=Late Finish"],["最迟开始","LS=Late Start"],
+  ["总浮动时间","TF=Total Float"],["进度绩效指数","SPI=Schedule Performance Index"],
+  ["进度偏差","SV=Schedule Variance"],["变更控制委员会","CCB=Change Control Board"],
+  ["关键路径法","CPM=Critical Path Method"],["计划评审技术","PERT=Program Evaluation Review Technique"],
+  ["工作分解结构","WBS=Work Breakdown Structure"],["项目管理知识体系","PMBOK"],
+  ["项目管理","PM=Project Management"],["项目经理","PM=Project Manager"],
+  ["项目章程","Project Charter"],["项目范围说明书","Project Scope Statement"],
+  ["范围基准","Scope Baseline"],["进度基准","Schedule Baseline"],
+  ["成本基准","Cost Baseline"],["质量管理计划","Quality Management Plan"],
+  ["资源分解结构","RBS=Resource Breakdown Structure"],
+  ["责任分配矩阵","RAM=Responsibility Assignment Matrix"],
+  ["RACI图","RACI Chart"],["风险登记册","Risk Register"],
+  ["干系人登记册","Stakeholder Register"],["项目管理系统","PMIS"],
+  ["事业环境因素","EEF=Enterprise Environmental Factors"],
+  ["组织过程资产","OPA=Organizational Process Assets"],
+  ["配置管理数据库","CMDB"],["总监理工程师","Chief Supervisor Engineer"],
+  ["工作绩效数据","Work Performance Data"],["工作绩效信息","Work Performance Information"],
+  ["工作绩效报告","Work Performance Report"],
+  ["项目管理办公室","PMO=Project Management Office"],
+  ["关键事件进度计划","Key Event Schedule"],["甘特图","Gantt Chart"],
+  ["里程碑","Milestone"],["虚活动","Dummy Activity"],
+  ["滞后量","Lag"],["提前量","Lead"],
+  ["赶工","Crashing"],["快速跟进","Fast Tracking"],
+  ["管理储备","Management Reserve"],["应急储备","Contingency Reserve"],
+  ["质量成本","COQ=Cost of Quality"],["帕累托图","Pareto Chart"],
+  ["控制图","Control Chart"],["鱼骨图/因果图","Fishbone/Cause-Effect Diagram"],
+  ["头脑风暴","Brainstorming"],["德尔菲技术","Delphi Technique"],
+  ["SWOT分析","SWOT Analysis"],["蒙特卡洛模拟","Monte Carlo Simulation"],
+  ["决策树","Decision Tree"],["力场分析","Force Field Analysis"],
+  ["合同","Contract"],["固定总价合同","FFP=Fixed Firm Price"],
+  ["成本加固定费用合同","CPFF"],["成本加激励费用合同","CPIF"],
+  ["工料合同","T&M=Time and Material"],["工作说明书","SOW=Statement of Work"],
+  ["信息安全","Information Security"],["保密性","Confidentiality"],
+  ["完整性","Integrity"],["可用性","Availability"],
+  ["对称加密","Symmetric Encryption"],["非对称加密","Asymmetric Encryption"],
+  ["数字签名","Digital Signature"],["防火墙","Firewall"],
+  ["入侵检测系统","IDS=Intrusion Detection System"],
+  ["虚拟专用网","VPN=Virtual Private Network"],
+  ["物联网","IoT=Internet of Things"],["云计算","Cloud Computing"],
+  ["人工智能","AI=Artificial Intelligence"],["区块链","Blockchain"],
+  ["大数据","Big Data"],["机器学习","Machine Learning"],
+  ["基础设施即服务","IaaS"],["平台即服务","PaaS"],
+  ["软件即服务","SaaS"],["面向服务架构","SOA"]
+];
+
+// ============================
+// DATA: Case study key points
+// ============================
+const CASE_POINTS = [
+  {ch:"第三章",q:"服务标准化的特征",a:"1.建立标准的过程、实施规范以及相关制度 2.具有明确的有形化产出物描述及相关模板 3.实施服务的过程有记录可追溯且可审计 4.建立完善的服务质量考核指标体系",tag:"标准"},
+  {ch:"第三章",q:"服务产品化的特征",a:"1.具有清晰的服务目录 2.具有独立的价值、明确的功能和性能指标 3.对具体的服务有相应的服务级别要求 4.对服务有明确的考核指标 5.对服务产品实施全生命周期管理",tag:"标准"},
+  {ch:"第四章",q:"应用架构的基本原则",a:"1.业务适配性原则 2.应用聚合化原则 3.功能专业化原则 4.风险最小化原则 5.资产复用化原则",tag:"架构"},
+  {ch:"第四章",q:"数据架构的基本原则",a:"1.数据分层原则 2.数据处理效率原则 3.数据一致性原则 4.数据架构可扩展性原则 5.服务于业务原则",tag:"架构"},
+  {ch:"第四章",q:"技术架构的基本原则",a:"1.成熟度控制原则 2.技术一致性原则 3.局部可替换原则 4.人才技能覆盖原则 5.创新驱动原则",tag:"架构"},
+  {ch:"第四章",q:"网络架构的基本原则",a:"1.高可靠性 2.高安全性 3.高性能 4.可管理性 5.平台化和架构化",tag:"架构"},
+  {ch:"第五章",q:"QFD软件需求的分类（非常重要）",a:"1.常规需求：用户认为系统应做到的功能，实现越多越满意 2.期望需求：用户想当然认为应具备的功能，未实现则不满意 3.意外需求：范围外的功能，实现会更高兴但不影响购买决策",tag:"高频"},
+  {ch:"第六章",q:"数据质量评价过程的步骤",a:"1.确定适用的数据质量定量元素及范围 2.确定数据质量度量方法 3.选择并使用数据质量评价方法 4.确定数据质量结果 5.决定一致性",tag:"标准"},
+  {ch:"第六章",q:"数据挖掘与传统数据分析的差异",a:"1.数据量差异：数据挖掘需要更大数据量 2.方法差异：传统用统计学，数据挖掘综合统计+AI+可视化 3.侧重差异：传统回顾型/验证型，数据挖掘预测型/发现型 4.成熟度不同",tag:"标准"},
+  {ch:"第六章",q:"数据可视化表现方式",a:"1.一维数据可视化 2.二维数据可视化 3.三维数据可视化 4.多维数据可视化 5.时态数据可视化 6.层次数据可视化 7.网络数据可视化",tag:"标准"},
+  {ch:"第九章",q:"PMO的三种类型（重要）",a:"1.支持型：顾问角色，提供模板/最佳实践/培训，控制程度低 2.控制型：要求项目服从，采用管理框架/模板/治理框架，控制程度中 3.指令型：直接管理和控制项目，PM由PMO指定并报告，控制程度高",tag:"高频"},
+  {ch:"第九章",q:"可行性研究包括哪些方面",a:"1.技术可行性分析 2.经济可行性分析 3.社会效益可行性分析 4.运行环境可行性分析 5.其他方面可行性分析",tag:"标准"},
+  {ch:"第九章",q:"详细可行性研究的方法",a:"1.经济评价法 2.市场预测法 3.投资估算法 4.增量净效益法（有无比较法）",tag:"标准"},
+  {ch:"第九章",q:"项目章程的主要内容",a:"1.项目目的 2.可测量的项目目标和成功标准 3.高层级需求 4.整体项目风险 5.总体里程碑进度计划 6.预先批准的财务资源 7.关键干系人名单 8.项目审批要求 9.委派的项目经理 10.发起人信息",tag:"高频"},
+  {ch:"第十章",q:"干系人分类模型",a:"1.权力/利益方格 2.权力/影响方格 3.干系人立方体 4.凸显模型(权力+紧迫性+合法性) 5.影响方向 6.优先级排序",tag:"高频"},
+  {ch:"第十一章",q:"收集需求的数据收集技术",a:"1.头脑风暴 2.访谈 3.焦点小组 4.问卷调查 5.标杆对照",tag:"标准"},
+  {ch:"第十一章",q:"创建WBS的原则",a:"1.WBS是对项目可交付成果的层次化分解 2.最底层为工作包 3.100%规则：WBS必须包含100%的范围 4.WBS词典是对WBS的详细说明",tag:"高频"},
+  {ch:"第十二章",q:"进度压缩方法",a:"1.赶工：增加资源，增加成本，需分析成本增量最小的活动 2.快速跟进：将顺序执行的活动并行执行，可能增加风险，可能返工",tag:"高频"},
+  {ch:"第十二章",q:"估算成本的工具",a:"1.专家判断 2.类比估算 3.参数估算 4.自下而上估算 5.三点估算 6.数据分析 7.PMIS 8.决策",tag:"标准"},
+  {ch:"第十三章",q:"质量管理七种基本工具",a:"1.因果图(鱼骨图) 2.流程图 3.核查表 4.直方图 5.帕累托图(80/20) 6.控制图 7.散点图",tag:"高频"},
+  {ch:"第十三章",q:"质量成本分类",a:"一致性成本=预防成本+评估成本；非一致性成本=内部失败成本+外部失败成本",tag:"标准"},
+  {ch:"第十四章",q:"冲突解决方法（优先级排序）",a:"1.合作/解决问题(最优，双赢) 2.妥协/调解(各让一步) 3.缓和/包容(求同存异) 4.撤退/回避(暂时搁置) 5.强制/命令(强制解决，输赢)",tag:"高频"},
+  {ch:"第十四章",q:"团队建设五阶段",a:"1.形成期 2.震荡期 3.规范期 4.成熟期 5.解散期",tag:"标准"},
+  {ch:"第十四章",q:"沟通渠道计算",a:"n个干系人的沟通渠道数 = n(n-1)/2",tag:"计算"},
+  {ch:"第十四章",q:"风险应对策略",a:"威胁：1.规避 2.转移 3.减轻 4.接受 5.上报；机会：1.开拓 2.分享 3.提高 4.接受 5.上报",tag:"高频"},
+  {ch:"第十五章",q:"配置项的三种状态",a:"草稿(0.YZ)→正式(X.Y)→修改(X.YZ)；草稿→评审通过→正式→更改→修改→评审通过→正式",tag:"高频"},
+  {ch:"第十五章",q:"三种配置库",a:"1.开发库(动态库)：开发人员当前正在开发的配置实体 2.受控库(主库)：包含当前基线+对基线的变更 3.产品库(静态库/发行库)：已发布的各种基线存档",tag:"高频"},
+  {ch:"第十五章",q:"配置审计类型",a:"1.功能配置审计：验证一致性（实际功效vs需求）2.物理配置审计：验证完整性（物理存在vs预期）",tag:"高频"},
+  {ch:"第十五章",q:"变更管理工作程序8步",a:"1.变更申请 2.对变更的初审 3.变更方案论证 4.变更审查 5.发出通知并实施 6.实施监控 7.效果评估 8.变更收尾",tag:"高频"},
+  {ch:"第十五章",q:"CCB的角色",a:"CCB是决策机构（非作业机构），负责审批/否决变更请求。项目经理可批准不影响基准的变更。",tag:"高频"},
+  {ch:"第十六章",q:"三控两管一协调",a:"三控：质量控制、进度控制、投资控制；两管：合同管理、信息管理；一协调：协调有关单位及人员间的工作关系",tag:"高频"},
+  {ch:"第十六章",q:"监理文件编制层次",a:"1.监理大纲：法定代表人批准 2.监理规划：总监理工程师主持编制，技术负责人审批 3.监理实施细则：监理工程师编制，总监批准",tag:"高频"},
+  {ch:"第十八章",q:"知识产权相关法律要点",a:"1.著作权保护期：自然人=终生+死后50年 2.软件保护期：自然人=终生+死后50年，法人=首次发表后50年 3.专利：发明20年，实用新型/外观设计10年",tag:"标准"}
+];
+
+// ============================
+// RENDER FUNCTIONS
+// ============================
+
+// Render ITTO Matrix
+function renderIttoMatrix() {
+  const domains = ["整合管理","范围管理","进度管理","成本管理","质量管理","资源管理","沟通管理","风险管理","采购管理","干系人管理"];
+  const groups = ["启动","规划","执行","监控","收尾"];
+  let html = '';
+  domains.forEach(d => {
+    html += '<tr><td class="kh-name">'+d+'</td>';
+    groups.forEach(g => {
+      const procs = PROCESSES.filter(p => p.kd===d && p.group===g);
+      if(procs.length === 0) {
+        html += '<td></td>';
+      } else {
+        html += '<td class="itto-cell">';
+        procs.forEach(p => {
+          html += '<div style="margin:2px 0;cursor:pointer" onclick="showItto(\''+d+'\',\''+p.name+'\')" title="点击查看详情">'+p.name+'</div>';
+        });
+        html += '</td>';
+      }
+    });
+    html += '</tr>';
+  });
+  document.getElementById('ittoBody').innerHTML = html;
+}
+
+// Show ITTO detail modal
+function showItto(domain, processName) {
+  const p = PROCESSES.find(x => x.kd===domain && x.name===processName);
+  if(!p) return;
+  let html = '<h2>'+p.name+'</h2><p style="color:#6a7a8a;margin-bottom:12px">'+p.kd+' · '+p.group+'过程组</p>';
+  html += '<div class="itto-section"><h4>📥 输入 (Inputs)</h4><div class="itto-list">'+p.input.split(/(?:\d\.\s*)/).filter(x=>x.trim()).map(x=>'• '+x.trim()).join('<br>')+'</div></div>';
+  html += '<div class="itto-section"><h4>🔧 工具与技术 (Tools & Techniques)</h4><div class="itto-list">'+p.tool.split(/(?:\d\.\s*)/).filter(x=>x.trim()).map(x=>'• '+x.trim()).join('<br>')+'</div></div>';
+  html += '<div class="itto-section"><h4>📤 输出 (Outputs)</h4><div class="itto-list">'+p.output.split(/(?:\d\.\s*)/).filter(x=>x.trim()).map(x=>'• '+x.trim()).join('<br>')+'</div></div>';
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('ittoModal').classList.add('show');
+}
+function closeModal(){document.getElementById('ittoModal').classList.remove('show')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+// Render Knowledge Domains
+function renderKnowledge() {
+  const domains = ["整合管理","范围管理","进度管理","成本管理","质量管理","资源管理","沟通管理","风险管理","采购管理","干系人管理"];
+  let html = '';
+  domains.forEach(d => {
+    const detail = KD_DETAILS[d];
+    const procs = PROCESSES.filter(p => p.kd===d);
+    html += '<div class="subsection" id="kd-'+d+'"><h3>'+d;
+    const counts = {启动:0,规划:0,执行:0,监控:0,收尾:0};
+    procs.forEach(p => counts[p.group]++);
+    html += ' <span class="badge">'+procs.length+'个过程</span></h3>';
+    html += '<p style="color:#8899aa;margin-bottom:10px">'+detail.core+'</p>';
+    html += '<h4>过程列表</h4><table><tr><th>过程组</th><th>过程名称</th></tr>';
+    procs.forEach(p => {
+      html += '<tr><td><span class="tag tag-'+({'启动':'red','规划':'blue','执行':'green','监控':'orange','收尾':'purple'}[p.group]||'blue')+'">'+p.group+'</span></td>';
+      html += '<td style="cursor:pointer;color:#5dade2" onclick="showItto(\''+d+'\',\''+p.name+'\')">'+p.name+' ↗</td></tr>';
+    });
+    html += '</table>';
+    html += '<h4>🎯 核心要点</h4>';
+    detail.points.forEach(pt => {
+      const isStar = pt.startsWith('★') || pt.startsWith('⚠');
+      html += '<p style="margin:4px 0">'+(isStar?'':'• ')+pt+'</p>';
+    });
+    html += '</div>';
+  });
+  document.getElementById('knowledgeContent').innerHTML = html;
+}
+
+// Render IT Tech
+function renderITTech() {
+  const chapters = [
+    {title:"第1章 信息化发展",nodes:[
+      {l:1,t:"信息化的内涵（四要素）"},
+      {l:2,t:"信息网络体系 / 信息产业基础 / 社会运行环境 / 效用积累过程"},
+      {l:1,t:"★新基建三大分类"},
+      {l:2,t:"信息基础设施（技术新）：5G/物联网/AI/云计算/区块链/数据中心"},
+      {l:2,t:"融合基础设施（应用新）：智能交通/智慧能源"},
+      {l:2,t:"创新基础设施（平台新）：重大科技基础设施"},
+      {l:1,t:"工业互联网四大层级：网络为基础→平台为中枢→数据为要素→安全为保障"},
+      {l:1,t:"★数字经济：数字产业化/产业数字化/数字化治理/数据价值化"},
+      {l:1,t:'数字政府：\u201c一网通办\u201d\u201c跨省通办\u201d\u201c一网统管\u201d'}
+    ]},
+    {title:"第2章 信息技术发展",nodes:[
+      {l:1,t:"★OSI七层模型：物理→数据链路→网络→传输→会话→表示→应用"},
+      {l:2,t:"TCP/IP四层：网络接口→网际→传输→应用"},
+      {l:1,t:"★加密技术：对称(DES)/非对称(RSA)/Hash(MD5/SHA)/数字签名"},
+      {l:1,t:"★云计算：IaaS(基础设施)/PaaS(平台)/SaaS(软件)"},
+      {l:2,t:"关键技术：虚拟化/容器/多任务/超线程（三者不同！）"},
+      {l:1,t:"★区块链：分布式账本+加密算法+共识机制+智能合约"},
+      {l:2,t:"四大分类：公有链/联盟链/私有链/混合链"},
+      {l:1,t:"物联网三层架构：感知层→网络层→应用层"},
+      {l:1,t:"5G三大场景：eMBB/uRLLC/mMTC"},
+      {l:1,t:"信息安全CIA：保密性/完整性/可用性"},
+      {l:1,t:"存储分类：DAS→NAS→SAN(FC SAN/IP SAN)"}
+    ]},
+    {title:"第3章 信息技术服务",nodes:[
+      {l:1,t:"IT服务PPTR：人员/过程/技术/资源"},
+      {l:1,t:"ITSS生命周期SDOR：规划→设计→运营→退役"},
+      {l:1,t:"ITIL核心概念：事件管理/问题管理/变更管理"},
+      {l:1,t:"★IT审计：合规性审计/安全性审计"}
+    ]},
+    {title:"第4章 信息系统架构",nodes:[
+      {l:1,t:"★企业架构：业务架构/数据架构/应用架构/技术架构"},
+      {l:2,t:"应用架构原则：业务适配/应用聚合/功能专业化/风险最小化/资产复用化"},
+      {l:1,t:"★SOA面向服务架构：松耦合/服务复用/互操作性"},
+      {l:1,t:"中间件分类：通信/事务/应用服务器/消息"}
+    ]},
+    {title:"第5章 软件工程",nodes:[
+      {l:1,t:"★软件开发生命周期：需求→设计→编码→测试→部署→运维"},
+      {l:1,t:"★需求分类：常规需求/期望需求/意外需求"},
+      {l:1,t:"设计模式原则：单一职责/开闭/里氏替换/接口隔离/依赖倒置"},
+      {l:1,t:"测试类型：单元测试→集成测试→系统测试→验收测试"},
+      {l:1,t:"★敏捷方法：Scrum/Kanban/XP/看板"},
+      {l:2,t:"Scrum角色：PO/Scrum Master/开发团队；工件：PB/Sprint Backlog/增量"}
+    ]},
+    {title:"第6章 数据工程",nodes:[
+      {l:1,t:"数据模型：层次/网状/关系(最重要)"},
+      {l:1,t:"数据库：关系型(ACID)/NoSQL(键值/列/文档/图)"},
+      {l:1,t:"数据仓库：ETL/元数据/OLAP/数据集市"},
+      {l:1,t:"★数据质量：准确性/完整性/一致性/及时性/有效性"},
+      {l:1,t:"数据挖掘vs传统数据分析"}
+    ]},
+    {title:"第7章 系统集成",nodes:[
+      {l:1,t:"集成方式：API/ESB/消息队列/数据集成"},
+      {l:1,t:"★系统集成项目实施：需求调研→方案设计→系统开发→测试→部署→运维"},
+      {l:1,t:"接口管理：协议/数据格式/安全认证"}
+    ]},
+    {title:"第8章 信息安全",nodes:[
+      {l:1,t:"★信息安全等级保护：1-5级"},
+      {l:1,t:"★加密：对称(DES)/非对称(RSA)/Hash(MD5/SHA)"},
+      {l:1,t:"数字签名=非对称加密+Hash（不可抵赖/不可伪造/可仲裁）"},
+      {l:1,t:"★PKI公钥基础设施：CA认证中心/证书/密钥管理"},
+      {l:1,t:"网络安全：防火墙/IDS/IPS/VPN/蜜罐/态势感知"},
+      {l:1,t:"SSO单点登录：一点登录多点访问"}
+    ]}
+  ];
+  let html = '';
+  chapters.forEach((ch, idx) => {
+    html += '<div class="mm-card" id="it-ch-'+(idx+1)+'"><h4>'+ch.title+'</h4>';
+    ch.nodes.forEach(n => {
+      const cls = 'mm-node level'+n.l;
+      const prefix = n.t.startsWith('★') ? '★ ' : '';
+      html += '<div class="'+cls+'">'+prefix+n.t.replace(/^★\s*/,'')+'</div>';
+    });
+    html += '</div>';
+  });
+  document.getElementById('itTechContent').innerHTML = html;
+}
+
+// Render Case Study
+function renderCase() {
+  let html = '';
+  CASE_POINTS.forEach((c,i) => {
+    html += '<div class="case-item" data-text="'+c.q+c.a+c.ch+'" data-tag="'+c.tag+'">';
+    html += '<div class="q">'+(c.tag==='高频'?'<span class="star-mark">★</span>':'')+c.ch+'：'+c.q+'</div>';
+    html += '<div class="a">'+c.a+'</div>';
+    html += '<div class="meta"><span class="tag tag-'+({'高频':'orange','标准':'blue','计算':'green','新增':'red'}[c.tag]||'blue')+'">'+c.tag+'</span></div>';
+    html += '</div>';
+  });
+  document.getElementById('caseContent').innerHTML = html;
+}
+
+function filterCase(val) {
+  document.querySelectorAll('#caseContent .case-item').forEach(el => {
+    el.style.display = !val || el.dataset.text.includes(val) ? '' : 'none';
+  });
+}
+
+// Render Calculations
+function renderCalc() {
+  let html = '';
+  html += '<div class="subsection"><h3>📐 挣值分析(EVM)公式速查 <span class="badge">超高频</span></h3>';
+  html += '<table class="highlight-table"><tr><th>指标</th><th>公式</th><th>>0(>1)</th><th><0(<1)</th></tr>';
+  html += '<tr><td>成本偏差 CV</td><td class="formula" style="border:none;margin:0">CV = EV - AC</td><td style="color:#27ae60">成本节约</td><td style="color:#e74c3c">成本超支</td></tr>';
+  html += '<tr><td>进度偏差 SV</td><td class="formula" style="border:none;margin:0">SV = EV - PV</td><td style="color:#27ae60">进度提前</td><td style="color:#e74c3c">进度延误</td></tr>';
+  html += '<tr><td>成本绩效指数 CPI</td><td class="formula" style="border:none;margin:0">CPI = EV / AC</td><td style="color:#27ae60">成本节约</td><td style="color:#e74c3c">成本超支</td></tr>';
+  html += '<tr><td>进度绩效指数 SPI</td><td class="formula" style="border:none;margin:0">SPI = EV / PV</td><td style="color:#27ae60">进度提前</td><td style="color:#e74c3c">进度延误</td></tr>';
+  html += '</table>';
+  html += '<div class="formula">万能公式：偏差 = EV - 另一个；指数 = EV ÷ 另一个<br>正值/大于1 = 好事；负值/小于1 = 坏事</div>';
+  html += '<table class="highlight-table"><tr><th>指标</th><th>场景</th><th>公式</th></tr>';
+  html += '<tr><td>ETC</td><td>典型偏差(持续)</td><td class="formula" style="border:none;margin:0">ETC = (BAC - EV) / CPI</td></tr>';
+  html += '<tr><td>ETC</td><td>非典型偏差(不持续)</td><td class="formula" style="border:none;margin:0">ETC = BAC - EV</td></tr>';
+  html += '<tr><td>EAC</td><td>基本公式</td><td class="formula" style="border:none;margin:0">EAC = AC + ETC</td></tr>';
+  html += '<tr><td>EAC</td><td>典型偏差</td><td class="formula" style="border:none;margin:0">EAC = BAC / CPI</td></tr>';
+  html += '<tr><td>EAC</td><td>非典型偏差</td><td class="formula" style="border:none;margin:0">EAC = AC + (BAC - EV)</td></tr>';
+  html += '<tr><td>TCPI</td><td>基于BAC</td><td class="formula" style="border:none;margin:0">TCPI = (BAC - EV) / (BAC - AC)</td></tr>';
+  html += '<tr><td>TCPI</td><td>基于EAC</td><td class="formula" style="border:none;margin:0">TCPI = (BAC - EV) / (EAC - AC)</td></tr>';
+  html += '</table></div>';
+
+  // Network diagram
+  html += '<div class="subsection"><h3>🕐 网络图与关键路径 <span class="badge">高频</span></h3>';
+  html += '<table class="highlight-table"><tr><th>信息</th><th>缩写</th><th>公式</th></tr>';
+  html += '<tr><td>最早完成时间</td><td>EF</td><td class="formula" style="border:none;margin:0">EF = ES + 工期</td></tr>';
+  html += '<tr><td>最迟开始时间</td><td>LS</td><td class="formula" style="border:none;margin:0">LS = LF - 工期</td></tr>';
+  html += '<tr><td>总浮动时间</td><td>TF</td><td class="formula" style="border:none;margin:0">TF = LF - EF = LS - ES</td></tr>';
+  html += '<tr><td>自由浮动时间</td><td>FF</td><td class="formula" style="border:none;margin:0">FF = 紧后活动ES最小值 - 本活动EF</td></tr>';
+  html += '</table>';
+  html += '<div class="formula">正推法：从起点到终点，多个紧前取EF<b>最大值</b><br>逆推法：从终点到起点，多个紧后取LS<b>最小值</b><br>关键路径上 TF=0</div>';
+  html += '<h4>双代号时标网络图</h4>';
+  html += '<p>• 波形线 = 自由时差</p><p>• 从终点逆推，无波形线的线路 = 关键线路</p><p>• 总浮动 = 通过该活动所有线路波形线之和的<b>最小值</b></p>';
+  html += '</div>';
+
+  // PERT
+  html += '<div class="subsection"><h3>📊 三点估算(PERT) <span class="badge">高频</span></h3>';
+  html += '<div class="formula">期望值 tE = (O + 4M + P) / 6<br>标准差 σ = (P - O) / 6<br>方差 σ² = σ × σ</div>';
+  html += '<table class="highlight-table"><tr><th>范围</th><th>概率</th></tr>';
+  html += '<tr><td>tE ± 1σ</td><td>68.26% ≈ 68%</td></tr>';
+  html += '<tr><td>tE ± 2σ</td><td>95.46% ≈ 95%</td></tr>';
+  html += '<tr><td>tE ± 3σ</td><td>99.73% ≈ 99%</td></tr>';
+  html += '<tr><td>≤ tE</td><td>50%</td></tr>';
+  html += '<tr><td>≤ tE + 1σ</td><td>84.13% ≈ 84%</td></tr>';
+  html += '<tr><td>≤ tE + 2σ</td><td>97.73% ≈ 98%</td></tr>';
+  html += '</table>';
+  html += '<div class="formula">项目期望工期 = Σ各活动tE<br>项目方差 = Σ各活动方差<br>项目标准差 = √(项目方差)<br>⚠方差可加，标准差不能直接加！</div></div>';
+
+  // EMV
+  html += '<div class="subsection"><h3>💰 预期货币价值(EMV) <span class="badge">高频</span></h3>';
+  html += '<div class="formula">EMV = Σ P(i) × V(i)<br>机会EMV为正值，威胁EMV为负值</div>';
+  html += '<p>典型题：40%获利10万，30%亏损8万，30%不亏不赚<br>EMV = 10×0.4 + (-8)×0.3 + 0×0.3 = <b>1.6万元</b></p></div>';
+
+  // Contract
+  html += '<div class="subsection"><h3>📄 合同计算 <span class="badge">高频</span></h3>';
+  html += '<h4>成本加激励费用合同(CPIF)</h4>';
+  html += '<div class="formula">实际支付 = 目标成本 + 目标费用 + (目标成本 - 实际成本) × 买方分摊比例<br><br>节约时：卖方利润 = 目标费用 + 节约额×卖方比例<br>超支时：卖方利润 = 目标费用 - 超支额×卖方比例</div>';
+  html += '<p>例题：目标成本20万，利润2万，分摊70:30(买:卖)，实际成本16万<br>节约=4万，买方享有=4×70%=2.8万<br>实际支付 = 20+2-2.8 = <b>19.2万</b></p>';
+  html += '<h4>合同类型风险排序</h4>';
+  html += '<table><tr><th>合同类型</th><th>买方风险</th><th>适用场景</th></tr>';
+  html += '<tr><td>固定总价(FFP)</td><td style="color:#27ae60">最小</td><td>范围明确</td></tr>';
+  html += '<tr><td>总价加激励(FPIF)</td><td>较小</td><td>鼓励控制成本</td></tr>';
+  html += '<tr><td>工料(T&M)</td><td>中等</td><td>范围不明确/工作量小</td></tr>';
+  html += '<tr><td>成本加固定费用(CPFF)</td><td>较大</td><td>范围不明确</td></tr>';
+  html += '<tr><td>成本加激励费用(CPIF)</td><td>较大</td><td>鼓励控制成本</td></tr>';
+  html += '<tr><td>成本加奖励费用(CPAF)</td><td style="color:#e74c3c">最大</td><td>主观评价</td></tr></table></div>';
+
+  // Communication
+  html += '<div class="subsection"><h3>🗣 沟通渠道</h3>';
+  html += '<div class="formula">沟通渠道数 = n(n-1) / 2<br>例：10人团队 → 10×9/2 = 45条渠道</div></div>';
+
+  document.getElementById('calcContent').innerHTML = html;
+}
+
+// Render Vocabulary
+function renderVocab() {
+  let html = '';
+  VOCAB.forEach(v => {
+    html += '<div class="vocab-item" data-text="'+v[0]+v[1].toLowerCase()+'"><span class="zh">'+v[0]+'</span><span class="en">'+v[1]+'</span></div>';
+  });
+  document.getElementById('vocabGrid').innerHTML = html;
+}
+function filterVocab(val) {
+  const v = val.toLowerCase();
+  document.querySelectorAll('#vocabGrid .vocab-item').forEach(el => {
+    el.style.display = !val || el.dataset.text.includes(v) ? '' : 'none';
+  });
+}
+
+// Render Org & Law
+function renderOrgLaw() {
+  let html = '';
+  html += '<div class="subsection"><h3>📁 配置管理 <span class="badge">高频</span></h3>';
+  html += '<h4>配置项状态转换</h4>';
+  html += '<p><span class="tag tag-blue">草稿 0.YZ</span> → 评审通过 → <span class="tag tag-green">正式 X.Y</span> → 更改 → <span class="tag tag-orange">修改 X.YZ</span> → 评审通过 → <span class="tag tag-green">正式</span></p>';
+  html += '<h4>配置库</h4>';
+  html += '<table><tr><th>配置库</th><th>别名</th><th>用途</th><th>控制级别</th></tr>';
+  html += '<tr><td>开发库</td><td>动态库/工作库</td><td>当前开发中的配置实体</td><td>开发人员自行控制</td></tr>';
+  html += '<tr><td>受控库</td><td>主库</td><td>当前基线+变更</td><td>完全配置管理</td></tr>';
+  html += '<tr><td>产品库</td><td>静态库/发行库</td><td>已发布基线存档</td><td>完全配置管理</td></tr></table>';
+  html += '<p>流转顺序：开发库 → 受控库 → 产品库</p>';
+  html += '<h4>配置审计</h4>';
+  html += '<table><tr><th>类型</th><th>审计内容</th><th>口诀</th></tr>';
+  html += '<tr><td>功能配置审计</td><td>一致性（实际功效 vs 需求）</td><td>功能审一致</td></tr>';
+  html += '<tr><td>物理配置审计</td><td>完整性（物理存在 vs 预期）</td><td>物理审完整</td></tr></table></div>';
+
+  html += '<div class="subsection"><h3>🔄 变更管理 <span class="badge">高频</span></h3>';
+  html += '<h4>变更管理8步流程</h4>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">';
+  const steps = ["1.变更申请","2.变更初审","3.方案论证","4.变更审查","5.发出通知并实施","6.实施监控","7.效果评估","8.变更收尾"];
+  steps.forEach(s => { html += '<span class="tag tag-orange" style="font-size:13px">'+s+'</span>'; });
+  html += '</div>';
+  html += '<h4>关键角色</h4>';
+  html += '<table><tr><th>角色</th><th>要点</th></tr>';
+  html += '<tr><td>CCB</td><td><b>决策机构</b>（非作业机构），审批/否决变更</td></tr>';
+  html += '<tr><td>变更经理</td><td>变更管理过程解决方案的负责人</td></tr>';
+  html += '<tr><td>变更实施者</td><td>按批准的计划实施变更（含恢复步骤）</td></tr></table></div>';
+
+  html += '<div class="subsection"><h3>🏗 监理基础 <span class="badge">高频</span></h3>';
+  html += '<h4>三控两管一协调</h4>';
+  html += '<p><span class="tag tag-red">三控</span> 质量控制 · 进度控制 · 投资控制</p>';
+  html += '<p><span class="tag tag-blue">两管</span> 合同管理 · 信息管理</p>';
+  html += '<p><span class="tag tag-green">一协调</span> 协调有关单位及人员间的工作关系</p>';
+  html += '<h4>监理文件层次</h4>';
+  html += '<table><tr><th>文件</th><th>编制人</th><th>审批人</th></tr>';
+  html += '<tr><td>监理大纲</td><td>监理单位</td><td>法定代表人批准</td></tr>';
+  html += '<tr><td>监理规划</td><td>总监理工程师主持</td><td>技术负责人审批</td></tr>';
+  html += '<tr><td>监理实施细则</td><td>监理工程师</td><td>总监批准</td></tr></table></div>';
+
+  html += '<div class="subsection"><h3>⚖️ 法律法规速记</h3>';
+  html += '<h4>知识产权</h4>';
+  html += '<table><tr><th>类型</th><th>保护期</th><th>备注</th></tr>';
+  html += '<tr><td>著作权(自然人)</td><td>终生 + 死后50年</td><td>自动取得，无需登记</td></tr>';
+  html += '<tr><td>著作权(法人)</td><td>首次发表后50年</td><td>未发表不受保护</td></tr>';
+  html += '<tr><td>软件著作权(自然)</td><td>终生 + 死后50年</td><td>自开发完成之日起产生</td></tr>';
+  html += '<tr><td>专利-发明</td><td>20年</td><td>自申请日起算</td></tr>';
+  html += '<tr><td>专利-实用新型/外观</td><td>10年</td><td>自申请日起算</td></tr></table>';
+  html += '<h4>招投标法要点</h4>';
+  html += '<p>• 投标人≥3个，否则重新招标</p><p>• 评标委员会：5人以上单数，技术经济专家≥2/3</p><p>• 中标通知书发出30日内签合同</p><p>• 投标保证金≤投标总价2%且≤80万元</p></div>';
+
+  html += '<div class="subsection"><h3>📋 文档管理</h3>';
+  html += '<table><tr><th>等级</th><th>名称</th><th>适用场景</th></tr>';
+  html += '<tr><td>1级</td><td>最低限度文档</td><td>开发者自用（<1人月）</td></tr>';
+  html += '<tr><td>2级</td><td>内部文档</td><td>专用程序（未共享）</td></tr>';
+  html += '<tr><td>3级</td><td>工作文档</td><td>多人联合开发/其他单位可用</td></tr>';
+  html += '<tr><td>4级</td><td>正式文档</td><td>正式发行/普遍使用</td></tr></table>';
+  html += '<p style="color:#f39c12;margin-top:8px">口诀：1级自用→2级专用→3级合用→4级通用</p></div>';
+
+  html += '<div class="subsection"><h3>🏛 职业道德规范</h3>';
+  html += '<p>• 遵守法律法规，维护社会公共利益</p>';
+  html += '<p>• 诚实守信，不弄虚作假</p>';
+  html += '<p>• 客观公正，不受利益冲突影响</p>';
+  html += '<p>• 勤勉尽责，保证工作质量</p>';
+  html += '<p>• 保守秘密，保护知识产权</p>';
+  html += '<p>• 持续学习，提高专业能力</p></div>';
+
+  document.getElementById('orgLawContent').innerHTML = html;
+}
+
+// === Section Switching ===
+function switchSection(id) {
+  var sectionId = id;
+  var subAnchor = null;
+  if(id.indexOf('it-ch-') === 0) { sectionId = 'it-tech'; subAnchor = id; }
+  else if(id.indexOf('kd-') === 0) { sectionId = 'knowledge'; subAnchor = id; }
+
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+  var target = document.getElementById(sectionId);
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.topbar .nav-links a').forEach(function(a){
+    a.classList.toggle('active', a.getAttribute('data-sec') === sectionId);
+  });
+  document.querySelectorAll('.tree-item').forEach(function(e){ e.classList.remove('active'); });
+  if(subAnchor) {
+    setTimeout(function() {
+      var el = document.getElementById(subAnchor);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 100);
+  } else {
+    window.scrollTo(0, 0);
+  }
+}
+
+// Render Sidebar
+function renderSidebar() {
+  var tree = [
+    {label:"📊 备考总览", target:"overview", children:[]},
+    {label:"🏆 十五至尊图", target:"itto-matrix", children:[]},
+    {label:"📚 知识域详解", target:"knowledge", children:[
+      {name:"整合管理",target:"kd-整合管理"},{name:"范围管理",target:"kd-范围管理"},{name:"进度管理",target:"kd-进度管理"},{name:"成本管理",target:"kd-成本管理"},{name:"质量管理",target:"kd-质量管理"},{name:"资源管理",target:"kd-资源管理"},{name:"沟通管理",target:"kd-沟通管理"},{name:"风险管理",target:"kd-风险管理"},{name:"采购管理",target:"kd-采购管理"},{name:"干系人管理",target:"kd-干系人管理"}
+    ]},
+    {label:"💻 IT技术(1-8章)", target:"it-tech", children:[
+      {name:"第1章 信息化发展",target:"it-ch-1"},{name:"第2章 信息技术",target:"it-ch-2"},{name:"第3章 IT服务",target:"it-ch-3"},{name:"第4章 系统架构",target:"it-ch-4"},{name:"第5章 软件工程",target:"it-ch-5"},{name:"第6章 数据工程",target:"it-ch-6"},{name:"第7章 系统集成",target:"it-ch-7"},{name:"第8章 信息安全",target:"it-ch-8"}
+    ]},
+    {label:"📝 案例背记", target:"case", children:[]},
+    {label:"🧮 计算速查", target:"calc", children:[]},
+    {label:"📖 词汇表", target:"vocab", children:[]},
+    {label:"⚖️ 组织法规(15-18章)", target:"org-law", children:[]}
+  ];
+  var html = '';
+  tree.forEach(function(g) {
+    var hasChildren = g.children.length > 0;
+    html += '<div class="tree-group">';
+    if(hasChildren) {
+      html += '<div class="tree-header open" data-action="toggle"><span class="arrow">▶</span>'+g.label+'</div>';
+      html += '<div class="tree-items">';
+      html += '<div class="tree-item" data-nav="'+g.target+'" style="font-weight:600;color:#5dade2">📋 查看全部 →</div>';
+      g.children.forEach(function(c) {
+        var cName = (typeof c === 'string') ? c : c.name;
+        var cTarget = (typeof c === 'string') ? g.target : c.target;
+        html += '<div class="tree-item" data-nav="'+cTarget+'">'+cName+'</div>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="tree-header" data-nav="'+g.target+'" style="cursor:pointer"><span class="arrow" style="visibility:hidden">▶</span>'+g.label+'</div>';
+    }
+    html += '</div>';
+  });
+  document.getElementById('sidebar').innerHTML = html;
+  // Direct event binding on each clickable element
+  var navItems = document.querySelectorAll('#sidebar [data-nav]');
+  for(var i = 0; i < navItems.length; i++) {
+    navItems[i].addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      switchSection(this.getAttribute('data-nav'));
+    });
+  }
+  var toggleItems = document.querySelectorAll('#sidebar [data-action="toggle"]');
+  for(var j = 0; j < toggleItems.length; j++) {
+    toggleItems[j].addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.classList.toggle('open');
+    });
+  }
+}
+
+// Global search
+function handleSearch(val) {
+  if(!val || val.length < 2) return;
+  document.querySelectorAll('.search-highlight').forEach(function(el) {
+    el.outerHTML = el.textContent;
+  });
+}
+
+// Star filter
+function filterStars(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.querySelectorAll('#starList p').forEach(function(p) {
+    if(type==='all') { p.style.display=''; return; }
+    if(type==='star') p.style.display = p.querySelector('.star-mark') ? '' : 'none';
+    if(type==='warn') p.style.display = p.querySelector('.warn-mark') ? '' : 'none';
+  });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  renderSidebar();
+  renderIttoMatrix();
+  renderKnowledge();
+  renderITTech();
+  renderCase();
+  renderCalc();
+  renderVocab();
+  renderOrgLaw();
+});
+</script>
+</body>
+</html>
