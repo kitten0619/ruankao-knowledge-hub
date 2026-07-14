@@ -1,0 +1,3119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HPU 学习笔记 - AI硕士课程</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-sidebar: #f0f2f5;
+            --bg-code: #f6f8fa;
+            --bg-hover: #e8eaed;
+            --bg-active: #d3e3fd;
+            --text-primary: #1a1a2e;
+            --text-secondary: #5f6368;
+            --text-heading: #1967d2;
+            --border-color: #dadce0;
+            --accent: #1967d2;
+            --accent-light: #e8f0fe;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
+            --table-stripe: #f8f9fa;
+            --blockquote-bg: #e8f0fe;
+            --blockquote-border: #1967d2;
+            --link-color: #1967d2;
+            --code-text: #d63384;
+            --scrollbar-thumb: #c1c1c1;
+            --scrollbar-track: #f1f1f1;
+        }
+        [data-theme="dark"] {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-sidebar: #0f3460;
+            --bg-code: #1e1e3f;
+            --bg-hover: #2a2a4a;
+            --bg-active: #1a3a6e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-heading: #64b5f6;
+            --border-color: #2a2a4a;
+            --accent: #64b5f6;
+            --accent-light: #1a3a6e;
+            --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.4);
+            --table-stripe: #1e1e3f;
+            --blockquote-bg: #1a2a4a;
+            --blockquote-border: #64b5f6;
+            --link-color: #64b5f6;
+            --code-text: #f48fb1;
+            --scrollbar-thumb: #444;
+            --scrollbar-track: #1a1a2e;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            transition: background 0.3s, color 0.3s;
+        }
+        .app-container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 300px; min-width: 300px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            height: 100vh; position: sticky; top: 0;
+            overflow-y: auto;
+            transition: transform 0.3s, background 0.3s;
+            z-index: 100;
+        }
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .sidebar-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .sidebar-title span { color: var(--accent); }
+        .theme-toggle {
+            background: none; border: 2px solid var(--border-color);
+            border-radius: 50%; width: 36px; height: 36px;
+            cursor: pointer; font-size: 18px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s;
+        }
+        .theme-toggle:hover { background: var(--bg-hover); border-color: var(--accent); }
+        .nav-container { padding: 12px; }
+        .nav-course { margin-bottom: 8px; }
+        .nav-course-header {
+            display: flex; align-items: center;
+            padding: 10px 12px; cursor: pointer;
+            border-radius: 8px; font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.2s; user-select: none;
+        }
+        .nav-course-header:hover { background: var(--bg-hover); }
+        .nav-icon { margin-right: 8px; font-size: 18px; }
+        .nav-course-title { flex: 1; font-size: 14px; }
+        .nav-toggle { font-size: 12px; color: var(--text-secondary); transition: transform 0.3s; }
+        .nav-sections { max-height: 0; overflow-y: auto; transition: max-height 0.4s ease; }
+        .nav-sections.expanded { max-height: 5000px; }
+        .nav-item {
+            display: block; padding: 6px 12px 6px 38px;
+            color: var(--text-secondary); text-decoration: none;
+            font-size: 13px; border-radius: 6px;
+            transition: all 0.2s;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .nav-item:hover { background: var(--bg-hover); color: var(--accent); }
+        .nav-item.active { background: var(--bg-active); color: var(--accent); font-weight: 500; }
+        .nav-item.nav-sub { padding-left: 52px; font-size: 12px; }
+        .main-content { flex: 1; min-width: 0; padding: 0; }
+        .content-header {
+            position: sticky; top: 0;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 24px; display: flex; align-items: center;
+            z-index: 50; backdrop-filter: blur(10px);
+        }
+        .menu-btn {
+            display: none; background: none; border: none;
+            font-size: 24px; cursor: pointer; color: var(--text-primary);
+            margin-right: 12px; padding: 4px;
+        }
+        .breadcrumb { font-size: 14px; color: var(--text-secondary); }
+        .search-box { margin-left: auto; position: relative; }
+        .search-box input {
+            padding: 6px 12px 6px 32px;
+            border: 1px solid var(--border-color); border-radius: 20px;
+            background: var(--bg-secondary); color: var(--text-primary);
+            font-size: 13px; width: 200px; outline: none; transition: all 0.3s;
+        }
+        .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); width: 260px; }
+        .search-box::before { content: "🔍"; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; }
+        .content-body { padding: 32px 48px; max-width: 960px; margin: 0 auto; }
+        .course-section { margin-bottom: 64px; scroll-margin-top: 80px; }
+        .course-header {
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 32px; padding-bottom: 20px;
+            border-bottom: 2px solid var(--accent);
+        }
+        .course-icon { font-size: 40px; }
+        .course-title { font-size: 28px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
+        .course-subtitle { font-size: 14px; color: var(--text-secondary); }
+        .markdown-body { font-size: 15px; line-height: 1.8; }
+        .markdown-body h1 { font-size: 26px; font-weight: 700; margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-heading); }
+        .markdown-body h2 { font-size: 22px; font-weight: 600; margin: 36px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--border-color); color: var(--text-heading); scroll-margin-top: 80px; }
+        .markdown-body h3 { font-size: 18px; font-weight: 600; margin: 28px 0 12px; color: var(--text-primary); scroll-margin-top: 80px; }
+        .markdown-body h4 { font-size: 16px; font-weight: 600; margin: 24px 0 10px; color: var(--text-primary); }
+        .markdown-body p { margin: 12px 0; }
+        .markdown-body ul, .markdown-body ol { padding-left: 24px; margin: 12px 0; }
+        .markdown-body li { margin: 6px 0; }
+        .markdown-body blockquote {
+            margin: 16px 0; padding: 12px 20px;
+            background: var(--blockquote-bg);
+            border-left: 4px solid var(--blockquote-border);
+            border-radius: 0 8px 8px 0; color: var(--text-secondary);
+        }
+        .markdown-body blockquote p { margin: 6px 0; }
+        .markdown-body code {
+            background: var(--bg-code); color: var(--code-text);
+            padding: 2px 6px; border-radius: 4px; font-size: 0.9em;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+        .markdown-body pre {
+            background: var(--bg-code); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 16px 20px;
+            overflow-x: auto; margin: 16px 0; position: relative;
+        }
+        .markdown-body pre code { background: none; color: var(--text-primary); padding: 0; font-size: 13px; line-height: 1.6; }
+        .markdown-body table {
+            width: 100%; border-collapse: collapse; margin: 16px 0;
+            font-size: 14px; border: 1px solid var(--border-color);
+            border-radius: 8px; overflow: hidden;
+        }
+        .markdown-body th {
+            background: var(--accent); color: white;
+            font-weight: 600; padding: 10px 14px; text-align: left;
+        }
+        .markdown-body td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); }
+        .markdown-body tr:nth-child(even) { background: var(--table-stripe); }
+        .markdown-body tr:hover { background: var(--bg-hover); }
+        .markdown-body a { color: var(--link-color); text-decoration: none; }
+        .markdown-body a:hover { text-decoration: underline; }
+        .markdown-body hr { border: none; border-top: 1px solid var(--border-color); margin: 32px 0; }
+        .markdown-body img { max-width: 100%; border-radius: 8px; margin: 16px 0; }
+        .markdown-body strong { font-weight: 600; color: var(--text-primary); }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+        .back-to-top {
+            position: fixed; bottom: 24px; right: 24px;
+            width: 44px; height: 44px;
+            background: var(--accent); color: white;
+            border: none; border-radius: 50%; font-size: 20px;
+            cursor: pointer; display: none;
+            align-items: center; justify-content: center;
+            box-shadow: var(--shadow-lg); transition: all 0.3s; z-index: 200;
+        }
+        .back-to-top:hover { transform: translateY(-2px); }
+        .back-to-top.visible { display: flex; }
+        .sidebar-overlay {
+            display: none; position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 99;
+        }
+        .sidebar-overlay.active { display: block; }
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: 0; top: 0; transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .menu-btn { display: block; }
+            .content-body { padding: 20px 16px; }
+            .search-box input { width: 140px; }
+            .search-box input:focus { width: 180px; }
+            .course-title { font-size: 22px; }
+            .markdown-body table { font-size: 12px; }
+            .markdown-body th, .markdown-body td { padding: 6px 8px; }
+        }
+        @media print {
+            .sidebar, .content-header, .back-to-top { display: none !important; }
+            .main-content { margin: 0; }
+            .content-body { padding: 0; }
+        }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">📚 <span>HPU</span> 学习笔记</div>
+                <button class="theme-toggle" onclick="toggleTheme()" title="切换主题" id="themeBtn">🌙</button>
+            </div>
+            <div class="nav-container">
+                
+        <div class="nav-course">
+            <div class="nav-course-header" onclick="toggleCourse('dsci6400')">
+                <span class="nav-icon">⚖️</span>
+                <span class="nav-course-title">DSCI6400 AI伦理学</span>
+                <span class="nav-toggle" id="toggle-dsci6400">▼</span>
+            </div>
+            <div class="nav-sections" id="nav-dsci6400">
+        <a href="#dsci6400-课程概述" class="nav-item" onclick="navigateTo('dsci6400-课程概述')">课程概述</a>
+<a href="#dsci6400-课程目标" class="nav-item nav-sub" onclick="navigateTo('dsci6400-课程目标')">课程目标</a>
+<a href="#dsci6400-核心知识框架" class="nav-item nav-sub" onclick="navigateTo('dsci6400-核心知识框架')">核心知识框架</a>
+<a href="#dsci6400-第1章课程导论与背景11-13" class="nav-item" onclick="navigateTo('dsci6400-第1章课程导论与背景11-13')">第1章：课程导论与背景（1.1-1.3）</a>
+<a href="#dsci6400-11-概述" class="nav-item nav-sub" onclick="navigateTo('dsci6400-11-概述')">1.1 概述</a>
+<a href="#dsci6400-12-数据伦理的必要性" class="nav-item nav-sub" onclick="navigateTo('dsci6400-12-数据伦理的必要性')">1.2 数据伦理的必要性</a>
+<a href="#dsci6400-13-跨学科方法的必要性" class="nav-item nav-sub" onclick="navigateTo('dsci6400-13-跨学科方法的必要性')">1.3 跨学科方法的必要性</a>
+<a href="#dsci6400-第2章经典伦理理论体系14-19" class="nav-item" onclick="navigateTo('dsci6400-第2章经典伦理理论体系14-19')">第2章：经典伦理理论体系（1.4-1.9）</a>
+<a href="#dsci6400-21-幸福主义伦理学-eudaimonism" class="nav-item nav-sub" onclick="navigateTo('dsci6400-21-幸福主义伦理学-eudaimonism')">2.1 幸福主义伦理学 (Eudaimonism)</a>
+<a href="#dsci6400-22-义务论伦理学-deontology" class="nav-item nav-sub" onclick="navigateTo('dsci6400-22-义务论伦理学-deontology')">2.2 义务论伦理学 (Deontology)</a>
+<a href="#dsci6400-23-功利主义伦理学-utilitarianism" class="nav-item nav-sub" onclick="navigateTo('dsci6400-23-功利主义伦理学-utilitarianism')">2.3 功利主义伦理学 (Utilitarianism)</a>
+<a href="#dsci6400-24-新亚里士多德主义-neo-aristotelianism" class="nav-item nav-sub" onclick="navigateTo('dsci6400-24-新亚里士多德主义-neo-aristotelianism')">2.4 新亚里士多德主义 (Neo-Aristotelianism)</a>
+<a href="#dsci6400-25-平等主义伦理学-egalitarianism" class="nav-item nav-sub" onclick="navigateTo('dsci6400-25-平等主义伦理学-egalitarianism')">2.5 平等主义伦理学 (Egalitarianism)</a>
+<a href="#dsci6400-26-境遇伦理学-situation-ethics" class="nav-item nav-sub" onclick="navigateTo('dsci6400-26-境遇伦理学-situation-ethics')">2.6 境遇伦理学 (Situation Ethics)</a>
+<a href="#dsci6400-第3章计算伦理的历史演变110-111" class="nav-item" onclick="navigateTo('dsci6400-第3章计算伦理的历史演变110-111')">第3章：计算伦理的历史演变（1.10-1.11）</a>
+<a href="#dsci6400-31-前ai时代计算伦理" class="nav-item nav-sub" onclick="navigateTo('dsci6400-31-前ai时代计算伦理')">3.1 前AI时代计算伦理</a>
+<a href="#dsci6400-32-ai与大数据时代伦理" class="nav-item nav-sub" onclick="navigateTo('dsci6400-32-ai与大数据时代伦理')">3.2 AI与大数据时代伦理</a>
+<a href="#dsci6400-第4章行为数据与自我报告数据21" class="nav-item" onclick="navigateTo('dsci6400-第4章行为数据与自我报告数据21')">第4章：行为数据与自我报告数据（2.1）</a>
+<a href="#dsci6400-41-两种数据类型的本质对比" class="nav-item nav-sub" onclick="navigateTo('dsci6400-41-两种数据类型的本质对比')">4.1 两种数据类型的本质对比</a>
+<a href="#dsci6400-42-行为数据的十二大类型" class="nav-item nav-sub" onclick="navigateTo('dsci6400-42-行为数据的十二大类型')">4.2 行为数据的十二大类型</a>
+<a href="#dsci6400-43-行为数据的伦理悖论" class="nav-item nav-sub" onclick="navigateTo('dsci6400-43-行为数据的伦理悖论')">4.3 行为数据的伦理悖论</a>
+<a href="#dsci6400-第5章面部识别技术的伦理争议22" class="nav-item" onclick="navigateTo('dsci6400-第5章面部识别技术的伦理争议22')">第5章：面部识别技术的伦理争议（2.2）</a>
+<a href="#dsci6400-51-clearview-ai-案例你的脸属于我们" class="nav-item nav-sub" onclick="navigateTo('dsci6400-51-clearview-ai-案例你的脸属于我们')">5.1 Clearview AI 案例——"你的脸属于我们"</a>
+<a href="#dsci6400-52-中国的社会信用体系" class="nav-item nav-sub" onclick="navigateTo('dsci6400-52-中国的社会信用体系')">5.2 中国的社会信用体系</a>
+<a href="#dsci6400-53-隐私-vs-安全任何事物都有两面" class="nav-item nav-sub" onclick="navigateTo('dsci6400-53-隐私-vs-安全任何事物都有两面')">5.3 隐私 vs 安全——"任何事物都有两面"</a>
+<a href="#dsci6400-54-利益冲突-conflict-of-interest-的视角转换" class="nav-item nav-sub" onclick="navigateTo('dsci6400-54-利益冲突-conflict-of-interest-的视角转换')">5.4 利益冲突 (Conflict of Interest) 的视角转换</a>
+<a href="#dsci6400-第6章隐私保密与安全的博弈23" class="nav-item" onclick="navigateTo('dsci6400-第6章隐私保密与安全的博弈23')">第6章：隐私、保密与安全的博弈（2.3）</a>
+<a href="#dsci6400-61-核心概念辨析" class="nav-item nav-sub" onclick="navigateTo('dsci6400-61-核心概念辨析')">6.1 核心概念辨析</a>
+<a href="#dsci6400-62-隐私与安全的根本矛盾" class="nav-item nav-sub" onclick="navigateTo('dsci6400-62-隐私与安全的根本矛盾')">6.2 隐私与安全的根本矛盾</a>
+<a href="#dsci6400-63-隐私法律现状截至2024年" class="nav-item nav-sub" onclick="navigateTo('dsci6400-63-隐私法律现状截至2024年')">6.3 隐私法律现状（截至2024年）</a>
+<a href="#dsci6400-64-保护隐私的工具" class="nav-item nav-sub" onclick="navigateTo('dsci6400-64-保护隐私的工具')">6.4 保护隐私的工具</a>
+<a href="#dsci6400-第7章安全风险与数据泄露24" class="nav-item" onclick="navigateTo('dsci6400-第7章安全风险与数据泄露24')">第7章：安全风险与数据泄露（2.4）</a>
+<a href="#dsci6400-71-安全风险的本质" class="nav-item nav-sub" onclick="navigateTo('dsci6400-71-安全风险的本质')">7.1 安全风险的本质</a>
+<a href="#dsci6400-72-重大数据泄露案例" class="nav-item nav-sub" onclick="navigateTo('dsci6400-72-重大数据泄露案例')">7.2 重大数据泄露案例</a>
+<a href="#dsci6400-73-生物特征数据的独特风险" class="nav-item nav-sub" onclick="navigateTo('dsci6400-73-生物特征数据的独特风险')">7.3 生物特征数据的独特风险</a>
+<a href="#dsci6400-74-外国政府参与的安全风险tiktok案例" class="nav-item nav-sub" onclick="navigateTo('dsci6400-74-外国政府参与的安全风险tiktok案例')">7.4 外国政府参与的安全风险——TikTok案例</a>
+<a href="#dsci6400-第8章数据所有权与知情同意25-26" class="nav-item" onclick="navigateTo('dsci6400-第8章数据所有权与知情同意25-26')">第8章：数据所有权与知情同意（2.5-2.6）</a>
+<a href="#dsci6400-81-知情同意的困境-informed-consent" class="nav-item nav-sub" onclick="navigateTo('dsci6400-81-知情同意的困境-informed-consent')">8.1 知情同意的困境 (Informed Consent)</a>
+<a href="#dsci6400-82-剑桥分析丑闻深度剖析" class="nav-item nav-sub" onclick="navigateTo('dsci6400-82-剑桥分析丑闻深度剖析')">8.2 剑桥分析丑闻深度剖析</a>
+<a href="#dsci6400-83-数据所有权的模糊性" class="nav-item nav-sub" onclick="navigateTo('dsci6400-83-数据所有权的模糊性')">8.3 数据所有权的模糊性</a>
+<a href="#dsci6400-84-互联网数据与开源数据的伦理边界" class="nav-item nav-sub" onclick="navigateTo('dsci6400-84-互联网数据与开源数据的伦理边界')">8.4 互联网数据与开源数据的伦理边界</a>
+<a href="#dsci6400-第9章被遗忘权与法律监管27" class="nav-item" onclick="navigateTo('dsci6400-第9章被遗忘权与法律监管27')">第9章：被遗忘权与法律监管（2.7）</a>
+<a href="#dsci6400-91-被遗忘权-right-to-be-forgotten-rtbf" class="nav-item nav-sub" onclick="navigateTo('dsci6400-91-被遗忘权-right-to-be-forgotten-rtbf')">9.1 被遗忘权 (Right to Be Forgotten, RTBF)</a>
+<a href="#dsci6400-92-被遗忘权经典案例" class="nav-item nav-sub" onclick="navigateTo('dsci6400-92-被遗忘权经典案例')">9.2 被遗忘权经典案例</a>
+<a href="#dsci6400-93-mimi-groves-案永远为15岁的行为负责" class="nav-item nav-sub" onclick="navigateTo('dsci6400-93-mimi-groves-案永远为15岁的行为负责')">9.3 Mimi Groves 案——"永远为15岁的行为负责？"</a>
+<a href="#dsci6400-94-被遗忘权的现实局限" class="nav-item nav-sub" onclick="navigateTo('dsci6400-94-被遗忘权的现实局限')">9.4 被遗忘权的现实局限</a>
+<a href="#dsci6400-95-法律与监管挑战" class="nav-item nav-sub" onclick="navigateTo('dsci6400-95-法律与监管挑战')">9.5 法律与监管挑战</a>
+<a href="#dsci6400-96-找到平衡点" class="nav-item nav-sub" onclick="navigateTo('dsci6400-96-找到平衡点')">9.6 找到平衡点</a>
+<a href="#dsci6400-全课程知识图谱" class="nav-item" onclick="navigateTo('dsci6400-全课程知识图谱')">全课程知识图谱</a>
+<a href="#dsci6400-六大伦理理论对比总结" class="nav-item" onclick="navigateTo('dsci6400-六大伦理理论对比总结')">六大伦理理论对比总结</a>
+<a href="#dsci6400-第2单元核心概念速查表" class="nav-item" onclick="navigateTo('dsci6400-第2单元核心概念速查表')">第2单元核心概念速查表</a>
+<a href="#dsci6400-复习要点清单" class="nav-item" onclick="navigateTo('dsci6400-复习要点清单')">复习要点清单</a>
+<a href="#dsci6400-第1单元复习week-1" class="nav-item nav-sub" onclick="navigateTo('dsci6400-第1单元复习week-1')">第1单元复习（Week 1）</a>
+<a href="#dsci6400-第2单元复习week-2" class="nav-item nav-sub" onclick="navigateTo('dsci6400-第2单元复习week-2')">第2单元复习（Week 2）</a>
+</div></div>
+
+        <div class="nav-course">
+            <div class="nav-course-header" onclick="toggleCourse('dsci6700')">
+                <span class="nav-icon">📝</span>
+                <span class="nav-course-title">DSCI6700 文本挖掘</span>
+                <span class="nav-toggle" id="toggle-dsci6700">▼</span>
+            </div>
+            <div class="nav-sections" id="nav-dsci6700">
+        <a href="#dsci6700-课程概述" class="nav-item" onclick="navigateTo('dsci6700-课程概述')">课程概述</a>
+<a href="#dsci6700-课程目标" class="nav-item nav-sub" onclick="navigateTo('dsci6700-课程目标')">课程目标</a>
+<a href="#dsci6700-核心知识框架" class="nav-item nav-sub" onclick="navigateTo('dsci6700-核心知识框架')">核心知识框架</a>
+<a href="#dsci6700-第1章引言与非结构化数据11-12" class="nav-item" onclick="navigateTo('dsci6700-第1章引言与非结构化数据11-12')">第1章：引言与非结构化数据（1.1-1.2）</a>
+<a href="#dsci6700-11-为什么需要文本挖掘" class="nav-item nav-sub" onclick="navigateTo('dsci6700-11-为什么需要文本挖掘')">1.1 为什么需要文本挖掘？</a>
+<a href="#dsci6700-12-非结构化数据的类型" class="nav-item nav-sub" onclick="navigateTo('dsci6700-12-非结构化数据的类型')">1.2 非结构化数据的类型</a>
+<a href="#dsci6700-第2章nlp与大语言模型13-14" class="nav-item" onclick="navigateTo('dsci6700-第2章nlp与大语言模型13-14')">第2章：NLP与大语言模型（1.3-1.4）</a>
+<a href="#dsci6700-21-自然语言处理-nlp" class="nav-item nav-sub" onclick="navigateTo('dsci6700-21-自然语言处理-nlp')">2.1 自然语言处理 (NLP)</a>
+<a href="#dsci6700-22-大语言模型-llm" class="nav-item nav-sub" onclick="navigateTo('dsci6700-22-大语言模型-llm')">2.2 大语言模型 (LLM)</a>
+<a href="#dsci6700-第3章文本挖掘核心15" class="nav-item" onclick="navigateTo('dsci6700-第3章文本挖掘核心15')">第3章：文本挖掘核心（1.5）</a>
+<a href="#dsci6700-31-文本挖掘的定义与机制" class="nav-item nav-sub" onclick="navigateTo('dsci6700-31-文本挖掘的定义与机制')">3.1 文本挖掘的定义与机制</a>
+<a href="#dsci6700-32-跨行业应用" class="nav-item nav-sub" onclick="navigateTo('dsci6700-32-跨行业应用')">3.2 跨行业应用</a>
+<a href="#dsci6700-第4章文本挖掘的历史发展16-17" class="nav-item" onclick="navigateTo('dsci6700-第4章文本挖掘的历史发展16-17')">第4章：文本挖掘的历史发展（1.6-1.7）</a>
+<a href="#dsci6700-41-技术发展时间线" class="nav-item nav-sub" onclick="navigateTo('dsci6700-41-技术发展时间线')">4.1 技术发展时间线</a>
+<a href="#dsci6700-42-人文科学根源另一段历史" class="nav-item nav-sub" onclick="navigateTo('dsci6700-42-人文科学根源另一段历史')">4.2 人文科学根源（另一段历史）</a>
+<a href="#dsci6700-第5章文本预处理text-preprocessing" class="nav-item" onclick="navigateTo('dsci6700-第5章文本预处理text-preprocessing')">第5章：文本预处理（Text Preprocessing）</a>
+<a href="#dsci6700-51-文本预处理概述" class="nav-item nav-sub" onclick="navigateTo('dsci6700-51-文本预处理概述')">5.1 文本预处理概述</a>
+<a href="#dsci6700-52-分词tokenization" class="nav-item nav-sub" onclick="navigateTo('dsci6700-52-分词tokenization')">5.2 分词（Tokenization）</a>
+<a href="#dsci6700-53-词干提取stemming" class="nav-item nav-sub" onclick="navigateTo('dsci6700-53-词干提取stemming')">5.3 词干提取（Stemming）</a>
+<a href="#dsci6700-54-词形还原lemmatization" class="nav-item nav-sub" onclick="navigateTo('dsci6700-54-词形还原lemmatization')">5.4 词形还原（Lemmatization）</a>
+<a href="#dsci6700-55-特殊字符处理" class="nav-item nav-sub" onclick="navigateTo('dsci6700-55-特殊字符处理')">5.5 特殊字符处理</a>
+<a href="#dsci6700-56-其他预处理步骤" class="nav-item nav-sub" onclick="navigateTo('dsci6700-56-其他预处理步骤')">5.6 其他预处理步骤</a>
+<a href="#dsci6700-第6章停用词移除stop-word-removal" class="nav-item" onclick="navigateTo('dsci6700-第6章停用词移除stop-word-removal')">第6章：停用词移除（Stop-word Removal）</a>
+<a href="#dsci6700-61-定义与原理" class="nav-item nav-sub" onclick="navigateTo('dsci6700-61-定义与原理')">6.1 定义与原理</a>
+<a href="#dsci6700-62-停用词的争议" class="nav-item nav-sub" onclick="navigateTo('dsci6700-62-停用词的争议')">6.2 停用词的争议</a>
+<a href="#dsci6700-第7章词频-逆文档频率tf-idf" class="nav-item" onclick="navigateTo('dsci6700-第7章词频-逆文档频率tf-idf')">第7章：词频-逆文档频率（TF-IDF）</a>
+<a href="#dsci6700-71-tf-idf定义" class="nav-item nav-sub" onclick="navigateTo('dsci6700-71-tf-idf定义')">7.1 TF-IDF定义</a>
+<a href="#dsci6700-72-公式详解" class="nav-item nav-sub" onclick="navigateTo('dsci6700-72-公式详解')">7.2 公式详解</a>
+<a href="#dsci6700-73-python代码示例tfidfvectorizer" class="nav-item nav-sub" onclick="navigateTo('dsci6700-73-python代码示例tfidfvectorizer')">7.3 Python代码示例（TfidfVectorizer）</a>
+<a href="#dsci6700-第8章n元语法n-gram" class="nav-item" onclick="navigateTo('dsci6700-第8章n元语法n-gram')">第8章：N元语法（N-gram）</a>
+<a href="#dsci6700-81-定义" class="nav-item nav-sub" onclick="navigateTo('dsci6700-81-定义')">8.1 定义</a>
+<a href="#dsci6700-82-n-gram类型" class="nav-item nav-sub" onclick="navigateTo('dsci6700-82-n-gram类型')">8.2 N-gram类型</a>
+<a href="#dsci6700-83-应用场景" class="nav-item nav-sub" onclick="navigateTo('dsci6700-83-应用场景')">8.3 应用场景</a>
+<a href="#dsci6700-第9章词嵌入word-embedding" class="nav-item" onclick="navigateTo('dsci6700-第9章词嵌入word-embedding')">第9章：词嵌入（Word Embedding）</a>
+<a href="#dsci6700-91-词嵌入概述" class="nav-item nav-sub" onclick="navigateTo('dsci6700-91-词嵌入概述')">9.1 词嵌入概述</a>
+<a href="#dsci6700-92-word2vec" class="nav-item nav-sub" onclick="navigateTo('dsci6700-92-word2vec')">9.2 Word2Vec</a>
+<a href="#dsci6700-93-glove" class="nav-item nav-sub" onclick="navigateTo('dsci6700-93-glove')">9.3 GloVe</a>
+<a href="#dsci6700-94-词嵌入的应用场景" class="nav-item nav-sub" onclick="navigateTo('dsci6700-94-词嵌入的应用场景')">9.4 词嵌入的应用场景</a>
+<a href="#dsci6700-全课程知识图谱" class="nav-item" onclick="navigateTo('dsci6700-全课程知识图谱')">全课程知识图谱</a>
+<a href="#dsci6700-与其他课程的关联" class="nav-item" onclick="navigateTo('dsci6700-与其他课程的关联')">与其他课程的关联</a>
+<a href="#dsci6700-复习要点清单" class="nav-item" onclick="navigateTo('dsci6700-复习要点清单')">复习要点清单</a>
+<a href="#dsci6700-week-1-复习要点" class="nav-item nav-sub" onclick="navigateTo('dsci6700-week-1-复习要点')">Week 1 复习要点</a>
+<a href="#dsci6700-week-2-复习要点" class="nav-item nav-sub" onclick="navigateTo('dsci6700-week-2-复习要点')">Week 2 复习要点</a>
+</div></div>
+
+        <div class="nav-course">
+            <div class="nav-course-header" onclick="toggleCourse('dsci6200')">
+                <span class="nav-icon">🤖</span>
+                <span class="nav-course-title">DSCI6200 机器学习</span>
+                <span class="nav-toggle" id="toggle-dsci6200">▼</span>
+            </div>
+            <div class="nav-sections" id="nav-dsci6200">
+        <a href="#dsci6200-week-1-数据科学与传统统计反思" class="nav-item" onclick="navigateTo('dsci6200-week-1-数据科学与传统统计反思')">Week 1: 数据科学与传统统计反思</a>
+<a href="#dsci6200-week-2-ols-回归信息准则与正则化模型选择" class="nav-item" onclick="navigateTo('dsci6200-week-2-ols-回归信息准则与正则化模型选择')">Week 2: OLS 回归、信息准则与正则化模型选择</a>
+<a href="#dsci6200-week-3-支持向量机与决策树模型" class="nav-item" onclick="navigateTo('dsci6200-week-3-支持向量机与决策树模型')">Week 3: 支持向量机与决策树模型</a>
+<a href="#dsci6200-week-4-重采样自助法与集成模型" class="nav-item" onclick="navigateTo('dsci6200-week-4-重采样自助法与集成模型')">Week 4: 重采样、自助法与集成模型</a>
+<a href="#dsci6200-week-5-pcaefa-与降维方法" class="nav-item" onclick="navigateTo('dsci6200-week-5-pcaefa-与降维方法')">Week 5: PCA/EFA 与降维方法</a>
+<a href="#dsci6200-week-6-聚类分析方法与软件实现" class="nav-item" onclick="navigateTo('dsci6200-week-6-聚类分析方法与软件实现')">Week 6: 聚类分析方法与软件实现</a>
+<a href="#dsci6200-week-7-人工智能机器学习与神经网络" class="nav-item" onclick="navigateTo('dsci6200-week-7-人工智能机器学习与神经网络')">Week 7: 人工智能、机器学习与神经网络</a>
+<a href="#dsci6200-week-8-文本挖掘nlp-与情感分析" class="nav-item" onclick="navigateTo('dsci6200-week-8-文本挖掘nlp-与情感分析')">Week 8: 文本挖掘、NLP 与情感分析</a>
+</div></div>
+            </div>
+        </aside>
+        <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+        <main class="main-content">
+            <div class="content-header">
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <span class="breadcrumb">HPU AI硕士 · 学习笔记知识库</span>
+                <div class="search-box">
+                    <input type="text" placeholder="搜索笔记内容..." id="searchInput" oninput="handleSearch(this.value)">
+                </div>
+            </div>
+            <div class="content-body fade-in">
+                
+        <section class="course-section" id="course-dsci6400">
+            <div class="course-header">
+                <span class="course-icon">⚖️</span>
+                <div>
+                    <h1 class="course-title">DSCI6400 AI伦理学</h1>
+                    <p class="course-subtitle">人工智能中的伦理学 · 系统化学习笔记</p>
+                </div>
+            </div>
+            <div class="course-content markdown-body">
+                <h1 id="dsci6400">DSCI6400 人工智能中的伦理学 · 系统化学习笔记</h1>
+<blockquote>
+<p><strong>课程信息</strong>：HPU 夏威夷太平洋大学 · AI硕士项目<br>
+<strong>学习周期</strong>：Week 1-2（Week 1：11节课 + Week 2：第2单元）<br>
+<strong>素材来源</strong>：课程PPT + 智能纪要 + 补充材料<br>
+<strong>整理日期</strong>：2026-07-10（Week 1）/ 2026-07-12（Week 2 更新）</p>
+</blockquote>
+<hr>
+<h2 id="dsci6400-课程概述" id="_1">课程概述</h2>
+<h3 id="dsci6400-课程目标" id="_2">课程目标</h3>
+<ul>
+<li>培养数据伦理的<strong>敏捷思维</strong>，应对旧规则失效的技术挑战</li>
+<li>建立<strong>批判性思维</strong>，从多利益相关方角度分析现实伦理困境</li>
+<li>理解伦理引导不是阻碍技术进步，而是确保创新惠及所有人</li>
+</ul>
+<h3 id="dsci6400-核心知识框架" id="_3">核心知识框架</h3>
+<pre><code>DSCI6400 课程结构
+├── 第1单元：伦理理论基础（Week 1）
+│   ├── 1.1 概述（课程背景与学习方法）
+│   ├── 1.2 数据伦理的必要性
+│   ├── 1.3 跨学科方法的必要性
+│   ├── 1.4 幸福主义伦理学 (Eudaimonism)
+│   ├── 1.5 义务论伦理学 (Deontology)
+│   ├── 1.6 功利主义伦理学 (Utilitarianism)
+│   ├── 1.7 新亚里士多德主义 (Neo-Aristotelianism)
+│   ├── 1.8 平等主义伦理学 (Egalitarianism)
+│   ├── 1.9 境遇伦理学 (Situation Ethics)
+│   ├── 1.10 前AI时代计算伦理
+│   └── 1.11 AI与大数据伦理
+│
+└── 第2单元：数据收集、存储和所有权的伦理问题（Week 2）
+    ├── 2.1 行为数据 vs 自我报告数据
+    ├── 2.2 面部识别技术的伦理争议
+    ├── 2.3 隐私、保密与安全的博弈
+    ├── 2.4 数据所有权与知情同意
+    ├── 2.5 互联网数据与开源数据的伦理边界
+    ├── 2.6 被遗忘权 (Right to Be Forgotten)
+    └── 2.7 法律与监管挑战
+</code></pre>
+<hr>
+<h2 id="dsci6400-第1章课程导论与背景11-13" id="111-13">第1章：课程导论与背景（1.1-1.3）</h2>
+<h3 id="dsci6400-11-概述" id="11">1.1 概述</h3>
+<h4 id="_4">课程背景与必要性</h4>
+<ul>
+<li><strong>不断演变的道德格局</strong>：科技正以前所未有的速度发展，历史法规如今往往不足</li>
+<li><strong>美国监管空白</strong>：缺乏全面的联邦AI立法，算法偏见、监控、数据操纵等重大风险处于监管缺失状态</li>
+<li><strong>欧盟AI法案</strong>：全球领先但面临技术迭代速度超越规则更新的永恒挑战</li>
+</ul>
+<h4 id="_5">课程方法论</h4>
+<ul>
+<li><strong>数据伦理很少是非黑即白</strong>，必须应对灰色地带和相互竞争的利益</li>
+<li><strong>批判性思维 + 多元视角</strong>至关重要</li>
+<li>考虑工程师、政策制定者、用户和受影响社区的观点</li>
+<li><strong>本课程是行动号召</strong>：塑造更公平、以人为本的技术未来</li>
+</ul>
+<blockquote>
+<p>🔑 <strong>核心语录</strong>："数据伦理并非小众议题。它对我们未来的生活、工作和自我治理方式至关重要。"</p>
+</blockquote>
+<h3 id="dsci6400-12-数据伦理的必要性" id="12">1.2 数据伦理的必要性</h3>
+<h4 id="_6">四大核心挑战</h4>
+<table>
+<thead>
+<tr>
+<th>挑战</th>
+<th>关键问题</th>
+<th>典型案例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>隐私与安全</strong></td>
+<td>侵入式监控、数据泄露</td>
+<td>2017 Equifax数据泄露（1.5亿人）</td>
+</tr>
+<tr>
+<td><strong>算法偏见</strong></td>
+<td>强化历史社会歧视</td>
+<td>亚马逊有偏见的招聘AI工具</td>
+</tr>
+<tr>
+<td><strong>缺乏问责制</strong></td>
+<td>"黑箱"模型、未经质疑的错误</td>
+<td>COMPAS算法的种族差异</td>
+</tr>
+<tr>
+<td><strong>社会影响</strong></td>
+<td>重塑社会、非人性化</td>
+<td>预测性警务针对边缘化群体</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_7">信任的核心作用</h4>
+<ul>
+<li>公众信任是技术采用的基础</li>
+<li>信任侵蚀导致阻力（如疫苗护照应用程序）</li>
+<li>信任通过<strong>透明度和责任感</strong>获得</li>
+<li><strong>伦理是建立信任的关键</strong></li>
+</ul>
+<h4 id="_8">伦理教育的四大目的</h4>
+<ol>
+<li><strong>配备工具</strong>：检测/纠正偏差，确保公正</li>
+<li><strong>培养责任感</strong>：构建可审计系统，落实个人责任制</li>
+<li><strong>培养推理能力</strong>：深思熟虑地应对模糊道德困境</li>
+<li><strong>培养领导力</strong>：制定符合公共利益的未来规则</li>
+</ol>
+<h3 id="dsci6400-13-跨学科方法的必要性" id="13">1.3 跨学科方法的必要性</h3>
+<h4 id="_9">为什么需要跨学科合作？</h4>
+<ul>
+<li><strong>单领域框架不足</strong>：纯伦理哲学框架无法跟上快速发展的AI技术，纯技术逻辑忽略伦理细节</li>
+<li><strong>多元专业知识的互补价值</strong>：</li>
+<li>哲学家：提供结构化推理</li>
+<li>技术专家：阐明系统运作</li>
+<li>法律学者：梳理合规规则</li>
+<li>社会科学家：衡量现实世界的人口影响</li>
+</ul>
+<h4 id="_10">伦理哲学的关键贡献</h4>
+<ul>
+<li><strong>基础分析框架</strong>：经典伦理理论（功利主义、义务论、美德伦理学）为分析AI困境提供成熟视角</li>
+<li><strong>批判性思维</strong>：发现隐藏的逻辑谬误（如邮政编码作为种族偏见的代理变量）</li>
+</ul>
+<h4 id="_11">核心定位</h4>
+<blockquote>
+<p>伦理引导不会阻碍技术进步，而是确保创新带来<strong>普惠的公共利益</strong>，而非对弱势群体造成伤害。</p>
+</blockquote>
+<hr>
+<h2 id="dsci6400-第2章经典伦理理论体系14-19" id="214-19">第2章：经典伦理理论体系（1.4-1.9）</h2>
+<h3 id="dsci6400-21-幸福主义伦理学-eudaimonism" id="21-eudaimonism">2.1 幸福主义伦理学 (Eudaimonism)</h3>
+<h4 id="_12">核心理论基础</h4>
+<ul>
+<li><strong>理论根源</strong>：古希腊哲学传统（苏格拉底、柏拉图、亚里士多德、伊壁鸠鲁、斯多葛派）</li>
+<li><strong>Eudaimonia 定义</strong>：不同于短暂快乐，指通过始终践行美德而实现的<strong>客观、持久的人类繁荣</strong></li>
+<li><strong>美德导向</strong>：勇气、智慧、正义、节制等美德是美好生活<strong>本身的内在组成部分</strong>，而非手段</li>
+</ul>
+<h4 id="_13">核心操作逻辑</h4>
+<ul>
+<li><strong>品格聚焦</strong>：基于个体品格在整个生命周期中的全面发展来评估道德表现</li>
+<li><strong>社会属性</strong>：真正的幸福只有在社会环境中才能实现</li>
+<li><strong>情境判断</strong>：优先考虑细微判断和实践智慧，而非严格遵守规则</li>
+</ul>
+<h4 id="_14">与其他伦理体系的差异</h4>
+<table>
+<thead>
+<tr>
+<th>特征</th>
+<th>幸福主义</th>
+<th>功利主义</th>
+<th>义务论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>评判标准</td>
+<td>品格发展</td>
+<td>行为结果</td>
+<td>规则遵循</td>
+</tr>
+<tr>
+<td>关注焦点</td>
+<td>成为什么样的人</td>
+<td>做什么</td>
+<td>遵守什么</td>
+</tr>
+<tr>
+<td>典型问题</td>
+<td>"这是否促进人的繁荣？"</td>
+<td>"这是否带来最大幸福？"</td>
+<td>"这是否违背普遍规则？"</td>
+</tr>
+</tbody>
+</table>
+<h4 id="ai">AI领域应用</h4>
+<ul>
+<li>数据科学家将<strong>透明度置于效率之上</strong></li>
+<li>招聘AI设计师融入<strong>同理心</strong>确保公平</li>
+<li>评估举报人（如Frances Haugen）时关注<strong>道德勇气和正直</strong>，而非结果</li>
+</ul>
+<h3 id="dsci6400-22-义务论伦理学-deontology" id="22-deontology">2.2 义务论伦理学 (Deontology)</h3>
+<h4 id="_15">核心理论基础</h4>
+<ul>
+<li><strong>创始人</strong>：康德（Immanuel Kant），启蒙运动时期</li>
+<li><strong>核心原则</strong>：道德价值完全取决于行为是否<strong>出于义务</strong>，与结果无关</li>
+<li><strong>定言命令（Categorical Imperative）</strong>：核心规则（不撒谎、不偷窃）是<strong>绝对的</strong></li>
+</ul>
+<h4 id="_16">康德的三个公式</h4>
+<ol>
+<li><strong>普遍性公式</strong>：只按你愿意成为普遍法则的准则行动</li>
+<li><strong>人性公式</strong>：永远把人当作目的，而非手段</li>
+<li><strong>自律公式</strong>：每个理性存在者都是道德法则的立法者</li>
+</ol>
+<h4 id="_17">应用案例</h4>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>义务论判断</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>隐瞒病情</td>
+<td>❌ 错误</td>
+<td>侵犯患者知情权</td>
+</tr>
+<tr>
+<td>提高差生成绩</td>
+<td>❌ 不道德</td>
+<td>违背公平评估的核心职责</td>
+</tr>
+<tr>
+<td>酷刑逼供</td>
+<td>❌ 绝对不可接受</td>
+<td>侵犯人的固有尊严</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_18">核心批评</h4>
+<ul>
+<li><strong>绝对规则的刚性</strong>：为救犹太难民而对纳粹撒谎被广泛认为道德合理，挑战了绝对禁止违反规则的立场</li>
+</ul>
+<h3 id="dsci6400-23-功利主义伦理学-utilitarianism" id="23-utilitarianism">2.3 功利主义伦理学 (Utilitarianism)</h3>
+<h4 id="_19">理论演变</h4>
+<ul>
+<li><strong>思想渊源</strong>：古希腊伊壁鸠鲁学派</li>
+<li><strong>边沁（Bentham）</strong>：现代功利主义创始人，提出<strong>享乐微积分</strong></li>
+<li><strong>密尔（Mill）</strong>：区分高级智力快乐与低级肉体快乐</li>
+</ul>
+<h4 id="_20">核心框架</h4>
+<ul>
+<li><strong>结果主义</strong>：仅根据行为的<strong>实际结果</strong>判断道德有效性</li>
+<li><strong>两大分支</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>分支</th>
+<th>核心逻辑</th>
+<th>优势</th>
+<th>缺陷</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>行为功利主义</strong></td>
+<td>每个行为单独评估其直接后果</td>
+<td>灵活</td>
+<td>可能导致不公正</td>
+</tr>
+<tr>
+<td><strong>规则功利主义</strong></td>
+<td>遵循能产生最大长期利益的普遍规则</td>
+<td>稳定性</td>
+<td>可能过于僵化</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_21">主要批评</h4>
+<ul>
+<li><strong>少数群体剥削漏洞</strong>：可能被威权政权利用为审查辩护</li>
+<li><strong>人权冲突</strong>：集体利益可能损害边缘化群体</li>
+</ul>
+<h3 id="dsci6400-24-新亚里士多德主义-neo-aristotelianism" id="24-neo-aristotelianism">2.4 新亚里士多德主义 (Neo-Aristotelianism)</h3>
+<h4 id="_22">核心框架</h4>
+<ul>
+<li><strong>美德中心论</strong>：道德评价聚焦于行为者的<strong>品格特质</strong></li>
+<li><strong>实践智慧（Phronesis）</strong>：在具体情境中运用实践智慧做出正确判断</li>
+<li><strong>中庸之道（Golden Mean）</strong>：美德是两个极端之间的适中点</li>
+<li>勇敢 = 懦弱 ← <strong>勇敢</strong> → 鲁莽</li>
+<li>节制 = 麻木 ← <strong>节制</strong> → 放纵</li>
+</ul>
+<h4 id="_23">独特优势</h4>
+<ul>
+<li>避免功利主义<strong>单一原则计算的过度简化</strong></li>
+<li>避免康德义务论<strong>固定法则的僵化</strong></li>
+<li>提供全面、<strong>以人为本</strong>、因地制宜的框架</li>
+</ul>
+<h3 id="dsci6400-25-平等主义伦理学-egalitarianism" id="25-egalitarianism">2.5 平等主义伦理学 (Egalitarianism)</h3>
+<h4 id="_24">核心原则</h4>
+<ul>
+<li><strong>理论渊源</strong>：卢梭（Rousseau）的社会平等与集体意志</li>
+<li><strong>三大支柱</strong>：平等、公平、正义</li>
+<li><strong>核心信条</strong>：所有个体具有<strong>平等的道德价值</strong>，社会差异必须得到合理证明</li>
+</ul>
+<h4 id="_25">罗尔斯的正义理论</h4>
+<ul>
+<li><strong>无知之幕（Veil of Ignorance）</strong>：规则制定者在不知道自身社会身份的情况下设定制度</li>
+<li><strong>分蛋糕隐喻</strong>：公平的决策需要摆脱个人私利偏见</li>
+<li><strong>务实取向</strong>：支持<strong>适度不平等</strong>而非绝对平均化，确保所有人获得发展所需的"基本善"</li>
+</ul>
+<h4 id="_26">支持的政策类型</h4>
+<ul>
+<li>累进税制</li>
+<li>全民医疗保健</li>
+<li>平权行动（Affirmative Action）</li>
+<li>普遍基本收入（UBI）</li>
+</ul>
+<h3 id="dsci6400-26-境遇伦理学-situation-ethics" id="26-situation-ethics">2.6 境遇伦理学 (Situation Ethics)</h3>
+<h4 id="_27">核心原则</h4>
+<ul>
+<li><strong>不是道德主观主义</strong>：保留"充满爱心行事"的固定目标，但<strong>拒绝一刀切规则</strong></li>
+<li><strong>Agape（圣爱）</strong>：无条件的、以他人为中心的爱是最高道德原则</li>
+<li><strong>情境至上</strong>：道德判断必须考虑具体情境，没有放之四海而皆准的规则</li>
+</ul>
+<h4 id="_28">应用案例</h4>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>境遇伦理学判断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>安乐死</td>
+<td>✅ 支持（减轻不可忍受的痛苦符合圣爱）</td>
+</tr>
+<tr>
+<td>为救人而说谎</td>
+<td>✅ 道德义务（保护弱势群体）</td>
+</tr>
+<tr>
+<td>公民抗命</td>
+<td>✅ 道德责任（追求集体正义）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_29">核心批评</h4>
+<ul>
+<li><strong>可扩展性障碍</strong>：抽象的"爱"原则没有明确操作指标</li>
+<li><strong>意外后果风险</strong>：大规模人道主义政策可能引发资源短缺等问题</li>
+</ul>
+<hr>
+<h2 id="dsci6400-第3章计算伦理的历史演变110-111" id="3110-111">第3章：计算伦理的历史演变（1.10-1.11）</h2>
+<h3 id="dsci6400-31-前ai时代计算伦理" id="31-ai">3.1 前AI时代计算伦理</h3>
+<h4 id="_30">各时代核心伦理问题</h4>
+<table>
+<thead>
+<tr>
+<th>时代</th>
+<th>核心伦理问题</th>
+<th>里程碑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1960s-70s</strong> 大型机</td>
+<td>资源垄断、获取不平等</td>
+<td>1968 ACM首份道德准则</td>
+</tr>
+<tr>
+<td><strong>1970s-80s</strong> 个人计算</td>
+<td>软件盗版、计算机犯罪、数字鸿沟</td>
+<td>CPSR公众倡导运动</td>
+</tr>
+<tr>
+<td><strong>1990s-00s</strong> 互联网</td>
+<td>数据收集、网络安全、内容监管</td>
+<td>开源运动 vs 封闭生态</td>
+</tr>
+<tr>
+<td><strong>2000s+</strong> Web 2.0</td>
+<td>定向广告操纵、网络骚扰、虚假信息</td>
+<td>平台内容审核争议</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_31">关键洞见</h4>
+<blockquote>
+<p>当前所有高优先级问题（算法偏见、监控资本主义）都是<strong>公平和隐私长期争论的延伸</strong>。唯一的重大变化在于现代技术风险的<strong>规模更大、迭代更快、系统复杂性更高</strong>。</p>
+</blockquote>
+<h3 id="dsci6400-32-ai与大数据时代伦理" id="32-ai">3.2 AI与大数据时代伦理</h3>
+<h4 id="_32">大数据时代核心风险</h4>
+<ul>
+<li><strong>数据所有权和同意不明确</strong>：用户不知个人数据如何被存储、出售或重新利用</li>
+<li><strong>算法歧视</strong>：有偏数据集上训练的算法复制甚至放大歧视模式</li>
+<li><strong>早期监管</strong>：2012奥巴马报告（不具约束力）→ 2018 EU GDPR（全球基准）</li>
+</ul>
+<h4 id="ai_1">生成式AI新兴挑战</h4>
+<table>
+<thead>
+<tr>
+<th>风险类别</th>
+<th>具体表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>算法不透明</strong></td>
+<td>黑箱运行，不可审计</td>
+</tr>
+<tr>
+<td><strong>行为操纵</strong></td>
+<td>定向广告、虚假信息模糊说服与胁迫的边界</td>
+</tr>
+<tr>
+<td><strong>劳动力冲击</strong></td>
+<td>自动化取代数百万岗位</td>
+</tr>
+<tr>
+<td><strong>民主危害</strong></td>
+<td>合成媒体、回音室、舆论操纵</td>
+</tr>
+<tr>
+<td><strong>存在性风险</strong></td>
+<td>超级智能的长期安全控制问题</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_33">全球监管格局</h4>
+<ul>
+<li><strong>欧盟GDPR</strong>：全球基准，赋予用户数据权利，违规重罚</li>
+<li><strong>欧盟AI法案</strong>：风险分级管理</li>
+<li><strong>美国</strong>：缺乏全面联邦AI立法</li>
+<li><strong>中国</strong>：算法推荐管理规定</li>
+</ul>
+<hr>
+<h2 id="dsci6400-第4章行为数据与自我报告数据21" id="421">第4章：行为数据与自我报告数据（2.1）</h2>
+<h3 id="dsci6400-41-两种数据类型的本质对比" id="41">4.1 两种数据类型的本质对比</h3>
+<blockquote>
+<p>🔑 <strong>单元导入</strong>："在数字时代，复杂的算法和传感器可以持续监控和分析我们的行为、偏好和动作。虽然这些数据可以增强用户体验，但也引发了严重的隐私问题——可能导致George Orwell《1984》那样的场景。"</p>
+</blockquote>
+<h4 id="_34">核心对比框架</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>🗣️ 自我报告数据 (Self-Report Data)</th>
+<th>📊 行为数据 (Behavioral Data)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>收集方式</strong></td>
+<td>调查、访谈、问卷（人工、主动）</td>
+<td>传感器、跟踪软件、在线活动（自动、被动）</td>
+</tr>
+<tr>
+<td><strong>数据性质</strong></td>
+<td>主观——基于个人感知、想法和感受</td>
+<td>客观——捕捉实际行为，可量化</td>
+</tr>
+<tr>
+<td><strong>典型内容</strong></td>
+<td>意见、偏好、自我评估行为</td>
+<td>网站访问、购买历史、GPS位置</td>
+</tr>
+<tr>
+<td><strong>核心优势</strong></td>
+<td>揭示态度、动机和经验（行为无法观察到的维度）</td>
+<td>更准确、不易产生偏差（记录的是真实动作）</td>
+</tr>
+<tr>
+<td><strong>核心缺陷</strong></td>
+<td>社会期望偏差、回忆错误、自我认知不准确</td>
+<td>隐私风险、缺乏行为背后的背景/原因</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-42-行为数据的十二大类型" id="42">4.2 行为数据的十二大类型</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>示例</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🌐 <strong>Web浏览数据</strong></td>
+<td>页面浏览量、点击率、停留时间、搜索查询</td>
+<td>个性化内容、推荐产品、优化UX</td>
+</tr>
+<tr>
+<td>🛒 <strong>购买数据</strong></td>
+<td>交易历史、购买商品、购买频率、付款方式</td>
+<td>分析购买模式、定制营销</td>
+</tr>
+<tr>
+<td>📍 <strong>位置数据</strong></td>
+<td>GPS数据、签到、IP地址跟踪</td>
+<td>基于位置的服务、优化供应链</td>
+</tr>
+<tr>
+<td>💬 <strong>社交媒体活动</strong></td>
+<td>点赞、分享、评论、发布、关注</td>
+<td>衡量品牌情绪、监控趋势</td>
+</tr>
+<tr>
+<td>📱 <strong>移动App使用</strong></td>
+<td>安装量、使用频率、应用内购买</td>
+<td>改进App设计、增强用户参与</td>
+</tr>
+<tr>
+<td>📞 <strong>客户服务互动</strong></td>
+<td>通话记录、聊天记录、支持工单</td>
+<td>评估服务质量、识别常见问题</td>
+</tr>
+<tr>
+<td>📧 <strong>电子邮件参与度</strong></td>
+<td>打开率、点击率、响应率</td>
+<td>完善邮件营销、衡量活动效果</td>
+</tr>
+<tr>
+<td>⌚ <strong>可穿戴设备数据</strong></td>
+<td>活动水平、心率、睡眠模式</td>
+<td>个性化健康计划</td>
+</tr>
+<tr>
+<td>🏠 <strong>物联网设备数据</strong></td>
+<td>智能家居交互、能源消耗</td>
+<td>节能优化、智能家居生态</td>
+</tr>
+<tr>
+<td>🎬 <strong>流媒体消费</strong></td>
+<td>观看历史、观看时间、播放列表</td>
+<td>内容推荐、观众偏好分析</td>
+</tr>
+<tr>
+<td>🔐 <strong>生物特征数据</strong></td>
+<td>面部识别、语音识别</td>
+<td>身份验证、安全、个性化</td>
+</tr>
+<tr>
+<td>📊 <strong>网站统计</strong></td>
+<td>每日/小时统计、热门页面、引荐来源</td>
+<td>流量分析、SEO优化</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-43-行为数据的伦理悖论" id="43">4.3 行为数据的伦理悖论</h3>
+<ul>
+<li><strong>精确性 vs 隐私</strong>：行为数据更准确，但收集过程本身可能构成隐私侵犯</li>
+<li><strong>全面性 vs 去语境化</strong>：能记录"做了什么"，但无法解释"为什么这样做"</li>
+<li><strong>自动化 vs 知情权</strong>：数据在用户不知情时被自动采集</li>
+</ul>
+<blockquote>
+<p>💡 <strong>思考</strong>：Google Timeline 能精确记录你访问的时间、交通方式、在每个地方停留的时间——"谷歌比我更了解我自己"。这种便利的边界在哪里？</p>
+</blockquote>
+<hr>
+<h2 id="dsci6400-第5章面部识别技术的伦理争议22" id="522">第5章：面部识别技术的伦理争议（2.2）</h2>
+<h3 id="dsci6400-51-clearview-ai-案例你的脸属于我们" id="51-clearview-ai">5.1 Clearview AI 案例——"你的脸属于我们"</h3>
+<h4 id="_35">核心问题</h4>
+<ul>
+<li>Kashmir Hill（《纽约时报》记者）揭露 Clearview AI 的软件已进入<strong>执法部门、私营公司和个人投资者</strong>手中</li>
+<li>不受约束的面部识别技术 (FRT) 可能导致：</li>
+<li>🚨 隐私侵犯</li>
+<li>🚨 监视能力增强</li>
+<li>🚨 因身份错误导致的<strong>错误逮捕</strong></li>
+</ul>
+<h4 id="_36">全球对比警示</h4>
+<ul>
+<li>Hill 将美国现状与中国、俄罗斯等国的广泛应用进行比较</li>
+<li>提出<strong>反乌托邦</strong>式监视和控制的警示故事</li>
+<li>《1984》隐喻："老大哥在看着你！"</li>
+</ul>
+<h3 id="dsci6400-52-中国的社会信用体系" id="52">5.2 中国的社会信用体系</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>具体表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>摄像头网络</strong></td>
+<td>Skynet——全球最大视频监控网络，超6亿个摄像头，平均每两个成年人一个摄像头</td>
+</tr>
+<tr>
+<td><strong>实时扫描</strong></td>
+<td>面部识别系统可在1秒内扫描全部14亿人口面部</td>
+</tr>
+<tr>
+<td><strong>行为评分</strong></td>
+<td>积极行为（志愿服务）提分，消极行为（乱扔垃圾）降分</td>
+</tr>
+<tr>
+<td><strong>实际影响</strong></td>
+<td>截至2019年，低分者被拒绝乘坐飞机超1700万次、火车超500万次</td>
+</tr>
+<tr>
+<td><strong>生活限制</strong></td>
+<td>低分限制旅行、就业、金融服务和合同签订</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-53-隐私-vs-安全任何事物都有两面" id="53-vs">5.3 隐私 vs 安全——"任何事物都有两面"</h3>
+<h4 id="_37">面部识别的正面应用</h4>
+<table>
+<thead>
+<tr>
+<th>应用场景</th>
+<th>典型案例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔍 <strong>执法破案</strong></td>
+<td>2017年，FBI利用FRT识别并逮捕一名通缉16年的罪犯</td>
+</tr>
+<tr>
+<td>🛡️ <strong>反恐</strong></td>
+<td>2018年俄罗斯世界杯期间，成功识别监视名单上的个人</td>
+</tr>
+<tr>
+<td>✈️ <strong>边境安全</strong></td>
+<td>美国CBP使用FRT有效识别使用假护照的冒名顶替者</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_38">面部识别的负面风险</h4>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>案例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🏴 <strong>政治监控</strong></td>
+<td>香港抗议中，示威者破坏"智能灯柱"，怀疑装有FRT</td>
+</tr>
+<tr>
+<td>🗣️ <strong>言论压制</strong></td>
+<td>阿根廷人权组织担忧监控导致自我审查</td>
+</tr>
+<tr>
+<td>⚖️ <strong>身份错误</strong></td>
+<td>错误匹配导致无辜者被错误逮捕</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-54-利益冲突-conflict-of-interest-的视角转换" id="54-conflict-of-interest">5.4 利益冲突 (Conflict of Interest) 的视角转换</h3>
+<blockquote>
+<p>🔑 <strong>核心洞见</strong>：同一个人，在不同角色下可能对面部识别技术持完全相反的立场。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>角色情境</th>
+<th>对FRT的态度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🏛️ 政治活动家</td>
+<td>❌ 反对——威胁隐私和言论自由，扼杀政治异议</td>
+</tr>
+<tr>
+<td>✈️ 旅行者</td>
+<td>✅ 支持——赞赏边境安全措施的效率</td>
+</tr>
+<tr>
+<td>🚨 犯罪受害者</td>
+<td>✅ 支持——快速识别犯罪者，追回损失</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>结论</strong>：在保护隐私和确保安全之间取得平衡，是政策制定者和整个社会面临的<strong>核心挑战</strong>。<strong>透明度和问责制</strong>是两个极端之间的调解者。</p>
+</blockquote>
+<hr>
+<h2 id="dsci6400-第6章隐私保密与安全的博弈23" id="623">第6章：隐私、保密与安全的博弈（2.3）</h2>
+<h3 id="dsci6400-61-核心概念辨析" id="61">6.1 核心概念辨析</h3>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>定义</th>
+<th>关注焦点</th>
+<th>典型示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔒 <strong>隐私 (Privacy)</strong></td>
+<td>个人控制对其个人信息访问的权利</td>
+<td>个人对自身信息的<strong>权利和自主权</strong></td>
+<td>决定谁可查看健康记录</td>
+</tr>
+<tr>
+<td>🤫 <strong>保密 (Confidentiality)</strong></td>
+<td>受委托方保护信息免于未授权访问的<strong>义务</strong></td>
+<td>信任关系内共享信息的<strong>保护责任</strong></td>
+<td>医生对患者病历保密</td>
+</tr>
+<tr>
+<td>🛡️ <strong>安全 (Security)</strong></td>
+<td>防御网络威胁、保护数据免于泄露的<strong>技术措施</strong></td>
+<td>系统层面的<strong>防御与应对</strong></td>
+<td>网络安全工具、事件响应</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-62-隐私与安全的根本矛盾" id="62">6.2 隐私与安全的根本矛盾</h3>
+<blockquote>
+<p>"我们既希望免受监控，又希望获得监控带来的保护——但这两个目标可能相互矛盾。"</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>我们想要的...</th>
+<th>矛盾之处</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>隐私不被侵犯</td>
+<td>但被黑客攻击时希望有广泛日志来追踪罪犯</td>
+</tr>
+<tr>
+<td>不被网络追踪</td>
+<td>但设备丢失时希望科技公司能定位追踪</td>
+</tr>
+<tr>
+<td>数据不被监控</td>
+<td>但遭受数据泄露后要求更强的监控能力</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-63-隐私法律现状截至2024年" id="63-2024">6.3 隐私法律现状（截至2024年）</h3>
+<h4 id="_39">美国：无全面联邦法律</h4>
+<ul>
+<li><strong>FERPA</strong>（家庭教育权利和隐私法案）：保护学生教育记录</li>
+<li><strong>FTC法案</strong>：防止不公平或欺骗性行为</li>
+<li><strong>面部识别</strong>：截至2024年7月，无全面联邦FRT法律，仅有州和地方法律</li>
+</ul>
+<h4 id="gdpr">欧洲：GDPR全球基准</h4>
+<ul>
+<li>赋予个人对其数据的广泛权利</li>
+<li>违规罚款严厉</li>
+</ul>
+<h3 id="dsci6400-64-保护隐私的工具" id="64">6.4 保护隐私的工具</h3>
+<table>
+<thead>
+<tr>
+<th>工具类型</th>
+<th>代表产品</th>
+<th>能做什么</th>
+<th>不能做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🕵️ <strong>无痕浏览</strong></td>
+<td>Chrome Incognito</td>
+<td>不保存浏览历史/Cookie/表单信息</td>
+<td>对ISP隐藏活动、隐藏IP地址、防御恶意软件</td>
+</tr>
+<tr>
+<td>🦊 <strong>隐私浏览器</strong></td>
+<td>Safari / Firefox</td>
+<td>更强的隐私保护选项</td>
+<td>完全匿名</td>
+</tr>
+<tr>
+<td>🔐 <strong>VPN</strong></td>
+<td>各类VPN服务</td>
+<td>IP掩蔽、流量加密、地理重定位、ISP盲目</td>
+<td>100%不可追踪</td>
+</tr>
+<tr>
+<td>🔑 <strong>其他工具</strong></td>
+<td>—</td>
+<td>加密软件、2FA、安全云存储、防火墙</td>
+<td>消除所有风险</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>关键认知</strong>：无痕模式 ≠ 完全匿名。它仅对<strong>本地设备</strong>隐藏痕迹，对ISP、访问的网站、恶意软件均无防护。</p>
+</blockquote>
+<hr>
+<h2 id="dsci6400-第7章安全风险与数据泄露24" id="724">第7章：安全风险与数据泄露（2.4）</h2>
+<h3 id="dsci6400-71-安全风险的本质" id="71">7.1 安全风险的本质</h3>
+<blockquote>
+<p>🔑 <strong>核心原则</strong>："能力越大，责任越大。"——AI和大数据赋予企业与政府前所未有的能力，相应的保护义务也随之增大。</p>
+</blockquote>
+<ul>
+<li>安全风险在AI时代之前就已存在</li>
+<li>大数据使大规模维护安全变得<strong>更具挑战性</strong></li>
+<li>大数据生态系统的<strong>复杂性</strong>引入难以管理的漏洞</li>
+</ul>
+<h3 id="dsci6400-72-重大数据泄露案例" id="72">7.2 重大数据泄露案例</h3>
+<table>
+<thead>
+<tr>
+<th>事件</th>
+<th>时间</th>
+<th>影响规模</th>
+<th>泄露内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Equifax</strong></td>
+<td>2017</td>
+<td>1.47亿美国人</td>
+<td>SSN、出生日期、地址</td>
+</tr>
+<tr>
+<td><strong>Yahoo</strong></td>
+<td>2013-2016</td>
+<td>全球30亿+账户</td>
+<td>姓名、邮箱、电话、加密密码</td>
+</tr>
+<tr>
+<td><strong>Microsoft Exchange</strong></td>
+<td>2021</td>
+<td>3万美国组织 + 6万全球组织</td>
+<td>电子邮件账户访问权限</td>
+</tr>
+<tr>
+<td><strong>SolarWinds供应链攻击</strong></td>
+<td>2020</td>
+<td>多个美国政府机构 + 大量企业</td>
+<td>财政部、商务部、能源部机密信息</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-73-生物特征数据的独特风险" id="73">7.3 生物特征数据的独特风险</h3>
+<ul>
+<li><strong>无法有效加密</strong>：面部数据在保持实用性的同时无法像密码一样加密</li>
+<li><strong>分布式存储</strong>：面部信息散布在驾照数据库、执法记录、社交媒体等多个平台</li>
+<li><strong>拼图效应</strong>：恶意行为者可将各种数据点拼凑，轻易勾勒一个人的完整生活画像</li>
+</ul>
+<h3 id="dsci6400-74-外国政府参与的安全风险tiktok案例" id="74-tiktok">7.4 外国政府参与的安全风险——TikTok案例</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>核心担忧</strong></td>
+<td>字节跳动可能因中国《国家安全法》被要求向政府提供TikTok用户数据</td>
+</tr>
+<tr>
+<td><strong>中国法律要求</strong></td>
+<td>个人和组织均须协助情报机构侦查间谍活动</td>
+</tr>
+<tr>
+<td><strong>美方应对</strong></td>
+<td>2024年3月众议院通过立法：要求字节跳动出售TikTok，否则在美被禁</td>
+</tr>
+<tr>
+<td><strong>TikTok回应</strong></td>
+<td>否认中国政府控制，提出"德克萨斯计划"（Project Texas）等内部监督措施</td>
+</tr>
+<tr>
+<td><strong>批评声音</strong></td>
+<td>内部监督机制不足以消除国家级安全风险</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>对称性观察</strong>：中国同样出于国家安全考虑封禁了Google、YouTube、Facebook，认为这些平台是外部势力影响公众情绪的渠道。</p>
+</blockquote>
+<hr>
+<h2 id="dsci6400-第8章数据所有权与知情同意25-26" id="825-26">第8章：数据所有权与知情同意（2.5-2.6）</h2>
+<h3 id="dsci6400-81-知情同意的困境-informed-consent" id="81-informed-consent">8.1 知情同意的困境 (Informed Consent)</h3>
+<h4 id="_40">现实问题</h4>
+<ul>
+<li>隐私政策<strong>冗长复杂</strong>，几乎无人通读</li>
+<li>即使尝试阅读，无法律背景的人<strong>无法真正理解</strong>数据被收集和使用的范围</li>
+<li>导致<strong>"不知情"或"半被迫"的同意</strong></li>
+<li>用户"不情愿地"放弃权利，任由公司随意处置数据</li>
+</ul>
+<h4 id="_41">典型案例：未获知情同意</h4>
+<table>
+<thead>
+<tr>
+<th>案例</th>
+<th>时间</th>
+<th>核心问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>X/Grok</strong></td>
+<td>2024</td>
+<td>在未通知用户或未征求同意的情况下，为用户帖子收集数据训练AI聊天机器人</td>
+</tr>
+<tr>
+<td><strong>剑桥分析</strong></td>
+<td>2016</td>
+<td>通过个性测试App获取5000万（后修正为8700万）Facebook用户数据，含好友数据</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-82-剑桥分析丑闻深度剖析" id="82">8.2 剑桥分析丑闻深度剖析</h3>
+<pre><code>事件链条：
+用户安装&quot;这就是你的数字生活&quot;App
+       ↓
+App收集安装者数据 + 其Facebook好友数据（未经好友同意）
+       ↓
+8700万用户数据流入剑桥分析
+       ↓
+心理特征分析：每用户5000个数据点
+       ↓
+根据性格特征定制政治信息 → 定向政治广告
+       ↓
+可能影响2016美国总统大选 + 英国脱欧公投
+       ↓
+2018年丑闻爆发 → 剑桥分析破产
+       ↓
+2019年FTC对Facebook罚款50亿美元
+</code></pre>
+<h3 id="dsci6400-83-数据所有权的模糊性" id="83">8.3 数据所有权的模糊性</h3>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🤝 <strong>数据共创</strong></td>
+<td>社交媒体数据由用户创建，但由平台存储和处理——谁拥有？</td>
+</tr>
+<tr>
+<td>🔄 <strong>衍生品与聚合</strong></td>
+<td>AI从现有数据生成新数据/见解时——衍生数据产品归谁？</td>
+</tr>
+<tr>
+<td>💰 <strong>利润不共享</strong></td>
+<td>公司将用户数据出售给第三方投放广告，却不与用户分享利润</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-84-互联网数据与开源数据的伦理边界" id="84">8.4 互联网数据与开源数据的伦理边界</h3>
+<h4 id="_42">核心争议：使用互联网数据的权利边界在哪里？</h4>
+<table>
+<thead>
+<tr>
+<th>争议焦点</th>
+<th>关键问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🕷️ <strong>网络抓取</strong></td>
+<td>OpenAI等公司用爬虫从互联网收集数据训练LLM——是"窃取"还是合理使用？</td>
+</tr>
+<tr>
+<td>🔥 <strong>蒸馏技术</strong></td>
+<td>DeepSeek等小公司从ChatGPT蒸馏知识降低成本——是"从小偷那里偷"还是技术创新？</td>
+</tr>
+<tr>
+<td>📜 <strong>知识产权</strong></td>
+<td>使用公开可得的数据，是侵犯所有权还是合理使用（Fair Use）？</td>
+</tr>
+<tr>
+<td>🤝 <strong>开源社区</strong></td>
+<td>利用开源贡献却不回馈，是否破坏开放协作精神？</td>
+</tr>
+<tr>
+<td>🔍 <strong>透明度</strong></td>
+<td>AI公司是否应披露数据源并认可原始内容创造者？</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>蒸馏的法律与道德边界</strong>：蒸馏让公司无需投入同等资源就能从大型AI模型获益，但许多基于蒸馏的模型并未认可或补偿原始创造者——技术上合法，道德上存疑。</p>
+</blockquote>
+<hr>
+<h2 id="dsci6400-第9章被遗忘权与法律监管27" id="927">第9章：被遗忘权与法律监管（2.7）</h2>
+<h3 id="dsci6400-91-被遗忘权-right-to-be-forgotten-rtbf" id="91-right-to-be-forgotten-rtbf">9.1 被遗忘权 (Right to Be Forgotten, RTBF)</h3>
+<h4 id="_43">核心概念</h4>
+<ul>
+<li><strong>定义</strong>：个人有权要求删除不再相关或对其生活产生负面影响的过去记录</li>
+<li><strong>起源</strong>：2014年欧洲法院 (ECJ) 确立</li>
+<li><strong>GDPR条款</strong>：当数据对收集目的不再重要、个人撤回同意、或数据被非法处理时，可要求删除</li>
+<li><strong>核心矛盾</strong>：个人隐私权 vs 历史事实保存 + 公众知情权</li>
+</ul>
+<h4 id="_44">全球法律对比</h4>
+<table>
+<thead>
+<tr>
+<th>地区</th>
+<th>被遗忘权状况</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🇪🇺 <strong>欧洲</strong></td>
+<td>最发达——GDPR赋予明确权利，ECJ 2014年确立</td>
+</tr>
+<tr>
+<td>🇺🇸 <strong>美国</strong></td>
+<td>无全面RTBF法律；加州CCPA赋予部分删除权</td>
+</tr>
+<tr>
+<td>🇯🇵 <strong>日本</strong></td>
+<td>2017年最高法院判决：权衡公众知情权 vs 隐私权，倾向于前者</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-92-被遗忘权经典案例" id="92">9.2 被遗忘权经典案例</h3>
+<table>
+<thead>
+<tr>
+<th>案例</th>
+<th>时间</th>
+<th>判决结果</th>
+<th>核心逻辑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Costeja González 诉 Google</strong></td>
+<td>2014</td>
+<td>✅ 原告胜诉</td>
+<td>搜索引擎须删除"不充分、不相关或不再相关"的信息</td>
+</tr>
+<tr>
+<td><strong>荷兰外科师案</strong></td>
+<td>2019</td>
+<td>❌ 原告败诉（上级法院推翻）</td>
+<td>试图删除停职记录——公共利益 &gt; 个人隐私</td>
+</tr>
+<tr>
+<td><strong>日本男子案</strong></td>
+<td>2017</td>
+<td>❌ 原告败诉</td>
+<td>儿童色情罪逮捕记录——犯罪严重性 + 搜索结果属受保护言论</td>
+</tr>
+<tr>
+<td><strong>NT1 诉 Google</strong></td>
+<td>2018</td>
+<td>❌ 请求驳回</td>
+<td>伪造账目罪——与公众利益仍有关联</td>
+</tr>
+<tr>
+<td><strong>NT2 诉 Google</strong></td>
+<td>2018</td>
+<td>✅ 请求支持</td>
+<td>窃听罪（刑期短）——已不相关，隐私权优先</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-93-mimi-groves-案永远为15岁的行为负责" id="93-mimi-groves-15">9.3 Mimi Groves 案——"永远为15岁的行为负责？"</h3>
+<pre><code>事件线：
+2016年：15岁的Mimi在Snapchat发布种族歧视语言短视频
+         ↓
+2020年：老同学Jimmy保存视频并公开发布（BLM运动期间）
+         ↓
+视频疯传 → 田纳西大学施压 → Mimi撤回录取
+         ↓
+伦理争议：
+  • Mimi是否应永远为15岁时的行为负责？
+  • 她有被遗忘和被原谅的权利吗？
+  • Jimmy的行为是揭露种族主义还是报复性破坏？
+  • 公开羞辱的程度和方式是否过于严厉？
+</code></pre>
+<h3 id="dsci6400-94-被遗忘权的现实局限" id="94">9.4 被遗忘权的现实局限</h3>
+<blockquote>
+<p>⚠️ <strong>残酷现实</strong>：几乎没有什么内容会被真正删除和遗忘。</p>
+</blockquote>
+<ul>
+<li>网站存档工具（如 Wayback Machine 自1996年起收集快照）</li>
+<li>时间旅行工具（timetravel.mementoweb.org）</li>
+<li>信息一旦上网，可能永久存在</li>
+</ul>
+<h3 id="dsci6400-95-法律与监管挑战" id="95">9.5 法律与监管挑战</h3>
+<table>
+<thead>
+<tr>
+<th>挑战维度</th>
+<th>具体表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🌍 <strong>管辖权冲突</strong></td>
+<td>数据存储在一个国家，由另一国实体拥有 → 法律框架冲突</td>
+</tr>
+<tr>
+<td>📜 <strong>法规滞后</strong></td>
+<td>GDPR确立数据保护权，但衍生数据所有权仍模糊</td>
+</tr>
+<tr>
+<td>🔗 <strong>数据不透明</strong></td>
+<td>公司不透明地说明如何收集、使用、共享数据</td>
+</tr>
+<tr>
+<td>💰 <strong>利益分配</strong></td>
+<td>出售用户数据获利，用户无份额</td>
+</tr>
+<tr>
+<td>🎭 <strong>政治操纵</strong></td>
+<td>数据被用于政治操纵（剑桥分析案）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6400-96-找到平衡点" id="96">9.6 找到平衡点</h3>
+<blockquote>
+<p>"尽管技术进步有缺点，我们并不主张逆转工业化、禁止车辆或拆除互联网。社会的目标是在进步与降低风险之间取得平衡。同样的道理也适用于大数据和人工智能。"</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>类比</th>
+<th>负面后果</th>
+<th>社会应对</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工业化</td>
+<td>环境污染</td>
+<td>环保法规 + 可持续发展</td>
+</tr>
+<tr>
+<td>车辆</td>
+<td>交通事故</td>
+<td>交通规则 + 安全技术</td>
+</tr>
+<tr>
+<td>互联网</td>
+<td>网络犯罪</td>
+<td>网络安全 + 数据保护</td>
+</tr>
+<tr>
+<td><strong>AI/大数据</strong></td>
+<td><strong>隐私侵犯、算法偏见</strong></td>
+<td><strong>伦理框架 + 监管法规</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🔑 <strong>目标</strong>：最大限度地发挥技术进步带来的<strong>好处</strong>，同时实施保障措施和法规以<strong>最小化</strong>其负面影响。</p>
+</blockquote>
+<hr>
+<h2 id="dsci6400-全课程知识图谱" id="_45">全课程知识图谱</h2>
+<pre><code>AI伦理学知识体系
+│
+├── 元理论层（第1章）
+│   ├── 伦理学的必要性（为什么需要伦理？）
+│   ├── 跨学科方法（谁能提供视角？）
+│   └── 道德推理方法（如何思考伦理问题？）
+│
+├── 规范伦理学（第2章）
+│   ├── 幸福主义 → 品格与繁荣
+│   ├── 义务论 → 规则与义务
+│   ├── 功利主义 → 结果与效用
+│   ├── 新亚里士多德 → 美德与实践智慧
+│   ├── 平等主义 → 公平与正义
+│   └── 境遇伦理学 → 爱与具体情境
+│
+├── 历史演变层（第3章）
+│   ├── 前AI时代（大型机→PC→互联网→Web2.0）
+│   └── AI时代（大数据→生成式AI→AGI风险）
+│
+├── 数据收集与行为伦理（第4章）
+│   ├── 行为数据 vs 自我报告数据
+│   ├── 行为数据12大类型
+│   └── 行为数据的伦理悖论
+│
+├── 监控与面部识别（第5章）
+│   ├── Clearview AI案例
+│   ├── 社会信用体系 vs 执法/反恐应用
+│   └── 利益冲突的多视角分析
+│
+├── 隐私-保密-安全三角（第6章）
+│   ├── 三概念辨析
+│   ├── 隐私与安全的根本矛盾
+│   └── 隐私保护工具
+│
+├── 安全风险与数据泄露（第7章）
+│   ├── 四大泄露事件
+│   ├── 生物特征加密困境
+│   └── TikTok与外国政府风险
+│
+├── 数据所有权与同意（第8章）
+│   ├── 知情同意困境
+│   ├── 剑桥分析事件链
+│   ├── 数据共创与衍生品归属
+│   └── 互联网/开源数据伦理边界
+│
+├── 被遗忘权与法律监管（第9章）
+│   ├── RTBF概念与全球对比
+│   ├── 五大经典案例
+│   ├── 互联网存档的现实局限
+│   └── 法律管辖权与监管挑战
+│
+└── 治理与监管（贯穿全课程）
+    ├── GDPR / AI法案 / CCPA
+    ├── 企业自律
+    ├── 行业准则（ACM等）
+    └── 透明度与问责制
+</code></pre>
+<h2 id="dsci6400-六大伦理理论对比总结" id="_46">六大伦理理论对比总结</h2>
+<table>
+<thead>
+<tr>
+<th>理论</th>
+<th>核心问题</th>
+<th>评判标准</th>
+<th>优势</th>
+<th>弱点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>幸福主义</td>
+<td>什么促进人的繁荣？</td>
+<td>品格发展</td>
+<td>全面、人性化</td>
+<td>难以操作化</td>
+</tr>
+<tr>
+<td>义务论</td>
+<td>是否出于义务？</td>
+<td>规则遵循</td>
+<td>稳定、明确</td>
+<td>过于刚性</td>
+</tr>
+<tr>
+<td>功利主义</td>
+<td>是否带来最大幸福？</td>
+<td>结果效用</td>
+<td>直观、实用</td>
+<td>忽视少数</td>
+</tr>
+<tr>
+<td>新亚里士多德</td>
+<td>是否体现美德？</td>
+<td>品格+实践智慧</td>
+<td>灵活、务实</td>
+<td>主观性强</td>
+</tr>
+<tr>
+<td>平等主义</td>
+<td>是否公平？</td>
+<td>分配正义</td>
+<td>关注弱势群体</td>
+<td>可能抑制效率</td>
+</tr>
+<tr>
+<td>境遇伦理学</td>
+<td>什么最有爱心？</td>
+<td>情境中的爱</td>
+<td>高度灵活</td>
+<td>缺乏标准</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dsci6400-第2单元核心概念速查表" id="2">第2单元核心概念速查表</h2>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>英文</th>
+<th>一句话定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>行为数据</td>
+<td>Behavioral Data</td>
+<td>通过技术自动收集的客观行为记录</td>
+</tr>
+<tr>
+<td>自我报告数据</td>
+<td>Self-Report Data</td>
+<td>通过调查/访谈获取的主观态度数据</td>
+</tr>
+<tr>
+<td>面部识别技术</td>
+<td>FRT (Facial Recognition Technology)</td>
+<td>利用面部特征进行身份识别的技术</td>
+</tr>
+<tr>
+<td>隐私</td>
+<td>Privacy</td>
+<td>个人控制自身信息访问的权利</td>
+</tr>
+<tr>
+<td>保密</td>
+<td>Confidentiality</td>
+<td>受委托方保护信息的义务</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>Security</td>
+<td>防御网络威胁的技术措施</td>
+</tr>
+<tr>
+<td>知情同意</td>
+<td>Informed Consent</td>
+<td>用户在充分了解情况后自愿同意</td>
+</tr>
+<tr>
+<td>数据所有权</td>
+<td>Data Ownership</td>
+<td>数据归谁所有、谁有权处置</td>
+</tr>
+<tr>
+<td>蒸馏技术</td>
+<td>Distillation</td>
+<td>从大模型提取知识训练小模型</td>
+</tr>
+<tr>
+<td>被遗忘权</td>
+<td>RTBF (Right to Be Forgotten)</td>
+<td>要求删除不相关个人数据的权利</td>
+</tr>
+<tr>
+<td>利益冲突</td>
+<td>Conflict of Interest</td>
+<td>同一人在不同角色下对技术持矛盾立场</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="dsci6400-复习要点清单" id="_47">复习要点清单</h2>
+<h3 id="dsci6400-第1单元复习week-1" id="1week-1">第1单元复习（Week 1）</h3>
+<ul>
+<li>[ ] 能说出数据伦理的四大核心挑战</li>
+<li>[ ] 理解五大规范伦理学的核心区别</li>
+<li>[ ] 能用不同伦理理论分析同一个AI案例</li>
+<li>[ ] 掌握计算伦理的历史演变脉络</li>
+<li>[ ] 了解GDPR和AI法案的核心内容</li>
+<li>[ ] 理解跨学科合作在AI伦理中的必要性</li>
+</ul>
+<h3 id="dsci6400-第2单元复习week-2" id="2week-2">第2单元复习（Week 2）</h3>
+<ul>
+<li>[ ] 能对比行为数据与自我报告数据的优劣</li>
+<li>[ ] 列举行为数据的主要类型及各自伦理风险</li>
+<li>[ ] 分析面部识别技术"隐私 vs 安全"的两难困境</li>
+<li>[ ] 理解"利益冲突"——同一人在不同角色下对FRT的矛盾立场</li>
+<li>[ ] 辨析隐私、保密、安全三个概念的区别与联系</li>
+<li>[ ] 说出四大重大数据泄露事件及其影响</li>
+<li>[ ] 理解生物特征数据无法有效加密的独特风险</li>
+<li>[ ] 分析TikTok案例中的外国政府安全风险</li>
+<li>[ ] 解释知情同意的困境——为什么"同意"往往是"不知情"的</li>
+<li>[ ] 复述剑桥分析事件的完整链条与影响</li>
+<li>[ ] 理解互联网数据/开源数据使用的伦理边界（网络抓取、蒸馏、知识产权）</li>
+<li>[ ] 掌握被遗忘权的定义、起源与全球法律对比</li>
+<li>[ ] 分析Mimi Groves案、Costeja案等经典被遗忘权案例</li>
+<li>[ ] 理解"几乎没有什么内容会被真正删除"的现实含义</li>
+<li>[ ] 能在"技术进步 vs 风险管控"框架下提出平衡方案</li>
+</ul>
+<hr>
+<blockquote>
+<p>📝 <strong>学习方法建议</strong>：<br>
+- <strong>Week 1</strong>：选取一个AI伦理案例（如自动驾驶决策），分别用6种理论分析，比较不同结论<br>
+- <strong>Week 2</strong>：选取一个数据收集场景（如社交媒体行为追踪），从隐私、安全、所有权、知情同意四个维度分析其伦理风险</p>
+</blockquote>
+<hr>
+            </div>
+        </section>
+        
+
+        <section class="course-section" id="course-dsci6700">
+            <div class="course-header">
+                <span class="course-icon">📝</span>
+                <div>
+                    <h1 class="course-title">DSCI6700 文本挖掘</h1>
+                    <p class="course-subtitle">文本挖掘与非结构化数据 · 系统化学习笔记</p>
+                </div>
+            </div>
+            <div class="course-content markdown-body">
+                <h1 id="dsci6700">DSCI6700 文本挖掘与非结构化数据 · 系统化学习笔记</h1>
+<blockquote>
+<p><strong>课程信息</strong>：HPU 夏威夷太平洋大学 · AI硕士项目<br>
+<strong>学习周期</strong>：Week 1-2<br>
+<strong>素材来源</strong>：课程PPT + 智能纪要（8节+补充文档）</p>
+<p><strong>整理日期</strong>：2026-07-10（Week 2更新于2026-07-13）</p>
+</blockquote>
+<hr>
+<h2 id="dsci6700-课程概述" id="_1">课程概述</h2>
+<h3 id="dsci6700-课程目标" id="_2">课程目标</h3>
+<ul>
+<li>理解<strong>结构化数据 vs 非结构化数据</strong>的本质区别与各自的局限</li>
+<li>掌握<strong>NLP</strong>的三大支柱：句法(Syntax)、语义(Semantics)、语用学(Pragmatics)</li>
+<li>理解<strong>大语言模型(LLM)</strong>的Transformer架构与预训练+微调范式</li>
+<li>掌握<strong>文本挖掘</strong>的概念、流程与跨行业应用</li>
+<li>了解文本挖掘的<strong>历史发展脉络</strong>与未来方向</li>
+</ul>
+<h3 id="dsci6700-核心知识框架" id="_3">核心知识框架</h3>
+<pre><code>DSCI6700 知识体系
+├── Week 1: 基础概念
+│   ├── 1.1 引言（为什么需要文本挖掘？）
+│   ├── 1.2 非结构化数据类型
+│   ├── 1.3 自然语言处理 (NLP)
+│   ├── 1.4 大语言模型 (LLM)
+│   ├── 1.5 文本挖掘
+│   ├── 1.6 文本挖掘的历史与发展
+│   ├── 1.7 文本分析的另一段历史（人文科学根源）
+│   └── 1.8 总结
+├── Week 2: 文本预处理与文本表示
+│   ├── 2.1 文本预处理概述
+│   ├── 2.2 分词（Tokenization）
+│   ├── 2.3 词干提取（Stemming）
+│   ├── 2.4 词形还原（Lemmatization）
+│   ├── 2.5 停用词移除（Stop-word Removal）
+│   ├── 2.6 特殊字符处理
+│   ├── 2.7 TF-IDF（词频-逆文档频率）
+│   ├── 2.8 N元语法（N-gram）
+│   └── 2.9 词嵌入（Word Embedding）
+└── 后续Week...
+</code></pre>
+<hr>
+<h2 id="dsci6700-第1章引言与非结构化数据11-12" id="111-12">第1章：引言与非结构化数据（1.1-1.2）</h2>
+<h3 id="dsci6700-11-为什么需要文本挖掘" id="11">1.1 为什么需要文本挖掘？</h3>
+<h4 id="_4">结构化数据的局限性</h4>
+<table>
+<thead>
+<tr>
+<th>局限</th>
+<th>说明</th>
+<th>例证</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>预设框架约束</strong></td>
+<td>将复杂现实映射到预设理论框架，遗漏创造力、情商等核心维度</td>
+<td>IQ测试简化人的智力</td>
+</tr>
+<tr>
+<td><strong>虚假客观性</strong></td>
+<td>数字指标创造误导性客观感，简化的排名指标带有隐藏偏见</td>
+<td>Gould《人类的错误测量》</td>
+</tr>
+<tr>
+<td><strong>认知盲点</strong></td>
+<td>纯定量分析遗漏不可量化的关键信息</td>
+<td>Cameron："并非所有重要的东西都能被量化"</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_5">文本挖掘的核心优势</h4>
+<ol>
+<li><strong>互补性根本原因识别</strong>：数值数据只反映"是什么"，文本挖掘揭示"为什么"</li>
+<li><strong>实时响应支持</strong>：对社交媒体、新闻源的实时文本挖掘可即时洞察公众情绪</li>
+<li><strong>偏差减少效应</strong>：全面分析完整非结构化数据集，发现传统框架忽略的联系</li>
+<li><strong>混合方法赋能</strong>：结合定性研究深度与大规模定量分析严谨性</li>
+</ol>
+<blockquote>
+<p>🔑 <strong>核心语录</strong>："只听取明确表述的内容只能了解故事的一部分。" —— Ziad Jamal</p>
+</blockquote>
+<h3 id="dsci6700-12-非结构化数据的类型" id="12">1.2 非结构化数据的类型</h3>
+<h4 id="_6">数据类型全景</h4>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>基本范围</th>
+<th>核心分析障碍</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>文本数据</strong></td>
+<td>邮件、社交媒体、PDF、开放式调查</td>
+<td>机器频繁误解隐含语气、主题和语境</td>
+</tr>
+<tr>
+<td><strong>多媒体数据</strong></td>
+<td>图像(JPEG)、视频(MP4)、音频(MP3)</td>
+<td>计算机视觉/语音识别成本高、准确率不稳定</td>
+</tr>
+<tr>
+<td><strong>IoT/传感器数据</strong></td>
+<td>智能恒温器、健身追踪器、服务器日志</td>
+<td>流噪声过滤和实时异常检测</td>
+</tr>
+<tr>
+<td><strong>Web/交互式数据</strong></td>
+<td>网页内容、元数据、社交媒体互动</td>
+<td>处理冲突标准和混合俚语</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_7">多媒体数据的处理工作流</h4>
+<pre><code>多媒体数据 → 转录工具(Zoom/Rev/Descript) → 文本 → NLP分析
+</code></pre>
+<blockquote>
+<p>大多数团队先将多媒体<strong>转录为文本</strong>，再运行NLP分析。</p>
+</blockquote>
+<hr>
+<h2 id="dsci6700-第2章nlp与大语言模型13-14" id="2nlp13-14">第2章：NLP与大语言模型（1.3-1.4）</h2>
+<h3 id="dsci6700-21-自然语言处理-nlp" id="21-nlp">2.1 自然语言处理 (NLP)</h3>
+<h4 id="_8">核心定义</h4>
+<p>NLP是人工智能的专门子领域，专注于教会计算机<strong>理解、解释和生成</strong>人类语言。</p>
+<h4 id="_9">三大核心目标</h4>
+<ol>
+<li>解码隐含的语言结构和意义</li>
+<li>弥合人机通信差距</li>
+<li>从海量非结构化文本数据集中提取见解</li>
+</ol>
+<h4 id="nlp">NLP三大语言学支柱</h4>
+<table>
+<thead>
+<tr>
+<th>支柱</th>
+<th>研究内容</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>句法 (Syntax)</strong></td>
+<td>语言的语法结构和规则</td>
+<td>词性标注、句法分析</td>
+</tr>
+<tr>
+<td><strong>语义 (Semantics)</strong></td>
+<td>语言的含义</td>
+<td>词义消歧、情感分析</td>
+</tr>
+<tr>
+<td><strong>语用学 (Pragmatics)</strong></td>
+<td>语境中的语言使用</td>
+<td>讽刺识别、意图理解</td>
+</tr>
+</tbody>
+</table>
+<h4 id="nlp_1">NLP技术演进四阶段</h4>
+<pre><code>阶段1: 基于规则    → 手工编写语法规则
+阶段2: 统计概率    → n-gram、隐马尔可夫模型
+阶段3: 传统ML     → SVM、随机森林、CRF
+阶段4: 深度学习    → Transformer、RNN、BERT、GPT（当前主流）
+</code></pre>
+<h4 id="_10">典型应用场景</h4>
+<ul>
+<li>文本挖掘（类别/情感提取）</li>
+<li>机器翻译（Google Translate）</li>
+<li>自动摘要</li>
+<li>语音识别（Siri、Alexa）</li>
+<li>搜索引擎信息检索</li>
+</ul>
+<h3 id="dsci6700-22-大语言模型-llm" id="22-llm">2.2 大语言模型 (LLM)</h3>
+<h4 id="_11">核心定义</h4>
+<p>LLM是基于深度学习和大量预训练数据集构建的先进AI系统，用于高效处理和生成人类自然语言。</p>
+<h4 id="transformer">Transformer架构（核心技术）</h4>
+<ul>
+<li><strong>起源</strong>：2017年论文《Attention Is All You Need》</li>
+<li><strong>自注意力机制</strong>：评估文本中每个单词的相对重要性，<strong>不受位置限制</strong></li>
+<li>所有主流LLM（GPT、BERT等）都基于此架构</li>
+</ul>
+<h4 id="_12">双阶段训练流程</h4>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>方法</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>预训练 (Pre-training)</strong></td>
+<td>无监督学习，预测缺失/后续词</td>
+<td>学习通用语言规则</td>
+</tr>
+<tr>
+<td><strong>微调 (Fine-tuning)</strong></td>
+<td>有监督学习，特定任务标注数据</td>
+<td>适应翻译、法律分析等具体场景</td>
+</tr>
+</tbody>
+</table>
+<h4 id="llm-vs">LLM vs 传统搜索引擎</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>早期LLM</th>
+<th>传统搜索引擎</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据来源</td>
+<td>预训练固定数据集</td>
+<td>实时互联网</td>
+</tr>
+<tr>
+<td>交互方式</td>
+<td>类人对话</td>
+<td>关键词匹配</td>
+</tr>
+<tr>
+<td>输出生成</td>
+<td>生成式</td>
+<td>检索式</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="dsci6700-第3章文本挖掘核心15" id="315">第3章：文本挖掘核心（1.5）</h2>
+<h3 id="dsci6700-31-文本挖掘的定义与机制" id="31">3.1 文本挖掘的定义与机制</h3>
+<h4 id="_13">核心定义</h4>
+<p>将杂乱无章、非结构化的原始文本转换为<strong>标准化的结构化格式</strong>，将定性语言转化为<strong>可量化的见解</strong>。</p>
+<h4 id="_14">与数据挖掘的区别</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>数据挖掘</th>
+<th>文本挖掘</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据对象</td>
+<td>结构化数值数据</td>
+<td>自由格式文本</td>
+</tr>
+<tr>
+<td>核心任务</td>
+<td>发现数值模式</td>
+<td>从文本中提取模式和见解</td>
+</tr>
+<tr>
+<td>预处理</td>
+<td>较少</td>
+<td>需要大量文本预处理</td>
+</tr>
+<tr>
+<td>输出</td>
+<td>数值模型/规则</td>
+<td>主题、情感、关键词等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6700-32-跨行业应用" id="32">3.2 跨行业应用</h3>
+<h4 id="_15">公共/专业领域</h4>
+<table>
+<thead>
+<tr>
+<th>行业</th>
+<th>应用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>公共安全</strong></td>
+<td>自动标记社交媒体威胁内容，筛查海量通信</td>
+</tr>
+<tr>
+<td><strong>医疗保健</strong></td>
+<td>临床研究辅助、诊断支持</td>
+</tr>
+<tr>
+<td><strong>金融</strong></td>
+<td>欺诈检测</td>
+</tr>
+<tr>
+<td><strong>法律</strong></td>
+<td>快速合同审查</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_16">后端/日常工具</h4>
+<ul>
+<li>内容推荐系统（Netflix、YouTube）</li>
+<li>垃圾邮件过滤器</li>
+<li>实时社交媒体监测</li>
+<li>学术文献检索</li>
+<li>网络安全（漏洞识别）</li>
+</ul>
+<hr>
+<h2 id="dsci6700-第4章文本挖掘的历史发展16-17" id="416-17">第4章：文本挖掘的历史发展（1.6-1.7）</h2>
+<h3 id="dsci6700-41-技术发展时间线" id="41">4.1 技术发展时间线</h3>
+<pre><code>1950s-60s ─── 自动文档索引和检索
+              │ Gerard Salton (1961) SMART系统 → 奠定核心框架
+              │
+1960s-70s ─── 形式语法和解析系统
+              │ 早期机器翻译研究 → NLP基础
+              │
+1970s-80s ─── 命名实体识别 (NER)
+              │ 1987 消息理解会议 (MUC) → 标准化技术基准
+              │
+1980s-90s ─── 统计方法兴起
+              │ 摒弃手工规则 → n-gram概率模型
+              │
+1990s-00s ─── 潜在语义分析 (LSA)
+              │ 在线文本爆炸 → Web挖掘、大规模文档分析
+              │
+2000s-10s ─── SVM分类 + LDA主题建模
+              │ Blei et al. (2003) LDA革命 → 情感挖掘蓬勃发展
+              │
+2010s+ ────── Word2Vec → RNN/LSTM → Transformer/BERT → GPT
+              │ 少样本/零样本学习 → 类人文本处理
+              │
+现在+未来 ─── 可解释性 + 算法偏差减少 + 低能耗 + 跨语言
+</code></pre>
+<h3 id="dsci6700-42-人文科学根源另一段历史" id="42">4.2 人文科学根源（另一段历史）</h3>
+<h4 id="don-r-swanson">Don R. Swanson的开创性贡献</h4>
+<ul>
+<li><strong>"未被发现的公共知识"概念（1986）</strong>：通过连接看似不相关的学术概念产生研究假设</li>
+<li><strong>核心方法</strong>：跨孤立概念连接（而非专业领域专长）</li>
+<li><strong>经典验证</strong>：鱼油对雷诺病的作用、压力-偏头痛-镁的联系</li>
+</ul>
+<h4 id="_17">核心洞见</h4>
+<blockquote>
+<p>"零散、独立创作的学术作品比作未组装的拼图碎片，隐藏的见解正等待着那些愿意将离散的知识点联系起来的人。"</p>
+</blockquote>
+<h4 id="_18">对现代实践的启示</h4>
+<ul>
+<li>现代ML/LLM文本分析建立在<strong>早期定性文本分析框架</strong>的知识基础之上</li>
+<li><strong>有价值的知识洞察不一定需要先进算法</strong>，也可以源自好奇心、仔细研读和创造性跨概念关联</li>
+</ul>
+<hr>
+<hr>
+<h2 id="dsci6700-第5章文本预处理text-preprocessing" id="5text-preprocessing">第5章：文本预处理（Text Preprocessing）</h2>
+<blockquote>
+<p><strong>来源</strong>：Week 2 章节补充学习内容<br>
+<strong>核心主题</strong>：将原始文本转换为算法可处理的结构化格式</p>
+</blockquote>
+<h3 id="dsci6700-51-文本预处理概述" id="51">5.1 文本预处理概述</h3>
+<h4 id="_19">定义</h4>
+<p>文本预处理（Text Preprocessing）是为机器学习模型或自然语言处理（NLP）任务准备原始文本时的关键步骤。其目标是将文本转换为算法易于理解的<strong>结构化格式</strong>。</p>
+<h4 id="_20">预处理流程全景</h4>
+<pre><code>原始文本 → 分词(Tokenization) → 小写转换 → 停用词移除 → 词干提取/词形还原 → 特殊字符处理 → 数值化处理(TF-IDF/词嵌入)
+</code></pre>
+<h4 id="_21">核心步骤组成</h4>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>英文术语</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分词</td>
+<td>Tokenization</td>
+<td>将连续文本拆分为独立的标记（token）</td>
+</tr>
+<tr>
+<td>词干提取</td>
+<td>Stemming</td>
+<td>通过去除后缀将单词还原为词干形式</td>
+</tr>
+<tr>
+<td>词形还原</td>
+<td>Lemmatization</td>
+<td>运用语言学知识将单词转换为词典基础形式</td>
+</tr>
+<tr>
+<td>停用词移除</td>
+<td>Stop-word Removal</td>
+<td>删除对分析无贡献的高频功能词</td>
+</tr>
+<tr>
+<td>特殊字符处理</td>
+<td>Special Character Handling</td>
+<td>移除或保留标点、符号等非文字字符</td>
+</tr>
+<tr>
+<td>小写转换</td>
+<td>Lower Casing</td>
+<td>统一大小写，避免同一词被识别为不同标记</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6700-52-分词tokenization" id="52-tokenization">5.2 分词（Tokenization）</h3>
+<h4 id="_22">核心定义</h4>
+<p>分词是将文本分割成更小单位（词、短语、符号等）的过程，这些单位称为<strong>标记（Token）</strong>。</p>
+<h4 id="_23">分词的注意事项</h4>
+<ul>
+<li>标点符号需要与单词分开处理，但结果必须<strong>保持意义</strong></li>
+<li>例：IP地址"129.2.13.105"中的句点不能简单删除，否则变成无意义的"129213105"</li>
+<li>分词粒度可以是词级别、子词级别或字符级别</li>
+</ul>
+<h3 id="dsci6700-53-词干提取stemming" id="53-stemming">5.3 词干提取（Stemming）</h3>
+<h4 id="_24">定义</h4>
+<p>词干提取通过去除诸如"ing""ed""ly"之类的后缀，将单词还原为其<strong>词干形式</strong>。它借助启发式方法实现，所得结果<strong>不一定都是有效的单词</strong>。</p>
+<h4 id="_25">示例</h4>
+<pre><code>原始词：[&quot;fishing&quot;, &quot;fished&quot;, &quot;fisher&quot;]
+提取词干后：[&quot;fish&quot;, &quot;fish&quot;, &quot;fisher&quot;]
+</code></pre>
+<blockquote>
+<p>"fishing"和"fished"都被简化为"fish"，而"fisher"保持不变。</p>
+</blockquote>
+<h4 id="_26">三大词干提取器对比</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Porter 词干提取器</th>
+<th>Snowball 词干提取器</th>
+<th>Lancaster 词干提取器</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>别名</strong></td>
+<td>Porter Stemmer</td>
+<td>Porter2 Stemmer</td>
+<td>Lancaster Stemmer</td>
+</tr>
+<tr>
+<td><strong>开发者</strong></td>
+<td>Martin Porter (1980)</td>
+<td>基于Snowball语言开发</td>
+<td>Lancaster大学</td>
+</tr>
+<tr>
+<td><strong>核心原理</strong></td>
+<td>去除英语常见形态和屈折词尾</td>
+<td>基于Porter改进，更先进</td>
+<td>使用外部规则进行迭代运算</td>
+</tr>
+<tr>
+<td><strong>激进程度</strong></td>
+<td>适中</td>
+<td>比Porter更激进</td>
+<td>最激进</td>
+</tr>
+<tr>
+<td><strong>多语言支持</strong></td>
+<td>❌ 仅英语</td>
+<td>✅ 支持多语言</td>
+<td>❌ 主要英语</td>
+</tr>
+<tr>
+<td><strong>速度</strong></td>
+<td>快</td>
+<td>比Porter更快</td>
+<td>较快，但处理短单词可能混淆</td>
+</tr>
+<tr>
+<td><strong>准确率</strong></td>
+<td>速度与准确率的较好平衡</td>
+<td>综合表现最佳</td>
+<td>可能过度提取（over-stemming）</td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td>文本挖掘、信息检索</td>
+<td>多语言文本处理</td>
+<td>对速度要求极高的场景</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🔑 <strong>选择建议</strong>：对于英语文本，<strong>Porter</strong>通常在速度和准确率之间实现了较好的平衡；<strong>Snowball</strong>（Porter2）是更先进、更广泛使用的选择；<strong>Lancaster</strong>最激进，需注意短单词处理问题。</p>
+</blockquote>
+<h4 id="pythonnltk">Python代码示例（NLTK词干提取）</h4>
+<pre><code class="language-python">from nltk.stem import PorterStemmer, SnowballStemmer, LancasterStemmer
+
+# 初始化三种词干提取器
+porter = PorterStemmer()
+snowball = SnowballStemmer(&quot;english&quot;)
+lancaster = LancasterStemmer()
+
+words = [&quot;running&quot;, &quot;ran&quot;, &quot;runner&quot;, &quot;fishing&quot;, &quot;fished&quot;, &quot;better&quot;]
+
+# 对比三种提取器
+for word in words:
+    print(f&quot;{word:12s} → Porter: {porter.stem(word):10s} | &quot;
+          f&quot;Snowball: {snowball.stem(word):10s} | &quot;
+          f&quot;Lancaster: {lancaster.stem(word)}&quot;)
+</code></pre>
+<h3 id="dsci6700-54-词形还原lemmatization" id="54-lemmatization">5.4 词形还原（Lemmatization）</h3>
+<h4 id="_27">定义</h4>
+<p>词形还原与词干提取类似，但它运用<strong>语言学知识</strong>将单词转换为其<strong>基础形式或词典形式（词元，Lemma）</strong>。与词干提取不同的是，词形还原的结果是<strong>真实存在的单词</strong>。</p>
+<h4 id="_28">示例</h4>
+<pre><code>词形还原：[&quot;running&quot;, &quot;ran&quot;, &quot;runner&quot;] → [&quot;run&quot;, &quot;run&quot;, &quot;runner&quot;]
+</code></pre>
+<h4 id="vs">词干提取 vs 词形还原对比</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>词干提取（Stemming）</th>
+<th>词形还原（Lemmatization）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>方法</strong></td>
+<td>启发式规则（去后缀）</td>
+<td>语言学知识（词汇+形态分析）</td>
+</tr>
+<tr>
+<td><strong>结果</strong></td>
+<td>不一定是有效单词</td>
+<td>一定是词典中的有效单词</td>
+</tr>
+<tr>
+<td><strong>速度</strong></td>
+<td>快</td>
+<td>较慢</td>
+</tr>
+<tr>
+<td><strong>典型工具</strong></td>
+<td>NLTK PorterStemmer</td>
+<td>NLTK WordNetLemmatizer</td>
+</tr>
+<tr>
+<td><strong>经典差异</strong></td>
+<td>"better" → "bet"</td>
+<td>"better" → "good"</td>
+</tr>
+</tbody>
+</table>
+<h4 id="pythonnltk_1">Python代码示例（NLTK词形还原）</h4>
+<pre><code class="language-python">from nltk.stem import WordNetLemmatizer
+import nltk
+nltk.download('wordnet')
+
+lemmatizer = WordNetLemmatizer()
+
+# 词形还原需要指定词性（POS tag）
+print(lemmatizer.lemmatize(&quot;running&quot;, pos=&quot;v&quot;))  # → &quot;run&quot;
+print(lemmatizer.lemmatize(&quot;better&quot;, pos=&quot;a&quot;))    # → &quot;good&quot;
+print(lemmatizer.lemmatize(&quot;children&quot;))            # → &quot;child&quot;
+</code></pre>
+<h3 id="dsci6700-55-特殊字符处理" id="55">5.5 特殊字符处理</h3>
+<h4 id="_29">定义</h4>
+<p>特殊字符、标点符号或符号（如 @、#、$、&amp; 等）可能会给文本分析引入<strong>干扰信息（Noise）</strong>。根据具体任务需求，它们通常会被移除或妥善处理。</p>
+<h4 id="_30">示例</h4>
+<pre><code>&quot;Alex Yu is #1 scholar in Hawaii&quot;
+→ 移除#后：[&quot;Alex&quot;, &quot;Yu&quot;, &quot;1&quot;, &quot;in&quot;, &quot;Hawaii&quot;]
+</code></pre>
+<blockquote>
+<p>⚠️ <strong>注意</strong>：在某些情境中，特殊字符可能具有<strong>特定含义</strong>（如社交媒体中的话题标签 #hashtag、@mention），因此是否保留要<strong>依据具体应用场景</strong>来决定。</p>
+</blockquote>
+<h3 id="dsci6700-56-其他预处理步骤" id="56">5.6 其他预处理步骤</h3>
+<h4 id="lower-casing">小写转换（Lower Casing）</h4>
+<p>将所有文本转换为小写形式，确保格式统一，避免把"Biology"和"biology"当作不同的标记（Token）。</p>
+<h4 id="dealing-with-numbers">数字处理（Dealing with Numbers）</h4>
+<p>数字既可以被移除，也可以用特定标记（如 <code>&lt;NUM&gt;</code>）替换。</p>
+<h4 id="handling-contractions">缩写展开（Handling Contractions）</h4>
+<p>缩写形式（如"don't""it's"）通常会被展开为完整形式，以使文本标准化。</p>
+<pre><code>&quot;don't&quot; → &quot;do not&quot;
+&quot;it's&quot;  → &quot;it is&quot;
+</code></pre>
+<hr>
+<h2 id="dsci6700-第6章停用词移除stop-word-removal" id="6stop-word-removal">第6章：停用词移除（Stop-word Removal）</h2>
+<blockquote>
+<p><strong>核心主题</strong>：移除对分析无贡献的高频功能词，保留有信息量的内容词</p>
+</blockquote>
+<h3 id="dsci6700-61-定义与原理" id="61">6.1 定义与原理</h3>
+<h4 id="_31">核心定义</h4>
+<p>停用词（Stop Words）是在文本分析中被过滤掉的常见词，如"a""an""the""is""am""are""however""although""but"等。这些词在语言中频率很高，但对区分文档主题或内容几乎没有贡献。</p>
+<h4 id="_32">移除停用词的意义</h4>
+<ul>
+<li><strong>减少数据维度</strong>：降低特征空间大小</li>
+<li><strong>提升计算效率</strong>：减少不必要的处理量</li>
+<li><strong>提高分析质量</strong>：让模型更关注有信息量的词汇</li>
+</ul>
+<h3 id="dsci6700-62-停用词的争议" id="62">6.2 停用词的争议</h3>
+<blockquote>
+<p>⚠️ <strong>重要提醒</strong>：停用词移除并非总是正确的选择。在某些情况下，停用词可能包含重要信息：<br>
+- "To be or not to be"（"生存还是毁灭"）—— 莎士比亚名句的核心含义恰好在停用词中<br>
+- "但是"可以<strong>完全颠覆</strong>句子的概念："房间很漂亮，<strong>但</strong>颜色不是我喜欢的"<br>
+- BERT等现代模型已经能够利用上下文中的停用词信息进行理解</p>
+</blockquote>
+<hr>
+<h2 id="dsci6700-第7章词频-逆文档频率tf-idf" id="7-tf-idf">第7章：词频-逆文档频率（TF-IDF）</h2>
+<blockquote>
+<p><strong>核心主题</strong>：将文本转化为数值特征的核心统计方法</p>
+</blockquote>
+<h3 id="dsci6700-71-tf-idf定义" id="71-tf-idf">7.1 TF-IDF定义</h3>
+<p>TF-IDF（Term Frequency-Inverse Document Frequency，词频-逆文档频率）是文本挖掘和信息检索中用于评估一个词对文档集合中某篇文档<strong>重要性</strong>的统计度量。</p>
+<ul>
+<li>某词在文档中的重要性与其在该文档中的<strong>出现频率成正比</strong></li>
+<li>同时与该词在整个文档集合中的<strong>出现频率成反比</strong></li>
+</ul>
+<h4 id="_33">核心应用场景</h4>
+<ul>
+<li>关键词提取</li>
+<li>文档相似度计算</li>
+<li>文本分类的特征工程</li>
+<li>搜索引擎排序</li>
+</ul>
+<h3 id="dsci6700-72-公式详解" id="72">7.2 公式详解</h3>
+<h4 id="_34">总公式</h4>
+<pre><code>TF-IDF(t, d) = TF(t, d) × IDF(t, D)
+</code></pre>
+<p>其中：<br>
+- t = 术语（Term），即某个词<br>
+- d = 特定文档（Document）<br>
+- D = 整个文档集合/语料库（Corpus）</p>
+<h4 id="tfterm-frequency">词频 TF（Term Frequency）</h4>
+<p>衡量某词 t 在文档 d 中的出现频率：</p>
+<pre><code>TF(t, d) = 词 t 在文档 d 中的出现次数 / 文档 d 的总词数
+</code></pre>
+<p><strong>计算示例</strong>：</p>
+<blockquote>
+<p>文档内容："I ate an apple, which was a very delicious and satisfying snack for my busy day. What a great luxury."<br>
+- "apple"的出现次数 = 1<br>
+- 文档总词数 = 20<br>
+- TF("apple") = 1/20 = <strong>0.05</strong></p>
+</blockquote>
+<h4 id="idfinverse-document-frequency">逆文档频率 IDF（Inverse Document Frequency）</h4>
+<p>衡量某词 t 在语料库所有文档中的<strong>罕见程度</strong>：</p>
+<pre><code>IDF(t, D) = log(文档集合 D 的总文档数 / 包含词 t 的文档数)
+</code></pre>
+<ul>
+<li>若词出现在所有文档中：分母 = 分子，log(1) = 0，IDF 值为 0</li>
+<li>若词出现在较少文档中：分母更小，IDF 值更高 → 该词更具信息量</li>
+</ul>
+<p><strong>计算示例</strong>：</p>
+<blockquote>
+<p>语料库有 10,000,000 篇文档，"apple"出现在 1,000 篇中<br>
+IDF("apple") = log(10,000,000 / 1,000) = log(10,000) = <strong>4</strong></p>
+</blockquote>
+<h4 id="tf-idf">TF-IDF得分计算</h4>
+<pre><code>TF-IDF(&quot;apple&quot;) = TF × IDF = 0.05 × 4 = 0.2
+</code></pre>
+<h3 id="dsci6700-73-python代码示例tfidfvectorizer" id="73-pythontfidfvectorizer">7.3 Python代码示例（TfidfVectorizer）</h3>
+<pre><code class="language-python">from sklearn.feature_extraction.text import TfidfVectorizer
+
+# 定义语料库（5篇文档）
+documents = [
+    &quot;Text mining is extracting insights from text&quot;,
+    &quot;Data mining discovers patterns from data&quot;,
+    &quot;Natural language processing understands text&quot;,
+    &quot;Machine learning builds predictive models&quot;,
+    &quot;Text classification categorizes documents&quot;
+]
+
+# 创建TF-IDF向量化器（可选移除停用词）
+vectorizer = TfidfVectorizer(stop_words='english')
+
+# 拟合并转换文档 → 生成TF-IDF矩阵
+tfidf_matrix = vectorizer.fit_transform(documents)
+
+# 获取词汇表
+feature_names = vectorizer.get_feature_names_out()
+print(&quot;词汇表:&quot;, feature_names)
+
+# 将稀疏矩阵转为密集矩阵以便查看
+import pandas as pd
+df = pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
+print(df)
+</code></pre>
+<h4 id="_35">代码关键点说明</h4>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TfidfVectorizer</code></td>
+<td>自动完成分词、小写转换、停用词移除和TF-IDF计算</td>
+</tr>
+<tr>
+<td><code>fit_transform</code></td>
+<td>将文档转换为TF-IDF矩阵，行=文档，列=词项</td>
+</tr>
+<tr>
+<td><code>get_feature_names_out()</code></td>
+<td>获取词汇表（提取出的所有单词）</td>
+</tr>
+<tr>
+<td><code>todense()</code></td>
+<td>将稀疏矩阵转为密集矩阵，便于查看</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_36">输出结果解读</h4>
+<ul>
+<li>像"text""mining""extracting"等词具有较高的非零TF-IDF分值</li>
+<li>像"an""but"等常见词的分值为零（被当作停用词处理）</li>
+<li>分值体现了该词在整个文档集合语境中与对应文档的相关程度</li>
+</ul>
+<hr>
+<h2 id="dsci6700-第8章n元语法n-gram" id="8nn-gram">第8章：N元语法（N-gram）</h2>
+<blockquote>
+<p><strong>核心主题</strong>：捕捉词语序列关系的文本表示方法</p>
+</blockquote>
+<h3 id="dsci6700-81-定义" id="81">8.1 定义</h3>
+<p>N-gram 是从文本中提取的<strong>连续 n 个词（或字符）的序列</strong>。它保留了词序信息，弥补了词袋模型（Bag of Words）丢失词序的缺陷。</p>
+<h3 id="dsci6700-82-n-gram类型" id="82-n-gram">8.2 N-gram类型</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>N值</th>
+<th>示例（文本："I love text mining"）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unigram</strong></td>
+<td>1</td>
+<td>["I"], ["love"], ["text"], ["mining"]</td>
+</tr>
+<tr>
+<td><strong>Bigram</strong></td>
+<td>2</td>
+<td>["I love"], ["love text"], ["text mining"]</td>
+</tr>
+<tr>
+<td><strong>Trigram</strong></td>
+<td>3</td>
+<td>["I love text"], ["love text mining"]</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6700-83-应用场景" id="83">8.3 应用场景</h3>
+<ul>
+<li><strong>语言建模</strong>：预测下一个词的出现概率</li>
+<li><strong>拼写检查</strong>：基于N-gram频率判断合理搭配</li>
+<li><strong>信息检索</strong>：短语搜索比单词搜索更精确</li>
+<li><strong>文本分类</strong>：Bigram/Trigram可捕捉更有意义的特征组合</li>
+<li><strong>机器翻译</strong>：评估翻译结果的自然度</li>
+</ul>
+<blockquote>
+<p>💡 <strong>选择建议</strong>：N值越大，捕捉的上下文信息越丰富，但数据稀疏性也越高。实际应用中 <strong>Bigram（N=2）</strong> 和 <strong>Trigram（N=3）</strong> 最为常用。</p>
+</blockquote>
+<hr>
+<h2 id="dsci6700-第9章词嵌入word-embedding" id="9word-embedding">第9章：词嵌入（Word Embedding）</h2>
+<blockquote>
+<p><strong>核心主题</strong>：用密集向量表示词语语义关系的分布式表示方法</p>
+</blockquote>
+<h3 id="dsci6700-91-词嵌入概述" id="91">9.1 词嵌入概述</h3>
+<h4 id="_37">核心定义</h4>
+<p>词嵌入（Word Embedding）是一类将单词映射到<strong>密集、低维度向量</strong>的技术。与TF-IDF的稀疏高维表示不同，词嵌入能够<strong>捕捉语义关系</strong>——语义相似的词在向量空间中距离更近。</p>
+<h4 id="tf-idf_1">与TF-IDF的区别</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>TF-IDF</th>
+<th>词嵌入（Word Embedding）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>表示方式</strong></td>
+<td>稀疏高维向量</td>
+<td>密集低维向量</td>
+</tr>
+<tr>
+<td><strong>语义信息</strong></td>
+<td>仅反映词频统计</td>
+<td>捕捉语义相似性</td>
+</tr>
+<tr>
+<td><strong>维度</strong></td>
+<td>等于词汇表大小</td>
+<td>通常100-300维</td>
+</tr>
+<tr>
+<td><strong>上下文</strong></td>
+<td>不考虑词序和语境</td>
+<td>通过训练捕捉语境关系</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6700-92-word2vec" id="92-word2vec">9.2 Word2Vec</h3>
+<h4 id="_38">核心思想</h4>
+<p>Word2Vec 由 Google 于 2013 年提出，通过浅层神经网络学习词的分布式表示。有两种训练架构：</p>
+<table>
+<thead>
+<tr>
+<th>架构</th>
+<th>原理</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CBOW</strong>（连续词袋）</td>
+<td>根据上下文词预测目标词</td>
+<td>较小数据集、较快训练</td>
+</tr>
+<tr>
+<td><strong>Skip-gram</strong>（跳字模型）</td>
+<td>根据目标词预测上下文词</td>
+<td>较大数据集、稀有词表现更好</td>
+</tr>
+</tbody>
+</table>
+<h4 id="python">Python代码示例</h4>
+<pre><code class="language-python">from gensim.models import Word2Vec
+
+# 预处理：分词、转小写、去停用词和标点
+sentences = [
+    [&quot;artificial&quot;, &quot;intelligence&quot;, &quot;involves&quot;, &quot;machine&quot;, &quot;learning&quot;],
+    [&quot;deep&quot;, &quot;learning&quot;, &quot;is&quot;, &quot;a&quot;, &quot;subset&quot;, &quot;of&quot;, &quot;machine&quot;, &quot;learning&quot;],
+    [&quot;natural&quot;, &quot;language&quot;, &quot;processing&quot;, &quot;understands&quot;, &quot;text&quot;],
+    [&quot;text&quot;, &quot;mining&quot;, &quot;extracts&quot;, &quot;insights&quot;, &quot;from&quot;, &quot;data&quot;],
+    # ... 更多语料
+]
+
+# 训练Word2Vec模型（使用skip-gram）
+model = Word2Vec(sentences, vector_size=100, window=5, min_count=1, sg=1)
+
+# 查询与&quot;artificial&quot;最相似的词
+similar_words = model.wv.most_similar('artificial', topn=10)
+print(&quot;与'artificial'最相似的词:&quot;, similar_words)
+
+# 获取某个词的向量表示
+vector = model.wv['intelligence']
+print(&quot;'intelligence'的向量维度:&quot;, vector.shape)
+</code></pre>
+<h4 id="_39">相似度分值解读</h4>
+<table>
+<thead>
+<tr>
+<th>分值范围</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>接近 <strong>+1</strong></td>
+<td>高度相似，向量在嵌入空间中非常接近</td>
+</tr>
+<tr>
+<td>接近 <strong>0</strong></td>
+<td>不太相似，不常出现在相似语境中</td>
+</tr>
+<tr>
+<td>接近 <strong>-1</strong></td>
+<td>不相似，可能出现在对比或相反的语境中</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dsci6700-93-glove" id="93-glove">9.3 GloVe</h3>
+<h4 id="_40">核心思想</h4>
+<p>GloVe（Global Vectors for Word Representation）由 Stanford 于 2014 年提出，结合了<strong>全局语料统计</strong>和<strong>局部上下文窗口</strong>的优势：<br>
+- 不同于Word2Vec的局部窗口预测<br>
+- 通过构建<strong>共现矩阵</strong>并进行矩阵分解来学习词向量<br>
+- 在大规模语料上表现优异</p>
+<h3 id="dsci6700-94-词嵌入的应用场景" id="94">9.4 词嵌入的应用场景</h3>
+<table>
+<thead>
+<tr>
+<th>应用领域</th>
+<th>具体任务</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>情感分析</strong></td>
+<td>通过词向量捕捉情感极性</td>
+</tr>
+<tr>
+<td><strong>命名实体识别（NER）</strong></td>
+<td>利用语义相似性识别人名、地名等</td>
+</tr>
+<tr>
+<td><strong>机器翻译</strong></td>
+<td>跨语言词向量对齐</td>
+</tr>
+<tr>
+<td><strong>文本分类</strong></td>
+<td>作为深度学习模型的输入特征</td>
+</tr>
+<tr>
+<td><strong>问答系统</strong></td>
+<td>基于语义相似度匹配问题和答案</td>
+</tr>
+<tr>
+<td><strong>信息检索</strong></td>
+<td>语义搜索替代关键词搜索</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🔑 <strong>Word2Vec vs GloVe 选择</strong>：两者都能生成高质量词嵌入。选择通常取决于具体应用场景和数据集特征。Word2Vec更适合在线学习和小规模数据；GloVe在大规模预训练语料上通常表现更好。</p>
+</blockquote>
+<hr>
+<h2 id="dsci6700-全课程知识图谱" id="_41">全课程知识图谱</h2>
+<pre><code>文本挖掘与非结构化数据
+│
+├── 数据基础层
+│   ├── 结构化数据 vs 非结构化数据
+│   ├── 文本/多媒体/IoT/Web数据
+│   └── 非结构化数据的处理流程
+│
+├── 技术方法层
+│   ├── NLP三大支柱：句法/语义/语用
+│   ├── LLM：Transformer + 预训练 + 微调
+│   ├── 文本挖掘：非结构化→结构化
+│   └── 文本预处理技术（Week 2 新增）
+│       ├── 分词（Tokenization）
+│       ├── 词干提取（Stemming）：Porter / Snowball / Lancaster
+│       ├── 词形还原（Lemmatization）
+│       ├── 停用词移除（Stop-word Removal）
+│       ├── 特殊字符处理
+│       ├── TF-IDF 向量化
+│       ├── N-gram 语法模型
+│       └── 词嵌入（Word2Vec / GloVe）
+│
+├── 应用实践层
+│   ├── 公共安全/医疗/金融/法律
+│   ├── 推荐系统/垃圾过滤/舆情监测
+│   └── 网络安全/文献检索
+│
+├── 历史发展层
+│   ├── 技术线：规则→统计→ML→DL→LLM
+│   └── 人文线：定性研究→Swanson→混合方法
+│
+└── 未来方向
+    ├── 可解释性
+    ├── 偏差减少
+    ├── 低能耗
+    └── 跨语言
+</code></pre>
+<h2 id="dsci6700-与其他课程的关联" id="_42">与其他课程的关联</h2>
+<table>
+<thead>
+<tr>
+<th>关联课程</th>
+<th>知识交叉点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DSCI6000</strong> 统计学</td>
+<td>文本数据的统计建模、假设检验</td>
+</tr>
+<tr>
+<td><strong>DSCI6100</strong> Python</td>
+<td>NLTK/spaCy文本处理、Python编程、gensim词嵌入</td>
+</tr>
+<tr>
+<td><strong>DSCI6200</strong> 机器学习</td>
+<td>SVM/LDA/Transformer等ML方法、TF-IDF特征工程、词嵌入输入</td>
+</tr>
+<tr>
+<td><strong>DSCI6300</strong> 数据可视化</td>
+<td>文本可视化（词云、主题图、嵌入空间可视化）</td>
+</tr>
+<tr>
+<td><strong>DSCI6400</strong> AI伦理</td>
+<td>文本挖掘的隐私和偏见问题</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dsci6700-复习要点清单" id="_43">复习要点清单</h2>
+<h3 id="dsci6700-week-1-复习要点" id="week-1">Week 1 复习要点</h3>
+<ul>
+<li>[ ] 解释结构化数据与非结构化数据的核心区别</li>
+<li>[ ] 描述NLP的三大语言学支柱（句法/语义/语用）</li>
+<li>[ ] 说明Transformer架构的核心机制（自注意力）</li>
+<li>[ ] 区分预训练和微调的区别</li>
+<li>[ ] 列举文本挖掘在3个以上行业的应用</li>
+<li>[ ] 梳理文本挖掘从1950年代至今的发展脉络</li>
+<li>[ ] 解释Swanson的"未被发现的公共知识"概念</li>
+</ul>
+<h3 id="dsci6700-week-2-复习要点" id="week-2">Week 2 复习要点</h3>
+<ul>
+<li>[ ] 说明文本预处理的完整流程及各步骤目的</li>
+<li>[ ] 对比Porter、Snowball、Lancaster三种词干提取器的差异</li>
+<li>[ ] 区分词干提取（Stemming）与词形还原（Lemmatization）的本质区别</li>
+<li>[ ] 写出TF-IDF的完整公式并手动计算示例</li>
+<li>[ ] 解释TF-IDF中"逆文档频率"的直觉含义</li>
+<li>[ ] 列举TF-IDF的至少3种应用场景</li>
+<li>[ ] 说明N-gram的定义及其与词袋模型的区别</li>
+<li>[ ] 对比Word2Vec的CBOW和Skip-gram两种架构</li>
+<li>[ ] 比较Word2Vec与GloVe的核心差异</li>
+<li>[ ] 解释词嵌入相似度分值的含义（+1/0/-1）</li>
+<li>[ ] 说明停用词移除的适用场景及其争议</li>
+</ul>
+<hr>
+<blockquote>
+<p>📝 <strong>学习方法建议</strong>：选取一组非结构化数据（如产品评论），尝试用文本挖掘的完整流程处理：分词→去停用词→TF-IDF→主题建模，体验完整工作流。可以使用NLTK和scikit-learn库在Jupyter Notebook中实践。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>本内容由 Coze AI 生成，请遵循相关法律法规及《人工智能生成合成内容标识办法》使用与传播。</p>
+</blockquote>
+            </div>
+        </section>
+        
+
+        <section class="course-section" id="course-dsci6200">
+            <div class="course-header">
+                <span class="course-icon">🤖</span>
+                <div>
+                    <h1 class="course-title">DSCI6200 机器学习</h1>
+                    <p class="course-subtitle">Module 8: 高级统计建模与机器学习</p>
+                </div>
+            </div>
+            <div class="course-content markdown-body">
+                <p>HPU 体系化学习笔记 · 模块8：高级统计建模与机器学习DSCI6200 机器学习与数据科学课程体系化笔记</p>
+<h2 id="dsci6200-week-1-数据科学与传统统计反思" id="week-1">Week 1: 数据科学与传统统计反思</h2>
+<p>个方法论转向：从“只看 p 值和显著性”的传统统计思维，过渡到“根据问题选择工具、根据数据结构验证模型、根据实际效果解释结论”的数据科学思维。课程并不否定传统统计，而是指出传统假设检验在处理效果解释、阈值判断、大样本显著性、参数假设、可重复性和大数据分析方面存在明显边界。整组内容可以分为三条主线：第一条是对 p 值和假设检验的反思；第二条是数据科学、机器学习、AI 与大数据分析的概念建构；第三条是数字化转型背景下，如何同时看到大数据优势和伦理风险。三、总体知识框架传统统计的价值：适合明确假设、小样本推断、参数估计、实验设计和理论检验。传统统计的风险：当研究者把 p 值当作效果大小、证据强度或因果证明时，结论会被过度解释。数据科学的价值：适合复杂数据、预测任务、模式识别、算法迭代、模型比较和数字化业务决策。大数据的价值：扩大观察范围，降低数据获取成本，捕捉行为足迹，支持实时分析和规模化预测。大数据的风险：隐私泄露、算法偏差、伦理争议、伪相关、操纵性传播和“显著性过剩”。四、逐视频智能章节1.1 拥抱现状1. 内容摘要本节用一个“1991 年遭遇事故、2021 年醒来”的假设故事说明：如果一个领域固守旧工具，就会错过三十年技术进步。课程随后把这一隐喻转向统计方法：传统假设检验并非毫无价值，但在数据规模、数据结构和应用目标发生变化后，不能再作为唯一工具。视频还回顾了现代数据科学与机器学习的发展线索，包括神经网络、分类树、C4.5、梯度提升树、随机森林、Elastic Net、Adaptive LASSO、XGBoost 等方法。2. 学习要点传统统计方法的地位来自历史惯性：论文、教材和课程长期围绕假设检验展开。现代数据科学的核心变化不是“不要统计”，而是从单次显著性判断转向建模、预测、解释和迭代。p 值最初的历史故事提醒我们：一个统计工具可以解决某类问题，但不能被泛化成所有研究问题的唯一答案。3. 章节脉络用“医学进步”故事类比“方法论进步”；说明机器学习方法已经形成成熟工具链；指出假设检验普及的制度原因；为后续 11 个缺点做铺垫。4. 可直接记忆的结论接受现状不等于维护现状。学习传统统计时，应同时看到它的适用边界，并准备使用数据科学工具补足它的短板。1.2 缺点1：不直接回答处理效果1. 内容摘要本节聚焦传统假设检验的第一个缺点：显著的 p 值并不能直接说明处理有效。p 值衡量的是“如果原假设为真，观察到当前或更极端数据的概率”，而不是“原假设为真的概率”，也不是“干预措施有效的概率”。视频用阿司匹林预防心肌梗死的大样本研究说明：即便 p&lt;0.0001，实际效应也可能很小，后续建议也可能被调整。2. 学习要点p 值不是 P(H|D)，而更接近 P(D|H0) 的尾部概率。统计显著不等于临床显著、业务显著或实际有效。大样本研究尤其需要报告效应大小、置信区间/可信区间和实际影响。3. 章节脉络先指出研究者常把显著性当作处理有效性；再解释假设检验只在原假设前提下评估数据罕见程度；最后用阿司匹林案例展示“很显著但效应很小”的风险。4. 可直接记忆的结论看到 p&lt;0.05 时，第一反应不应是“有效”，而应继续追问：效应有多大、方向是否稳定、代价是否值得、是否可复现。1.3 缺点2：容易拒绝原假设1. 内容摘要本节讨论第二个缺点：原假设有时太容易被拒绝。视频中的 Daisy Quest 等案例说明，如果对照组设计较弱、样本量足够大，或者使用单侧检验等更容易得到显著的设置，就可能把很小、很偶然、甚至设计偏差造成的差异包装成研究发现。2. 学习要点“容易拒绝原假设”并不等于理论强、干预强或模型强。对照组质量决定比较是否有意义，劣质对照会夸大处理效果。单侧/双侧检验的选择会改变显著性结论，不能事后为了显著而改口径。3. 章节脉络引入 do-nothing control group 的问题；展示看似显著的结果可能只比随机水平略高；强调检验设计与报告透明度。4. 可直接记忆的结论原假设被拒绝只能说明“在该设计下出现了差异证据”，不能自动说明“干预有效且值得推广”。1.4 缺点3-81. 内容摘要本节集中讨论第三到第八类缺点。可识别画面显示的重点包括：Fisher 显著性检验与 Neyman-Pearson 假设检验被混合使用，造成解释口径不清；传统检验依赖参数假设，例如 ANOVA 中的独立性、正态性和方差齐性；许多检验依赖理论分布，而现实数据结构往往复杂、非正态、非独立、异方差。课程由此引出重抽样、交叉验证、bootstrap 等更贴近数据本身的方法。2. 学习要点传统假设检验内部并非单一范式，混合使用会带来解释混乱。参数检验要求数据满足一定结构假设，但现实数据常常不满足。当理论分布假设不稳时，重抽样和数据驱动方法可以提供替代路径。3. 章节脉络先说明范式混合导致“p 值、α、功效、I/II 类错误”经常被混用；再说明参数假设在课程作业和真实研究中都需要检查；最后转向数据科学更强调验证、重采样和预测表现。4. 可直接记忆的结论传统统计的最大问题之一不是公式本身，而是公式背后的假设常被忽略。1.5 缺点9-101. 内容摘要本节聚焦第九和第十个缺点：0.05 阈值具有任意性；显著性阈值也无法代表证据强度、效应大小或预测能力。ASA 建议完整、透明地报告推断结果，不能把 p 值当作“科学结论开关”。视频还提到在数据挖掘/预测建模中，错误率常通过 AUC、ROC 等指标表达，而不是简单套用 I 类/II 类错误框架。2. 学习要点0.049 与 0.051 不应被解释成截然不同的科学结论。p 值不能告诉我们效应有多大、结果有多重要、证据有多强。预测任务更关心分类性能、泛化能力、误差曲线和业务损失。3. 章节脉络指出 0.05 没有魔法；用 ASA 建议说明不能机械二分；对比传统显著性判断与机器学习评价指标。4. 可直接记忆的结论不要把连续证据切成“有/无”两类；更好的报告方式是同时给出效应大小、区间、模型诊断和实际含义。1.6 缺点11：无法胜任大数据分析1. 内容摘要本节讨论第十一个缺点：传统统计很难直接胜任大数据分析。大数据环境下，样本量巨大，极小差异也可能得到极小 p 值。视频用“样本均值不变但标准差随样本量增加而下降”的例子说明，显著性会越来越容易出现。Facebook 情绪感染实验等案例进一步说明，大样本下要特别警惕“统计显著但实际影响极小”。2. 学习要点样本量越大，微小差异越容易显著。大数据分析不能只问 p 值，还要问效应大小、预测收益、业务价值和伦理边界。传统统计为小样本推断设计较多，大数据更需要算法、计算和验证框架。3. 章节脉络先说明数字数据量高速增长；再解释大样本对 p 值的影响；最后用社交媒体实验展示显著性与实际影响的脱节。4. 可直接记忆的结论大数据时代的核心不是“更容易显著”，而是“更容易被显著性误导”。1.7 对 p 值的误解1. 内容摘要本节专门澄清 p 值误解。视频强调，p 值来自长期重复抽样思想，是理论上无限重复时观察到当前或更极端统计量的概率。p=0.000 并不意味着事件不可能发生，很多软件只是把非常小的概率用 0.000 或科学计数法显示。显著性也只代表在模型假设下事件有多罕见，不代表模型有预测价值。2. 学习要点p 值不是“原假设为真的概率”。p=0.000 通常是显示精度问题，不是绝对零概率。显著结果可能来自真实效应，也可能来自模型设定、样本结构或统计假象。3. 章节脉络解释长期重复抽样；说明软件显示格式；用回归预测示意图说明“显著但无预测力”的可能。4. 可直接记忆的结论p 值只能回答很窄的问题，不能替代研究设计、效应解释和模型验证。1.8 补救措施1. 内容摘要本节给出补救思路。视频引用 2019 年 Nature 上“停止仅凭统计显著性判断研究”的倡议，指出课程并不是要求完全抛弃传统统计，而是主张按问题类型选工具：小样本研究可继续使用 p 值、置信区间、效应量和贝叶斯推断；大数据分析则需要 AI、机器学习和数据科学方法。最后用 Sears、Blockbuster、Kodak 等案例提醒学习者：环境变化时，技能也必须更新。2. 学习要点不要用单一 p 值决定研究成败。传统统计和数据科学不是二选一，而是服务于不同问题。技能更新是适应数字化转型的必要条件。3. 章节脉络先指出学界对“显著性崇拜”的反思；再提出不同工具箱共存；最后用商业案例强调变革压力。4. 可直接记忆的结论真正的补救不是换一个数字，而是建立多证据、多方法、多场景的分析思维。1.9 什么是数据科学与人工智能1. 内容摘要本节界定数据科学与人工智能的关系。视频指出，机器学习算法在近二十年更成熟，能更高效、更快处理数据；数据科学是一个伞状概念，融合统计/数据分析、计算机科学和领域知识。数据挖掘是从数据中提取模式的应用，商业智能更强调业务场景，机器学习是 AI 的核心方法之一。AI 与数据科学最初路径不同，但正在形成统一技术力量。2. 学习要点数据科学不是单一技术，而是跨统计、计算和业务理解的综合实践。AI 更强调智能系统，数据科学更强调从数据中发现规律、支持决策。AI 模型需要大量数据训练，数据科学为其提供数据处理、特征构造和评价框架。3. 章节脉络先比较算法发展与计算效率；再给出数据科学、数据挖掘、大数据分析、BI、ML、AI 的概念边界；最后说明大数据如何提升 AI 模型准确性与模式识别能力。4. 可直接记忆的结论数据科学是理解和使用 AI 的基础语言；只懂模型而不懂数据，无法形成可靠的智能分析。1.10 跨学科知识的作用1. 内容摘要本节强调跨学科知识的作用。领域知识帮助分析者判断变量是否有意义，例如年龄可以连续计量，但在某些问题中分组更有用；身高和体重可进一步组合成 BMI。计算机科学与 AI 提供迭代建模能力，数据库和数据仓库设计解决大规模数据存储与访问效率问题，数据挖掘负责从结构化或半结构化数据中提取模式。2. 学习要点领域知识决定问题如何被正确表达。计算机科学让建模从一次性公式推导转向迭代优化。数据库、Hadoop、MapReduce、内存分析等基础设施决定大数据是否可被有效分析。3. 章节脉络从变量含义与特征工程讲领域知识；从算法迭代讲计算机科学与 AI；从数据规模讲数据库/数据仓库；从模式提取讲数据挖掘。4. 可直接记忆的结论数据科学不是“会跑模型”即可，真正的能力来自问题理解、数据组织、算法建模和结果解释的结合。1.11 什么是大数据分析1. 内容摘要本节介绍大数据分析。视频强调机器学习需要大量数据，算法通过反复暴露于数据获得学习机会。大数据分析需要处理多样数据：结构化、半结构化、准结构化和非结构化数据。课程采用 4V 框架理解大数据特征，并通过商业运营、量化自我、物联网、政治传播等案例展示大数据应用。Cambridge Analytica 案例提醒我们，大数据既能提升影响力，也可能带来操纵和伦理风险。2. 学习要点大数据不只是数据量大，还包括类型多、变化快、价值密度低且真实性需要辨别。机器学习与大数据相互促进：数据越多，模型越可能学习复杂模式。政治、商业和健康场景都可以利用大数据，但必须关注隐私与伦理。3. 章节脉络先说明 ML 与大数据的关系；再拆分数据类型和 4V；最后用商业与政治案例说明影响。4. 可直接记忆的结论大数据分析的关键不是“拥有数据”，而是能在多源、复杂、动态的数据中提取可靠价值。1.12 破除对数据科学的误解及目标1. 内容摘要本节破除数据科学的三个常见误解。第一，数据挖掘不是“按按钮自动出结论”，它是探索性数据分析的延伸，仍然需要人的判断。第二，数据科学不一定需要大数据，更重要的是正确数据；大数据本身不能回答因果问题。第三，大语言模型和提示工程普及后，数据分析看似容易，但如果缺乏问题解决能力，反而会得出错误结论。2. 学习要点自动化工具不能替代研究判断。正确数据比更大数据更重要。数据分析与因果推断不同，相关性模型不能直接推出因果结论。会提问不等于会分析，好的问题来自领域知识和方法论训练。3. 章节脉络先批判按钮式自动化想象；再区分数据量与数据质量；最后联系 LLM 时代的提示工程风险。4. 可直接记忆的结论数据科学的目标不是让人停止思考，而是让人更系统地提出问题、组织证据并验证结论。1.13 数据科学在数字化转型中的作用1. 内容摘要本节说明数据科学在数字化转型中的作用。可识别内容显示，数据科学/数据挖掘可用图形和统计量回答“模式是什么”“效应大小是多少”“预测能力如何”等问题；它也可以通过重抽样、交叉验证、bootstrap、非参数方法等提高结果稳定性，减少对传统参数假设的依赖。视频还对预测建模中的 AUC、ROC 等指标进行提示，说明数字化转型更关注模型在实际任务中的识别能力。2. 学习要点数字化转型需要从确认性统计走向数据驱动发现。重抽样和交叉验证可以缓解单次样本结论不稳定的问题。非参数方法减少对正态性、齐性等强假设的依赖。预测任务应关注 AUC、ROC、误差率、泛化能力等指标。3. 章节脉络从传统论文需要统计证据讲起；指出 P(D|H) 容易形成确认偏差；引入数据科学方法作为解决可重复性和预测评价的路径。4. 可直接记忆的结论数字化转型的本质不是把线下数据搬到线上，而是让决策从经验和单次检验转向持续、可验证的数据闭环。1.14 大数据的优势1. 内容摘要本节总结大数据优势。视频指出，大数据可以节省时间、精力和成本，因为许多数据已经在线可得；它能为二次数据分析提供基础，便于与原始研究互相验证；更大的样本来源也能缓解 WEIRD 样本偏差。课程还讨论了人类记忆的局限、民调失准、社交媒体预测人格等案例，说明行为数据可以揭示传统问卷或小样本难以捕捉的模式。2. 学习要点大数据降低了数据获取和重复研究成本。二次分析可以补充或检验原始研究。更广泛的数据来源有助于突破西方、受教育、工业化、富裕、民主群体样本偏差。数字行为足迹能够捕捉自报数据难以揭示的偏好和行为。3. 章节脉络先讲效率优势；再讲样本代表性和二次分析；最后用政治民调和 Facebook 人格预测说明行为数据价值。4. 可直接记忆的结论大数据的优势不是“天然正确”，而是提供了更广、更细、更连续的观察窗口。1.15 潜在陷阱、差异与共同点1. 内容摘要本节总结大数据与数据科学的潜在陷阱、差异与共同点。视频从 Facebook 与 Cambridge Analytica 案例引出伦理问题：数据共享必须考虑用户知情、授权和隐私。随后介绍非结构化行为数据，如网页、社交媒体、平台足迹等，并比较传统小数据方法与新数据科学方法：前者从预设理论和假设出发收集结构化数据，后者更常由数据驱动、探索大量潜在预测变量，并处理结构化、半结构化和非结构化数据。2. 学习要点数据越多，伦理责任越重。非结构化行为数据是数字社会的重要资产，但处理难度更高。传统方法偏确认性，数据科学偏探索性和预测性。小数据强调样本设计和理论检验，大数据强调行为数据、规模、实时性和复杂结构。3. 章节脉络先用隐私事件提出伦理边界；再介绍社交媒体和数字足迹；最后系统比较经典方法与新方法、小数据与大数据。4. 可直接记忆的结论数据科学不是传统统计的简单替代，而是在问题目标、数据结构、方法评价和伦理责任上都更复杂的扩展。五、重点概念表六、关键结论不要把 p 值理解为“假设为真的概率”，也不要把 p&lt;0.05 直接写成“处理有效”。显著性不是重要性。尤其在大样本中，极小差异也可能显著，因此必须同时报告效应大小和实际意义。传统统计和数据科学不是替代关系，而是工具箱关系：小样本推断、实验设计、预测建模和大数据分析应使用不同工具。数据科学的核心能力不是按按钮，而是提出正确问题、获得合适数据、建立可验证模型并解释结果。大数据带来更强的观察和预测能力，也带来更高的隐私、伦理和偏差治理要求。七、金句/记忆点八、复习提纲复习时可以按照以下顺序串联：先复习 p 值：它是什么、不是是什么、为何会被误解。再复习传统假设检验的缺点：处理效果、原假设、阈值、参数假设、大样本显著性。接着复习补救方法：效应量、区间、透明报告、贝叶斯、机器学习、重抽样、交叉验证。然后复习数据科学概念体系：DS、DM、BDA、ML、AI、BI。最后复习大数据优势与陷阱：4V、行为数据、数字化转型、伦理风险。</p>
+<h2 id="dsci6200-week-2-ols-回归信息准则与正则化模型选择" id="week-2-ols">Week 2: OLS 回归、信息准则与正则化模型选择</h2>
+<p>选模型，最后在糖尿病数据中完成从数据导入、模型选择、验证集评估到结果解释的完整流程。特别说明：2.1-1 文件名标注为“普通最小二乘回归的缺点”，但可识别画面主要是“数据科学潜在陷阱、非结构化数据、三角互证与交叉验证”等内容。本文档保留原文件名，并按实际画面内容整理为第 2 章方法学习的衔接章节。三、核心总结四、分视频智能纪要2.1-1 普通最小二乘回归的缺点1. 核心总结Google Flu Trends 案例说明，大数据预测模型即使看似先进，也可能因为行为模式变化、搜索词漂移或模型过拟合而高估真实趋势。Cambridge Analytica 与 Facebook 相关内容强调：行为数据虽有预测价值，但采集、共享和使用必须处理知情同意、隐私保护和伦理边界。非结构化行为数据来自网页、社交媒体、搜索与数字足迹，数量庞大且增长快，但需要数据挖掘、文本分析或网络爬取等方法才能转化为可用变量。课程将传统统计中的二分判断与新方法中的模式识别进行对比：数据科学更关注从复杂模式中学习，而不是只根据固定阈值做显著/不显著判断。单一方法容易受模型假设限制，三角互证和交叉验证有助于减少过拟合、检验泛化能力，并为后续惩罚回归铺垫。2. 智能章节拆解3. 关键词与概念4. 关键要点大数据和数据科学模型也会失败，不能因为数据量大就默认结论更可靠。行为数据具有强预测潜力，但必须同时考虑隐私、伦理和可解释性。后续学习 OLS、正则化和信息准则时，要始终把“模型是否能泛化”放在核心位置。5. 学习提醒复习时建议围绕“OLS 能做什么、不能做什么、为什么需要验证和模型选择”来理解，而不是简单把 OLS 贴上“传统统计”或“机器学习”的单一标签。2.1-2 普通最小二乘法（OLS）回归真的是一种数据科学与机器学习算法吗1. 核心总结OLS 回归通过最小化残差平方和估计线性关系，是统计建模和机器学习中都常见的基础方法。传统 OLS 的局限在于强参数假设：线性、同方差、误差独立、残差正态、无严重多重共线性等，这些假设在真实数据中经常难以完全满足。逐步回归看似可以自动选变量，但容易受到样本偶然性影响，产生过拟合、变量选择不稳定和 p 值解释偏差。现代机器学习更强调训练/验证/测试拆分、交叉验证、模型迭代和预测性能，而不是只追求单次样本上的解释显著。OLS 可以作为机器学习中的线性回归算法或基准模型，但如果没有持续验证、正则化和模型比较，它更接近传统统计建模。2. 智能章节拆解3. 关键词与概念4. 关键要点OLS 是非常重要的基线模型，但不是所有 OLS 应用都能自动称为机器学习。判断是否具有数据科学/机器学习特征，要看是否关注预测、验证、泛化和迭代，而不仅是是否使用了算法。逐步回归不能替代真正的模型选择流程，后续需要引入正则化、信息准则和交叉验证。5. 学习提醒复习时建议围绕“OLS 能做什么、不能做什么、为什么需要验证和模型选择”来理解，而不是简单把 OLS 贴上“传统统计”或“机器学习”的单一标签。2.2 正则化和惩罚的不同方法1. 核心总结惩罚回归与 OLS 的主要区别是：除了拟合误差，还要惩罚模型复杂度，使模型不再一味追求训练样本上的最小残差。LASSO 使用 L1 惩罚，能够把部分回归系数压缩为 0，因此兼具变量选择功能。Ridge 使用 L2 惩罚，可以收缩系数并缓解多重共线性，但通常不会直接把变量系数压成 0。Double LASSO、Group LASSO、Adaptive Elastic Net 等方法适用于更复杂的变量结构、分组变量和高维场景。不同软件模块对正则化方法支持不同，实际使用时要根据数据结构、研究目的和软件能力选择模型。2. 智能章节拆解3. 关键词与概念4. 关键要点正则化的目标不是让训练集拟合得更漂亮，而是让模型在新数据上更稳。LASSO 适合变量选择，Ridge 适合处理共线性，Elastic Net 常用于兼顾两者。惩罚强度越大，模型越简单，但也可能欠拟合；惩罚强度过小，则可能仍然过拟合。5. 学习提醒重点区分 L1 与 L2 惩罚：LASSO 更像“筛变量”，Ridge 更像“压缩变量影响”，Elastic Net 则用于二者兼顾的场景。2.3.1 赤池信息准则或贝叶斯信息准则1. 核心总结AIC 用于模型比较而非固定 cut-off，通常选择 AIC 较小的模型。AIC 的基本思想是：在模型拟合能力相近时，参数更少、结构更简单的模型更可取。AICc 是对 AIC 的小样本修正，对额外参数施加更强惩罚；当样本量较小或参数数量较多时更适合使用。BIC 的惩罚通常比 AIC 更重，尤其会把样本量纳入惩罚逻辑，因此更倾向选择更简单模型。课程强调 AIC/BIC 都不是唯一真理，不能把信息准则当成机械答案，而应结合研究目的、预测表现和理论解释。2. 智能章节拆解3. 关键词与概念4. 关键要点信息准则的核心是“模型不能只看拟合好不好，还要看是否过于复杂”。AIC 更偏预测效率，BIC 更偏简约和大样本下选真模型的倾向。模型选择不应只看一个数值，最好结合交叉验证、理论意义和解释成本。5. 学习提醒信息准则只是在候选模型之间做相对比较，不能证明某个模型就是真实模型；如果候选模型集合本身很差，最低准则值也只是相对最优。2.3.2 基于信息准则的模型选择1. 核心总结单一模型适配会导致孤立判断；综合候选模型比较可以更完整地理解数据和模型之间的关系。AIC/AICc 与信息损失、KL divergence 有关，关注候选模型与数据生成机制之间的信息距离。模型选择的常见原则是选择拟合足够好且参数较少的模型，而不是选择训练误差最低但复杂度过高的模型。BIC 随样本量增大对复杂模型惩罚更重，大样本下更倾向于选择简单、稳定的模型。“bad lot problem”提醒：如果候选模型整体都不好，那么从中选出的最佳模型也未必接近真实机制。2. 智能章节拆解3. 关键词与概念4. 关键要点模型选择是候选模型之间的相对比较，不是证明某个模型绝对正确。信息准则可以帮助控制过拟合，但不能替代候选模型构建和理论判断。当所有候选模型都很差时，最低 AIC/BIC 也只能选出“相对不差”的模型。5. 学习提醒信息准则只是在候选模型之间做相对比较，不能证明某个模型就是真实模型；如果候选模型集合本身很差，最低准则值也只是相对最优。2.4 糖尿病数据1. 核心总结课程通过 SAS Studio 导入 pima/diabetes 相关数据，并设置响应变量与自变量。程序中使用 PROC GLMSELECT，对糖尿病分类/预测任务进行模型选择，并指定 validation、lasso/elasticnet 和 choose=AICC 等参数。验证集用于评估模型在非训练样本上的表现，避免只在训练集上看拟合效果。GLMSELECT 的结果表展示逐步进入模型的变量、AIC/AICc、SBC/BIC、ASE 等指标，帮助比较不同变量组合。该节重点不是记住软件界面，而是掌握“导入数据—划分验证—选择模型—查看准则—解释结果”的流程。2. 智能章节拆解3. 关键词与概念4. 关键要点真实建模流程必须包含数据准备和验证集设置，不能只关注最终模型表。AICc、BIC、Validation ASE 等指标提供了不同维度的模型比较依据。软件输出需要结合业务/医学解释，不应机械接受自动选出的变量。5. 学习提醒软件操作复习时，建议按“数据导入—变量角色—数据拆分—模型选择方法—评估指标—结果解释”的顺序记忆。2.5 正则化回归1. 核心总结视频展示包含 Y、X、Binary 等变量的数据文件，并在软件中选择 Regularized Linear Regression。建模流程涉及响应变量、协变量、分类变量和数据拆分设置，体现了机器学习式建模流程。输出中可见训练集、验证集、测试集样本量，以及 R²、RMSE、MAE 等模型评估指标。回归系数结果中部分变量被保留，部分变量系数接近 0 或被剔除，体现正则化的变量收缩/选择功能。预测值与观测值散点图用于检查模型预测效果；若高值区域偏离明显，说明模型在极端样本上的表现可能不足。2. 智能章节拆解3. 关键词与概念4. 关键要点正则化回归的解释应同时看变量系数和预测表现。训练集表现好不代表模型泛化好，验证集和测试集结果更关键。预测图能直观看出模型在哪些区间表现较差，尤其要关注极端值和系统性偏差。5. 学习提醒软件操作复习时，建议按“数据导入—变量角色—数据拆分—模型选择方法—评估指标—结果解释”的顺序记忆。2.6 惩罚回归的优缺点1. 核心总结SAS 与 JASP 中广义回归建模较成熟，Python 也可通过 sklearn 等包实现 LASSO、Ridge、Elastic Net、LassoCV 等方法。广义回归可处理分类和连续变量，在很多场景中可替代 OLS 和 Logistic 回归。优点包括缓解多重共线性、降低过拟合风险，并在一批候选路径中寻找较优模型。局限在于它仍然是全局模型，仍假设某种线性或广义线性结构；若真实关系高度非线性，线性惩罚模型仍可能不足。建议部分强调：常规线性任务可使用 generalized regression；预测变量很多时可用 double lasso；非线性强时考虑人工神经网络。2. 智能章节拆解3. 关键词与概念4. 关键要点惩罚回归不是 OLS 的简单替代品，而是更关注泛化能力和变量控制的建模策略。正则化模型仍有线性/全局模型限制，不能处理所有复杂关系。模型选择应从数据结构、预测目的、解释需求和软件实现能力共同出发。5. 学习提醒正则化模型适合常规高维/共线性/过拟合问题，但它仍有线性或广义线性框架的限制；遇到明显非线性关系，需要考虑非线性模型。五、跨视频知识框架六、复习提纲□ OLS 回归为什么是重要基线模型？它的主要参数假设有哪些？□ 为什么逐步回归不能完全替代现代模型选择流程？□ LASSO 与 Ridge 的惩罚项有什么差异？为什么 LASSO 可以把部分系数压缩为 0？□ Elastic Net 为什么常被视为 LASSO 与 Ridge 的折中方案？□ AIC、AICc、BIC 都在惩罚什么？三者使用场景有什么差异？□ 为什么信息准则只能用于候选模型之间的相对比较？什么是 bad lot problem？□ 糖尿病数据演示中，训练集、验证集、测试集分别解决什么问题？□ 正则化回归的优点和局限分别是什么？遇到明显非线性关系时应如何调整思路？七、最终学习结论这组视频的核心是从传统 OLS 回归过渡到数据科学语境下的模型选择。OLS 是理解线性关系的基础，但在复杂数据、共线性、高维变量和预测任务中，单纯依赖 OLS 或逐步回归容易出现过拟合、假设不满足和泛化不足。正则化通过惩罚项压缩或筛选变量，AIC/AICc/BIC 通过复杂度惩罚比较候选模型，训练/验证/测试拆分则帮助判断模型能否用于新数据。真正的学习重点不是记住某个软件按钮，而是理解：模型选择是一套围绕“拟合、简约、泛化、解释和应用场景”的综合判断流程。</p>
+<h2 id="dsci6200-week-3-支持向量机与决策树模型" id="week-3">Week 3: 支持向量机与决策树模型</h2>
+<p>hon 和 JASP 完成 SVM 实操；最后转向决策树，学习递归分割、分裂准则、ROC/AUC 评价，并在 Titanic、PISA 和 IBM Modeler 场景中完成案例化理解。三、核心总结四、方法与概念对照表五、分视频智能纪要3.1 缺点1. 核心总结课件首先提出“Shortcomings of Traditional Regression and Naïve Bayes”，强调传统回归和朴素贝叶斯并非在所有数据科学任务中都适用。T 检验和 OLS 回归适合小样本或线性关系清晰的分析，但当样本量极大时，极小差异也可能被判定为显著，导致“统计显著”不等于“实际有意义”。示例研究问题中样本量达到 3 million，提示传统显著性检验在超大样本下容易出现 p 值过度敏感的问题。朴素贝叶斯的关键假设是所有特征条件独立，这在文本分类、垃圾邮件识别等任务中有一定实用性，但在变量强相关场景中会过于简化。本节为后续 SVM 和决策树铺垫：当数据关系不是简单线性、特征之间并不独立时，需要更适合分类边界和非线性结构的算法。2. 智能章节拆解3. 关键词与概念4. 关键要点样本量越大，p 值越容易显著，因此不能只用显著性判断模型是否有价值。朴素贝叶斯的“朴素”来自特征独立假设，优点是简单高效，缺点是可能忽略变量相关结构。当任务重点是分类边界、非线性关系和变量交互时，需要转向 SVM、决策树等机器学习方法。5. 学习提醒复习时把“传统回归适合解释线性平均关系”与“分类算法适合寻找决策边界”区分开，不要把所有预测问题都默认套进 OLS。3.2 对比不同方法1. 核心总结SVM 最早由 Vladimir Vapnik 与 Alexey Chervonenkis 提出，后由 Vapnik 等人在 1990s 推广成为重要分类方法。SVM 可用于回归与分类，但本课程重点放在 classification，尤其是二分类边界问题。当类别之间不是简单直线可分时，非线性分隔曲线会变复杂，SVM 通过核函数在高维空间中寻找更合适的分离边界。线性核最简单、没有额外复杂参数，适合线性可分或近似线性可分的任务。多项式核、RBF 核与 Sigmoid 核可以处理不同类型的非线性结构，但复杂核也会带来调参和过拟合风险。2. 智能章节拆解3. 关键词与概念4. 关键要点SVM 的核心不是直接拟合平均趋势，而是寻找能区分类别的边界。核函数让 SVM 能处理非线性分类，但核越复杂越需要谨慎调参。选择核函数时应结合数据形态、模型解释需求和验证集表现，而不是默认使用最复杂的核。5. 学习提醒重点记住“边界”和“核函数”两个词：SVM 解决的是类别怎么分开，kernel trick 解决的是非线性怎么变得可计算。3.3 Python中的支持向量机1. 核心总结课程先展示 Anaconda Navigator 和 Jupyter Notebook 环境，说明 Python 建模通常通过 notebook 组织代码、数据读取和结果输出。数据读取部分区分了 Mac 与 Windows 路径写法，使用 pandas 的 read_excel 读取 Excel 数据。代码导入 pandas、train_test_split、svm、SelectFromModel，以及 accuracy_score、recall_score、precision_score 等评估函数。train_test_split 用于将数据拆分为训练集与测试集，示例中可见 test_size=0.3，random_state 用于保证结果可复现。模型评估不仅看 accuracy，还要看 recall 和 precision，因为分类任务中漏判与误判的业务代价可能不同。2. 智能章节拆解3. 关键词与概念4. 关键要点Python 做 SVM 的基本流程是：读数据、拆分数据、训练模型、预测测试集、输出评估指标。random_state 的作用是固定随机拆分，便于复现结果。分类模型不能只看准确率，类别不平衡时召回率和精确率更关键。5. 学习提醒复现代码时优先检查三件事：文件路径是否正确、X/Y 是否设置正确、训练/测试拆分比例是否符合任务要求。3.4 JASP中的支持向量机1. 核心总结视频从“SVM in JASP”界面进入，说明 JASP 可以通过菜单完成支持向量机分类，不一定需要手写 Python 代码。建模时需要选择目标变量与预测变量，并设置训练/验证或相关模型参数。输出界面展示模型性能指标和分类结果，可用于快速判断 SVM 的整体表现。决策边界矩阵图展示不同变量组合下的分类区域，绿色与粉色背景代表模型在特征空间中划出的类别区域。图中 BMI、BP 等变量散点与边界区域的重叠情况，帮助判断类别是否容易被变量组合区分。2. 智能章节拆解3. 关键词与概念4. 关键要点JASP 适合快速完成 SVM 的界面化建模和可视化检查。决策边界图能直观显示模型如何划分类别，但也要结合指标表判断效果。当不同类别大量重叠时，即使模型能画出边界，分类效果也可能有限。5. 学习提醒看 JASP 输出时，不要只看“模型跑出来了”，要同时看性能指标、混淆矩阵和边界图是否相互支持。3.5 决策树1. 核心总结决策树由 Breiman 等人在 1984 年发展，也被称为 classification tree 和 recursive partition tree。其目标是寻找哪些自变量能够对因变量进行有效、连续的分割，从而形成从根节点到叶节点的决策路径。心脏病案例说明，当医生需要快速判断患者风险时，决策树可以把血压、心率、病史等复杂信息转化为可执行规则。Nested-if logic 是决策树的直观表达：如果血压超过阈值，再判断年龄、心率等条件，最终给出风险分类。决策树的优势在于解释直观、规则清晰，但单棵树也可能不稳定，容易受样本变化影响。2. 智能章节拆解3. 关键词与概念4. 关键要点决策树本质上是一组分层 if-then 规则。它适合需要解释路径的分类任务，尤其适合向非技术人员说明“为什么这样判断”。单棵决策树容易过拟合或不稳定，后续通常需要剪枝、验证或集成方法辅助。5. 学习提醒理解决策树时不要先背公式，先想清楚“每一步用哪个变量、在哪个阈值分裂、分裂后类别是否更纯”。3.6 泰坦尼克号1. 核心总结Titanic 案例以 Survived 为因变量，候选自变量包括 Sex、Age、Passenger Class 及交互项。先用 Logistic Regression 建模时，结果表比较复杂，多个主效应和交互项不容易直接解释。决策树通过可视化节点展示分裂路径，让人更容易看出最关键的分类条件，例如 Sex、Passenger Class、Age 等。Leaf report 中提到从反向红三角选择叶报告，可根据叶节点中乘客特征组合查看预测存活概率。示例中女性且一等舱的存活概率较高，男性且三等舱的存活概率较低，体现了决策树对交互关系的直观呈现。2. 智能章节拆解3. 关键词与概念4. 关键要点逻辑回归适合参数解释，但交互项多时结果会变得不直观。决策树能把交互关系转化为分裂路径，更适合教学、沟通和规则解释。读取叶节点时要关注样本量、预测概率和该节点对应的人群条件。5. 学习提醒Titanic 案例的重点不是记住具体概率，而是理解决策树如何把“性别×舱位×年龄”的交互转化为可读路径。3.7 分裂准则1. 核心总结课件先区分两类分裂准则：一类基于统计检验，如 JMP 中的 LogWorth 和 G²、SPSS 中的 CHAID；另一类基于 impurity，如 CART 默认的 Gini 和 SAS HPSPLIT 默认的 Entropy。LogWorth 用于检查每个自变量是否能显著分裂样本，变量连续时会检查潜在切点，变量分类时会比较不同类别水平。LogWorth 与 p 值相关，定义为 -log10(p)，数值越大表示分裂越有统计证据；分类变量还可能报告 G²。Gini 关注节点纯度，混合越少越纯；算法会遍历变量和切点，寻找能让子节点更纯的分裂方式。ROC 曲线和 AUC 用于评价分类模型，AUC 越接近 1 越好，0.5 附近说明模型接近随机猜测。2. 智能章节拆解3. 关键词与概念4. 关键要点不同软件和算法使用的分裂准则不同，不能只看树形图而忽略背后的分裂逻辑。LogWorth 更接近统计检验视角，Gini/Entropy 更接近分类纯度视角。AUC 是判断分类模型区分能力的重要指标，但不能简单套用 p&lt;0.05 的显著性思维。5. 学习提醒复习时把“如何分裂”和“如何评价”分开：Gini/Entropy/LogWorth 是分裂准则，ROC/AUC 是模型表现评价。3.8 PISA例子1. 核心总结PISA 是 Programme for International Student Assessment，用于跨国家/地区评估学生能力表现。视频从 OECD/PISA 页面和数据文件进入，说明真实公共数据集可以作为数据科学建模案例。在软件中打开数据表后，可见国家、学生背景、学校/家庭信息和成绩相关变量，为决策树提供候选预测因素。模型输出包含散点/分布图和决策树结构，用于观察不同变量如何把样本划分到不同表现群体。PISA 案例强调，决策树不仅可以用于商业或医学分类，也可以用于教育评估和社会科学研究。2. 智能章节拆解3. 关键词与概念4. 关键要点PISA 数据体现了数据科学在教育和公共政策中的应用价值。真实公共数据建模时，变量多且来源复杂，必须先理解变量含义，再进行模型解释。决策树可以帮助识别影响学生表现的关键分裂变量，但结论应避免简单因果化。5. 学习提醒PISA 案例要特别注意“预测/分类”与“因果解释”的区别，树模型找到重要分裂变量，并不等于证明该变量造成了结果差异。3.9 IBM 建模器中的决策树1. 核心总结视频展示 IBM Modeler 工作区和节点式建模界面，强调其建模方式是通过拖拽节点并连接数据流完成。Type 节点用于设置字段类型、测量水平和变量角色，是后续建模前非常关键的数据定义步骤。数据源节点读取数据后，需要通过 Type 节点检查字段是否为输入、目标、名义/连续等类型。建模节点可以生成决策树结果，输出节点可查看模型摘要、分裂变量、叶节点和预测表现。IBM Modeler 的优势是流程可视化，适合教学和业务建模；不足是需要正确设置每个节点，否则模型可能运行但含义错误。2. 智能章节拆解3. 关键词与概念4. 关键要点IBM Modeler 的核心是“节点流”：数据从源节点流向类型设置、建模节点和输出节点。Type 节点设置错误会直接影响模型含义，建模前必须核对目标变量和输入变量。可视化建模降低了代码门槛，但并不降低对变量理解和模型解释的要求。5. 学习提醒做 IBM Modeler 作业时，优先检查数据源、Type 节点、目标变量、输入变量和模型节点是否连接正确，再看模型输出。六、跨视频复习框架七、考试/作业可直接使用的表达八、学习结论本组视频的核心不是让学习者机械区分“哪个模型更高级”，而是建立模型选择意识：传统回归适合解释线性关系，朴素贝叶斯适合简单高效的概率分类，SVM 适合关注复杂分类边界，决策树适合解释规则和交互路径。实际建模时，应结合数据结构、研究目标、软件工具、评价指标和可解释性要求共同选择方法。</p>
+<h2 id="dsci6200-week-4-重采样自助法与集成模型" id="week-4">Week 4: 重采样、自助法与集成模型</h2>
+<p>是形成适合个人学习复习的结构化笔记。由于视频可能存在语音识别不可用、画面切换较快、部分软件输出细节较小、课堂口头补充无法完整转写等情况，文档不作为逐字稿，也不替代原始课程视频。涉及操作步骤、统计指标和模型解释时，建议结合原视频与课堂材料复核。三、视频清单与主线总览本组视频的主线可以概括为：先从重采样的基本思想出发，连接中心极限定理与抽样分布；再学习交叉验证、刀切法、精确检验和自助法；随后进入偏差-方差权衡，理解为什么模型需要验证和稳定性评估；最后学习装袋法、提升算法、自助法森林、IBM Modeler 自动模型比较，并综合比较 LASSO、决策树与集成方法。四、核心总结五、方法与概念对照表六、分视频智能纪要4.1 什么是重采样1. 核心总结重采样不是重新收集真实世界数据，而是在现有数据集中通过重复抽样构造多个“近似样本”或训练/验证分割。重采样的核心价值是让我们观察统计量或模型结果在不同样本扰动下是否稳定。它弥补了单次样本分析的不足，尤其适用于样本量有限、理论分布难以直接推导或模型误差需要估计的场景。常见形式包括交叉验证、刀切法、自助法，以及后续集成学习中的装袋法等。本节为后续 CLT、抽样分布、精确检验、自助法和集成模型建立共同背景。2. 智能章节拆解3. 关键词与概念4. 关键要点重采样的思想是“用已有数据模拟多次抽样”。它关注的是结果稳定性和泛化误差，而不是只给出一次模型结果。交叉验证、自助法和装袋法都可看作重采样思想的不同应用。5. 学习提醒复习时先抓住一句话：重采样就是对同一批数据反复抽取或划分，用重复结果判断模型或统计量是否可靠。4.2 中心极限定理与抽样分布1. 核心总结中心极限定理说明，在满足一定条件时，即使原始总体分布不是正态，样本均值的抽样分布也会随着样本量增大而趋近正态。抽样分布不是原始数据分布，而是某个统计量在重复抽样下形成的分布。理解抽样分布可以帮助解释标准误、置信区间和假设检验的来源。视频以“Central Limit Theorem &amp; Sampling Distributions”为主题，将理论统计与后续重采样方法连接起来。重采样方法在某种程度上用计算方式近似抽样分布，降低了对封闭形式理论公式的依赖。2. 智能章节拆解3. 关键词与概念4. 关键要点抽样分布描述的是“统计量会怎么变”，不是“单个观测值怎么分布”。中心极限定理解释了很多统计推断为什么可以近似使用正态分布。重采样可以看作通过计算模拟抽样分布的一种实践方法。5. 学习提醒不要把总体分布、样本分布和抽样分布混在一起；本节最关键的区分就是“数据的分布”和“统计量的分布”。4.3 交叉验证与刀切法1. 核心总结交叉验证通过把数据分为训练集和验证集，反复训练与验证模型，用平均表现估计模型泛化误差。k-fold cross-validation 会把数据分成 k 份，每次用 k-1 份训练、1 份验证，循环 k 次。留一法交叉验证是 k 等于样本量的特殊情况，训练样本利用率高，但计算成本较高。刀切法通过每次删除一个观测或一组观测，观察统计量变化，以估计偏差、标准误和影响点。二者都体现重采样思想，但目标不同：交叉验证偏向模型评估，刀切法偏向统计量不确定性。2. 智能章节拆解3. 关键词与概念4. 关键要点交叉验证回答“模型在新数据上可能表现如何”。刀切法回答“统计量对单个样本是否敏感”。二者都不是改变真实数据，而是通过重复划分或删除已有数据来评估稳定性。5. 学习提醒作业中遇到 cross-validation 时优先想到模型选择和预测误差；遇到 jackknife 时优先想到标准误、偏差和影响性观察。4.4 精确检验1. 核心总结精确检验的核心是直接计算在零假设下出现当前结果或更极端结果的概率，而不是完全依赖大样本近似。当样本量较小、单元格期望频数较低时，卡方检验等渐近方法可能不稳健，精确检验更合适。视频中可见“Exact Test”主题，说明课程从传统近似推断过渡到计算型推断。精确检验常见于分类数据、列联表和小样本比较问题。精确检验体现了“根据可能结果空间直接计算概率”的思想，与重采样/置换思想有内在联系。2. 智能章节拆解3. 关键词与概念4. 关键要点精确检验适用于样本较小或近似条件不充分的场景。它的重点是直接计算零假设下结果出现概率。使用精确检验时仍需明确零假设和“更极端”的定义。5. 学习提醒不要把“精确”理解为结论一定正确；它指的是计算方式不依赖某些大样本近似，而不是研究设计没有误差。4.5 JMP 中的精确检验1. 核心总结视频画面展示一个“Actual/Guess”示例，体现分类结果与猜测结果的比较。JMP 中的精确检验通常需要先把变量角色设置好，再在分析菜单中选择合适的列联表或检验选项。软件输出中应重点关注检验统计量、p 值或 exact p-value，而不是只看图表。界面化软件降低了计算门槛，但前提是变量类型和分析角色设置正确。该节补充了上一节理论内容的实际操作路径。2. 智能章节拆解3. 关键词与概念4. 关键要点JMP 操作的第一步是确认变量类型和建模角色。输出中最核心的是 exact p-value 及其对应的假设。软件能自动计算，但不能替代对检验问题的理解。5. 学习提醒截图或作业中不要只放 JMP 界面，要配一段解释：比较的两个变量是什么、零假设是什么、p 值说明了什么。4.6 自助法1. 核心总结Bootstrap 的基本过程是从原始样本中有放回抽取与原样本等大的样本，重复很多次。每一次 bootstrap 样本都会计算目标统计量，如均值、中位数、回归系数或预测指标。多个 bootstrap 统计量形成经验分布，可用于估计标准误、置信区间或结果稳定性。由于是有放回抽样，同一个观测可以在某个 bootstrap 样本中出现多次，也可以不出现。Bootstrap 的优势是不强依赖复杂理论公式，适合很多统计量的经验不确定性估计。2. 智能章节拆解3. 关键词与概念4. 关键要点Bootstrap 的关键是“有放回”。它用重复抽样得到统计量的经验分布。Bootstrap 不是增加真实信息，而是用已有样本估计抽样不确定性。5. 学习提醒复习 bootstrap 时一定写清楚三步：有放回抽样、重复计算统计量、根据重复结果形成标准误或置信区间。4.7 JMP中的自助法1. 核心总结视频中的 LSAT.SAV/GPA 场景说明自助法可用于连续变量或关系分析中的统计量不确定性估计。在 JMP 中进行 bootstrap 通常需要先完成基础分析，再调用 bootstrap 相关功能或重新抽样设置。输出结果应关注重复抽样统计量的分布、均值、标准误和置信区间。如果 bootstrap 结果分布很分散，说明该统计量对样本扰动较敏感。本节把 bootstrap 理论转化为 JMP 软件操作流程。2. 智能章节拆解3. 关键词与概念4. 关键要点JMP 的 bootstrap 输出要看分布和区间，不要只看单一估计值。Bootstrap 结果越集中，统计量通常越稳定。软件操作前必须明确要 bootstrap 的统计量是什么。5. 学习提醒做 JMP bootstrap 截图时，建议同时保留原始统计量、bootstrap 分布和置信区间，三者一起解释。4.8 JASP中的自助法1. 核心总结视频画面出现 LSAT.SAV，说明本节围绕 LSAT/GPA 等数据文件进行 JASP 操作。JASP 通常在相关分析、回归或均值比较等模块中提供 bootstrap 选项。勾选 bootstrap 后，软件会基于重复重采样输出估计值、标准误和置信区间。JASP 适合教学和作业展示，因为输出表格相对整洁，便于复制到报告中。理解 JASP 输出时应把 bootstrap 区间解释为基于重采样经验分布得到的不确定性范围。2. 智能章节拆解3. 关键词与概念4. 关键要点JASP 的 bootstrap 更偏向界面化报告输出。Bootstrap 区间反映的是统计量在重复抽样下的波动范围。结果解释要回到研究问题，而不是只描述软件按钮。5. 学习提醒JASP 输出适合直接写入作业，但必须补充一句“本区间由 bootstrap 重采样得到”，否则读者看不出方法意义。4.9 偏差与方差问题1. 核心总结偏差（bias）指模型平均预测与真实规律之间的系统性差距，高偏差通常意味着模型过于简单、欠拟合。方差（variance）指模型对训练样本变化的敏感程度，高方差通常意味着模型过于复杂、过拟合。偏差-方差权衡是机器学习模型选择的核心问题：模型太简单学不到规律，模型太复杂又容易记住噪声。重采样和交叉验证可以帮助估计模型在不同数据划分下的表现，从而发现过拟合或欠拟合。本节为装袋法和提升算法铺垫：集成方法通常试图通过组合多个模型降低方差或偏差。2. 智能章节拆解3. 关键词与概念4. 关键要点高偏差对应模型太简单，高方差对应模型太依赖训练数据。好的模型不是训练集效果最好，而是新数据表现稳定。交叉验证是识别偏差/方差问题的重要工具。5. 学习提醒判断模型问题时不要只看训练集准确率；训练好、测试差通常是高方差，训练和测试都差通常是高偏差。4.10 装袋法1. 核心总结Bagging 是 Bootstrap Aggregating 的缩写，核心是 bootstrap 重采样加模型聚合。每个 bootstrap 样本训练一个模型，多个模型对同一新样本给出预测，再通过投票或平均得到最终结果。Bagging 特别适合降低高方差模型的不稳定性，例如决策树。随机森林可视为在 bagging 思想上加入特征随机选择的扩展。Bagging 的直觉是用多个略有差异的模型相互抵消偶然波动。2. 智能章节拆解3. 关键词与概念4. 关键要点Bagging 主要解决高方差问题。它依赖多个模型的平均化效果，而不是单一模型的最优分裂。随机森林是在 bagging 基础上的重要代表。5. 学习提醒记住 bagging 的三个词：bootstrap、many models、aggregate。4.11 提升算法及其变体1. 核心总结Boosting 与 bagging 的主要区别在于，bagging 通常并行训练多个模型，boosting 则按顺序迭代训练。每一轮 boosting 会更关注前一轮预测错误或残差较大的样本。AdaBoost、Gradient Boosting、XGBoost 等都可视为 boosting 思想的不同实现。Boosting 往往能降低偏差并提升预测精度，但参数设置不当也可能过拟合。课程标题为“Boosting and Its Variants”，重点应掌握思想差异，而不只是列举算法名称。2. 智能章节拆解3. 关键词与概念4. 关键要点Boosting 是顺序集成，后一个模型会试图修正前一个模型的不足。它通常有较强预测能力，但需要调参和验证控制过拟合。Bagging 主要降方差，boosting 更常用于降低偏差并提高精度。5. 学习提醒考试中区分 bagging 和 boosting：前者多个模型相对独立地平均，后者按顺序纠错。4.12 JASP 中的自助法森林1. 核心总结视频画面出现 PISA2018.csv，说明本节以教育数据为案例进行自助法森林建模。自助法森林可以理解为基于 bootstrap 重采样和多棵树的集成方法，接近随机森林思想。JASP 中需要设置目标变量、输入变量、训练/测试或验证选项，并查看模型表现。输出通常包括变量重要性、混淆矩阵或预测表现指标，用于判断模型是否有效。PISA 场景提醒我们：模型可用于预测教育表现，但变量重要性不能直接解释为因果影响。2. 智能章节拆解3. 关键词与概念4. 关键要点自助法森林结合了 bootstrap 和多树集成思想。JASP 提供了较直观的界面化森林模型输出。变量重要性代表预测贡献，不等于因果证明。5. 学习提醒报告 PISA 森林模型时，应写“该变量对预测有贡献”，不要直接写“该变量导致成绩变化”。4.13 IBM建模器1. 核心总结视频画面显示 IBM Modeler 节点式界面，主题为“Auto procedures for model comparison”。IBM Modeler 的建模流程通常由数据源节点、字段类型节点、建模节点、输出节点组成。自动过程可以同时尝试多个候选模型，并根据指定指标进行比较。在节点式流程中，字段角色和测量水平设置非常关键，设置错误会导致模型含义错误。本节为 4.14 的模型对比提供操作基础。2. 智能章节拆解3. 关键词与概念4. 关键要点IBM Modeler 的优势是流程可视化和自动模型比较。自动建模前必须正确设置目标变量和输入变量。自动比较只是辅助，最终仍需结合业务问题和评价指标选择模型。5. 学习提醒使用 IBM Modeler 时，先检查数据流是否正确，再检查模型指标；不要只相信自动推荐的第一名模型。4.14 模型对比1. 核心总结模型对比的核心是回答“哪个模型更适合当前任务”，而不是“哪个模型在训练集上最高”。不同任务对应不同指标：分类可看 accuracy、precision、recall、F1、AUC；回归可看 RMSE、MAE、R² 等。模型复杂度越高不一定越好，过于复杂可能泛化差、解释差、部署成本高。交叉验证和测试集评估可以减少偶然划分导致的误判。模型对比还应考虑业务可解释性，例如决策树可能不如集成模型精度高，但解释性更强。2. 智能章节拆解3. 关键词与概念4. 关键要点模型选择不能只看一个指标。验证集/测试集表现比训练集表现更能反映泛化能力。最终模型应在性能、稳定性、解释性和业务可用性之间平衡。5. 学习提醒写模型对比结论时，最好用“指标表现 + 解释性 + 业务适配性”三句话完成，而不是只写“模型 A 最好”。4.15 LASSO、决策树与集成方法1. 核心总结视频标题显示“Why Your Model Sees Something When There Is Nothing: LASSO vs. Decision Trees vs. Ensembles”，强调过拟合和虚假模式识别问题。LASSO 通过 L1 惩罚压缩系数并可实现变量选择，有助于控制线性模型复杂度。决策树能捕捉非线性和交互，但单棵树容易对样本噪声敏感。集成方法通过组合多棵树或多个弱学习器提升预测表现，但如果验证不足，也可能放大数据中的偶然模式。本节的综合结论是：算法越强，不代表结论越可靠；必须通过重采样、交叉验证和模型比较防止“看见不存在的规律”。2. 智能章节拆解3. 关键词与概念4. 关键要点LASSO 用惩罚项控制复杂度，适合变量多且需要筛选的线性建模场景。决策树解释性强，但单树稳定性弱。集成模型预测强，但仍要通过验证防止过拟合和虚假模式。5. 学习提醒本节最重要的警示是：模型能找到模式，不代表这个模式真实存在；必须用验证和重采样检验其稳定性。七、跨视频复习框架八、考试/作业可直接使用的表达九、整体学习结论本组视频的核心学习目标，是把“统计推断的不确定性”和“机器学习模型的泛化能力”连接起来。中心极限定理和抽样分布提供理论解释，bootstrap、交叉验证和刀切法提供计算型评估工具，偏差-方差框架解释模型为什么会欠拟合或过拟合，bagging 与 boosting 则展示如何通过集成学习提升稳定性与预测能力。最终，模型选择不应只追求训练集表现，而应围绕验证结果、稳定性、复杂度、解释性和业务目标形成综合判断。</p>
+<h2 id="dsci6200-week-5-pcaefa-与降维方法" id="week-5-pcaefa">Week 5: PCA/EFA 与降维方法</h2>
+<p>心总结二、知识框架总览三、视频逐节智能纪要四、关键概念对照表五、复习与应用提醒一、核心总结本组视频围绕 PCA、EFA 与降维展开，主线是：当变量很多、变量之间高度相关时，如何用更少的维度表达主要信息，同时避免把统计降维误用为理论建构。PCA 更偏向“数据压缩”和“方差解释”：它把多个相关变量线性组合为少数主成分，目标是尽量保留总体变异。EFA 更偏向“潜在结构发现”：它试图解释观测变量背后的共同因素，并要求这些因素有理论含义。课程反复强调：PCA 能帮助减少维度、处理多重共线性和提取主要信息，但它本身并不自动证明理论结构；若研究目标是测量潜变量或验证构念，应进一步考虑 EFA、CFA、IRT/Rasch 等方法。因素数量判断不能只机械依赖一个规则。碎石图、Kaiser criterion、平行分析和可解释性应结合使用。若提取因素太少会 under-factor；提取因素太多会 over-factor。软件操作部分覆盖 JMP/SAS/Python 等场景，重点不是“点哪里”，而是理解每一步背后的统计目的：导入数据、标准化/相关矩阵、提取成分、解释载荷、判断保留数量并形成可解释结论。二、知识框架总览三、视频逐节智能纪要1. 5.1-1 主成分分析和探索性因素分析的区别核心摘要：本节主要区分 PCA 与 EFA。PCA 的目标是把多个相关变量合成为少数主成分，以保留最大方差；EFA 的目标是发现观测变量背后的理论性潜在因素，并要求条目与构念之间存在合理关系。智能章节：关键要点：PCA 适合做变量压缩、维度减少和特征提取。EFA 适合探索量表或问卷背后的潜在结构。保险政策示例说明：PCA 可以把多项政策变量组合起来，即便这些变量未必有强理论基础。课程提示 IRT/Rasch 等可作为心理测量或潜特质分析的替代方法。2. 5.1-2 为什么主成分分析（PCA）是一种机器学习方法核心摘要：本节将 PCA 放入数据科学与机器学习语境中理解。PCA 不需要因变量标签，而是直接从变量之间的相关结构中学习新的特征方向，因此属于典型的无监督学习与特征提取方法。智能章节：关键要点：PCA 通过“学习”变量间协方差或相关结构来构造主成分。PCA 可用于降噪、压缩、可视化和后续建模前的特征工程。课程画面展示了从数据表到目标、再到方差分解的逻辑。PCA 的结果需要解释：共同成分与独特成分的区分不能被忽略。3. 5.2 降维的替代方法核心摘要：本节围绕“除了 PCA/EFA，还可以怎样降维或建构指标”展开。视频中结合身体测量/态度条目等示例，说明降维不只是数学压缩，也涉及变量含义、测量目的和后续解释。智能章节：关键要点：当研究对象是态度、心理特质或潜在能力时，EFA/PCA 未必是唯一选择。降维前需要先判断变量是否有共同主题，以及是否存在理论构念。图形探索可以帮助判断变量关系和分组趋势。替代方法的选择应服从研究问题，而不是服从软件默认选项。4. 5.3 在 SAS 和 JMP 中进行主成分分析和探索性因素分析核心摘要：本节侧重软件操作与方法区分。课件强调 EFA 比 PCA 对理论结构要求更高，PCA 在 JMP 中可通过多元方法或主成分菜单实现，并通过相关图、载荷图、山形图等辅助解释。智能章节：关键要点：EFA 的要求高于 PCA，尤其涉及 construct validity。EFA 不足以完成验证，若要验证量表结构通常还需要 CFA。JMP 中可以通过 Multivariate Methods 等路径进入 PCA。软件输出需要结合载荷、图形形态与因素含义解释。5. 5.4 向量核心摘要：本节补充 PCA 背后的线性代数基础。向量被解释为变量之间关系的表达方式，变量空间、个体空间、超空间、特征向量和特征值共同构成理解 PCA 的底层语言。智能章节：关键要点：向量不仅是几何箭头，也可以表示变量关系和方向。变量空间关注变量之间的坐标关系，个体空间关注样本之间的位置关系。特征向量是数据变换后的方向，特征值代表该方向解释的变异大小。PCA 中保留的主成分，本质上就是解释方差较大的新坐标轴。6. 5.5 识别因素核心摘要：本节介绍如何识别因素数量和因素含义，重点包括 biplot、scree plot 与 Kaiser criterion。课程提示这些规则都不是绝对真理，应结合数据结构、理论解释和模型简洁性判断。智能章节：关键要点：Biplot 可同时呈现个体空间和变量空间，但样本太多时会拥挤。Scree Plot 通过曲线拐点判断保留多少个成分。Kaiser criterion 通常用特征值大于 1 作为保留标准，但这只是经验规则。因素数量判断要警惕纯机械化，必要时使用更稳健方法。7. 5.6 在 Python 中进行主成分分析核心摘要：本节展示 Python 中进行 PCA 的基本流程：读取 Excel 数据，导入 sklearn PCA，拟合模型，选择主成分数量，并依据方差解释曲线判断较优成分数。画面中显示示例数据路径、PCA 代码和“4 个成分后增长趋缓”的结论。智能章节：关键要点：使用 pandas 读取 Excel 数据是分析入口。使用 sklearn.decomposition.PCA 完成 PCA 模型拟合。通过 explained variance 或累计解释方差判断保留成分数。示例指出 4 个成分后解释方差增长趋于平缓，因此可考虑 4 成分模型。8. 5.7 平行分析与碎石图核心摘要：本节围绕平行分析和碎石图展开，重点是如何避免 under-factoring 与 over-factoring。平行分析通过重采样/随机数据生成参考特征值分布，只有观测特征值高于随机参考时，才更有理由保留该因素。智能章节：关键要点：平行分析把真实特征值与随机或重采样特征值比较。使用第 95 百分位作为判断界限，逻辑类似显著性水平。只用 PCA/EFA 可能出现保留因素过少或过多的问题。SAS、SPSS、Matlab、R 等工具可用于执行平行分析，但前提是数据清洗到位。四、关键概念对照表软件操作流程归纳五、复习与应用提醒复习时先画出“PCA → 特征提取/方差压缩；EFA → 潜在结构探索；CFA → 结构验证”的方法链条。遇到高维变量时，不要直接套 PCA；先判断变量类型、研究目的、理论结构和后续建模需求。报告 PCA 结果时至少说明：使用相关矩阵还是协方差矩阵、保留几个成分、累计解释方差、主要载荷和解释名称。报告 EFA 结果时至少说明：提取方法、旋转方式、保留因素依据、载荷阈值、每个因素的理论命名。因素数量判断建议使用组合证据：碎石图 + Kaiser + 平行分析 + 理论可解释性。在 Python 操作中，应把数据读取、缺失处理、标准化、PCA 拟合、方差解释图和结果解释分成清晰步骤，避免只复制代码。自测问题PCA 和 EFA 的目标差异是什么？为什么说 PCA 是一种无监督机器学习方法？特征值和特征向量在 PCA 中分别代表什么？Kaiser criterion 的优点和局限是什么？平行分析如何帮助避免 over-factoring 或 under-factoring？如果 Python 结果显示 4 个成分后累计解释方差增长明显变慢，应如何解释？</p>
+<h2 id="dsci6200-week-6-聚类分析方法与软件实现" id="week-6">Week 6: 聚类分析方法与软件实现</h2>
+<p>校对字幕，个别细节、时间戳和软件界面步骤可能存在近似整理或识别误差。本合并版以“学习理解、方法比较、操作流程、常见误区”为主，不包含与学习内容无关的个人化评价。若后续用于正式提交或课堂引用，建议结合原视频和课程讲义再次核对具体参数、菜单名称和示例数据。三、核心总结本组视频围绕聚类分析展开。聚类分析的核心问题是：当数据没有明确标签时，如何根据对象之间的相似性发现自然群组，并将这些群组转化为可解释、可行动的知识。方法主线：从“为什么聚类”进入 K 均值、DBSCAN、层次聚类和两步聚类。操作主线：分别展示 JMP、Python 及建模器中的实现方式，强调标准化、参数选择、结果解释和可视化。理解重点：聚类结果不是自动产生意义，必须通过簇中心、变量均值、簇规模、异常点和业务语境进行命名与解释。方法差异：K 均值适合近似球形簇；DBSCAN 适合密度结构和噪声识别；层次聚类适合树状结构探索；两步聚类适合较大规模和混合变量。四、方法对照表五、视频目录与学习定位六、分视频智能纪要6.1 为什么进行聚类分析1. 核心内容概述本节说明为什么在没有明确标签时仍需要寻找样本之间的自然分组。聚类分析的核心不是预测一个已知结果，而是根据相似性把对象归入不同群体，从而支持用户细分、推荐系统、客户画像、异常识别和后续建模。视频画面可见 Google 根据搜索模式对用户分类、Netflix 根据评分与观看行为聚类观众并推荐内容等案例。2. 关键概念与方法要点聚类属于无监督学习，目标变量通常不存在或不作为建模标签使用。聚类结果需要解释：一个簇不是天然有意义，必须结合变量特征、业务场景和后续行动命名。相似性度量、变量尺度、异常点和聚类数量会直接影响结果。聚类常用于探索性分析，也常作为监督建模前的特征工程或分群策略。3. 智能章节拆解（近似时间戳）4. 常见误区与复习提醒把聚类当作分类：分类有已知标签，聚类是先找结构再解释。只看算法输出，不检查每个簇的变量画像。变量未标准化就计算距离，导致量纲大的变量主导结果。5. 一句话记忆聚类不是预测答案，而是在没有标签时先发现“人群/样本之间像不像”。6.2 K 均值算法1. 核心内容概述本节介绍 K 均值聚类的基本机制。算法预先指定 K 个簇，通过随机或策略性初始化质心，将样本分配到最近质心，再不断更新质心位置，直到分配结果稳定或误差下降不足。它直观、计算效率高，适合球形、规模相近、连续数值型数据的快速分群。2. 关键概念与方法要点K 是聚类数量，需要由研究目的、业务可解释性、肘部法、轮廓系数等共同决定。质心是簇内样本的均值位置，因此 K 均值对离群点和变量尺度敏感。算法目标是最小化簇内平方和，使同一簇内部尽量相似、不同簇之间尽量分离。不同初始值可能得到不同局部最优结果，通常需要多次初始化。3. 智能章节拆解（近似时间戳）4. 常见误区与复习提醒盲目设定 K 值，导致过度分割或合并异质群体。非球形簇、密度不均数据仍强行使用 K 均值。不做标准化，距离计算被某些大尺度变量支配。5. 一句话记忆K 均值就是“指定 K 个中心—分配最近中心—更新中心—反复迭代”。6.3 在 JMP 和 Python 中实现 K 均值算法1. 核心内容概述本节偏向操作演示，说明如何在 JMP 和 Python 中实现 K 均值聚类。核心流程包括选择变量、处理缺失值、标准化变量、设置 K 值、运行模型、查看簇中心与簇规模，并对每个簇进行画像解释。在 Python 中通常会使用 scikit-learn 的 KMeans，并配合 StandardScaler、PCA 可视化和轮廓系数评估。2. 关键概念与方法要点JMP 的优势在于交互式建模、图形联动和簇特征浏览，适合课堂演示和快速探索。Python 的优势在于可复现、可批量处理、便于加入管道和模型评估指标。实现步骤不应止于生成 cluster label，还要输出簇中心、样本数量、变量均值对比和可视化。PCA 二维投影可帮助观察聚类分布，但投影图不是原始高维空间的完整证明。3. 智能章节拆解（近似时间戳）4. 常见误区与复习提醒只保存簇编号，不解释每一簇代表什么。把降维后的二维图当作唯一判断依据。未固定随机种子，导致结果难以复现。5. 一句话记忆软件实现的重点不是跑出标签，而是解释每一簇为什么有意义。6.4 DBSCAN 密度聚类算法1. 核心内容概述本节介绍 DBSCAN 密度聚类。与 K 均值不同，DBSCAN 不需要预先指定簇数，而是通过半径 eps 和最小样本数 min_samples 寻找高密度区域，并把低密度区域中的样本识别为噪声。它适合发现非球形簇、识别异常点，但对参数选择和数据尺度非常敏感。2. 关键概念与方法要点核心点：在 eps 邻域内至少包含 min_samples 个样本的点。边界点：自身邻域样本不足，但处在某个核心点邻域内的点。噪声点：既不是核心点，也不能被核心点密度可达覆盖的点。DBSCAN 可发现任意形状簇，并自然输出噪声/异常样本。3. 智能章节拆解（近似时间戳）4. 常见误区与复习提醒eps 过小会把大量点判为噪声；eps 过大则把多个簇合并。不同密度并存的数据上，单一 eps 很难同时适配所有簇。高维数据中距离区分度下降，DBSCAN 效果可能变差。5. 一句话记忆DBSCAN 用密度找簇，同时把低密度孤立点识别为噪声。6.5 在 Python 中实现 DBSCAN 密度聚类算法1. 核心内容概述本节演示如何在 Python 中实现 DBSCAN。典型流程是读取数据、选择数值变量、标准化、使用 sklearn.cluster.DBSCAN 建模，并分析 labels_ 中的簇编号和 -1 噪声点。实际操作中需要通过 k-distance 曲线、轮廓指标或业务解释不断调整 eps 与 min_samples。2. 关键概念与方法要点StandardScaler 是 DBSCAN 前常用步骤，否则 eps 的含义会被变量量纲破坏。labels_=-1 通常表示噪声点，应单独分析其特征，而不是简单删除。参数调试应同时看簇数量、噪声比例、可视化分布和业务可解释性。DBSCAN 的输出适合用于异常识别、空间聚类、行为轨迹分群等场景。3. 智能章节拆解（近似时间戳）4. 常见误区与复习提醒只调 eps，不关注 min_samples。噪声比例过高或过低都可能说明参数不合适。用二维图判断高维聚类时，需要说明降维可能带来的信息损失。5. 一句话记忆Python 做 DBSCAN 的关键是标准化、调 eps/min_samples，并单独分析 -1 噪声点。6.6 在 JMP 软件中的层次聚类分析1. 核心内容概述本节说明在 JMP 中进行层次聚类分析。层次聚类通过逐步合并或拆分样本构建树状图，研究者可以根据树状结构选择分群数量。它的优势是过程可视化强、适合小中型数据探索；局限是计算成本较高，对距离度量和链接方法较敏感。2. 关键概念与方法要点层次聚类常见为凝聚式：从每个样本各自成簇开始，逐步合并最相近的簇。树状图展示样本或簇的合并顺序与距离，可用于判断合理切分位置。链接方法包括 single、complete、average、Ward 等，不同方法会改变聚类形态。JMP 操作重点是选择变量、标准化、距离度量、查看 dendrogram 与簇画像。3. 智能章节拆解（近似时间戳）4. 常见误区与复习提醒树状图切分位置过于主观，需要结合指标和业务解释。样本量很大时层次聚类可视化和计算都会变得困难。不同链接方法下结果差异较大，需要做敏感性检查。5. 一句话记忆层次聚类的树状图告诉我们样本如何一步步合并。6.7 两步聚类算法1. 核心内容概述本节介绍两步聚类算法。两步聚类通常先进行预聚类，把大量样本压缩为较小的子簇，再对这些子簇做层次聚类或模型化合并，因此适合更大规模数据，也能处理连续变量与分类变量的混合。该方法常见于统计软件和商业建模器，适合用于快速分群和自动选择簇数。2. 关键概念与方法要点第一步预聚类：快速扫描数据，把相似记录压缩成若干小类。第二步正式聚类：对预聚类结果进行层次合并或模型选择，得到最终簇。优势是效率较高，并可支持混合型变量。自动簇数选择不等于最优业务方案，仍需检查簇规模、轮廓质量和可解释性。3. 智能章节拆解（近似时间戳）4. 常见误区与复习提醒完全依赖软件自动推荐簇数，不做业务验证。分类变量编码或连续变量标准化不当，会影响距离或似然计算。簇过多会难以行动，簇过少会掩盖关键差异。5. 一句话记忆两步聚类先压缩再聚类，适合更大数据和混合变量，但仍要解释结果。七、跨视频综合理解1. 聚类分析的标准工作流2. 关键决策清单先判断是否真的需要聚类：如果已有明确标签和预测目标，分类或回归可能更合适。优先保证变量质量：聚类对变量选择非常敏感，错误变量会直接制造错误群组。必须做标准化：距离型聚类中，量纲大的变量会天然拥有更高权重。不要只相信软件推荐：自动簇数、轮廓系数和图形结果都必须结合业务解释。输出结果要可行动：聚类最终应形成“群体画像 + 识别规则 + 后续策略”，而不是停留在簇编号。3. 适用场景速查八、复习提纲能区分聚类、分类、回归三类任务的目标差异。能说明 K 均值算法的迭代流程、K 值选择和局限性。能解释 DBSCAN 中 eps、min_samples、核心点、边界点和噪声点。能根据树状图理解层次聚类的合并过程，并说明链接方法的影响。能描述两步聚类为什么适合较大样本和混合变量。能用“簇规模、簇中心、变量画像、异常点、业务含义”评价聚类结果。</p>
+<h2 id="dsci6200-week-7-人工智能机器学习与神经网络" id="week-7">Week 7: 人工智能、机器学习与神经网络</h2>
+<p>或具体数值时，应以原视频和课程材料为准。本文件侧重学习理解，不作为正式教材、研究报告或评分依据的唯一来源。二、基本信息表三、整体核心总结本组视频围绕“人工智能为什么重要、机器学习有哪些基本类型、AI 与大数据/数据分析的关系、神经网络如何建模、软件如何实现”逐步展开。前半部分偏概念框架，帮助学习者区分人工智能、机器学习、大数据和传统数据分析；后半部分偏方法与操作，重点讲人工神经网络的结构、训练逻辑、输入变量设置，以及 JMP/SPSS 等软件中的建模流程。如果用一条主线概括，本组课程是在回答：当传统统计模型难以处理复杂非线性关系、多变量组合和自动化预测需求时，机器学习与神经网络如何提供新的建模思路；同时，为什么仍然需要关注解释性、验证集表现、数据质量和伦理边界。四、核心知识框架表五、章节智能纪要7.1 为什么人工智能非常重要图 1：视频 7.1 可识别画面截帧（用于辅助定位课程内容）核心总结：本节从国家战略、产业实践和组织能力三个层面说明人工智能的重要性。课程画面提到许多国家已设立人工智能与机器学习国家级任务组，说明 AI 已从单一技术工具上升为政策、教育、产业和治理共同关注的核心能力。学习重点不是把 AI 理解为“会自动替代人”的系统，而是理解它如何借助数据、算法和算力扩大人类处理复杂问题的能力。关键概念表内容拆解从“为什么重要”切入，先建立 AI 与社会发展、产业效率之间的联系。通过国家政策和国际比较说明 AI/ML 不是短期热点，而是长期基础能力。强调 AI 对教育和职业能力结构的影响：未来数据理解、模型理解与结果解释会成为通用能力。提示学习者：掌握 AI 不等于只会调用软件，更重要的是知道它适合解决什么问题、不适合解决什么问题。关键要点AI 的核心价值在于增强复杂任务处理能力，而不是简单替代所有人工工作。国家和组织层面对 AI 的重视，意味着数据能力会成为基础竞争力。学习 AI 需要同时理解技术、数据、伦理和应用场景。学习提醒：学习本节时，建议把 AI 看成“数据驱动的决策增强系统”，而不是单纯的软件功能。7.2 机器学习的类型图 2：视频 7.2 可识别画面截帧（用于辅助定位课程内容）核心总结：本节梳理机器学习的主要类型，重点区分监督学习、无监督学习和强化学习。画面中出现 Reinforcement Learning，强调奖励、惩罚、环境、动作和长期收益等概念。课程意图是帮助学习者先建立机器学习任务的分类框架，再根据目标变量是否存在、是否需要分组、是否需要序列决策来选择方法。关键概念表内容拆解先说明机器学习不是单一算法，而是一组以数据学习规律的方法。围绕“有没有目标变量”区分监督学习和无监督学习。进一步引出强化学习：不只是预测一次结果，而是学习一系列行动。结合奖励与惩罚解释为什么强化学习重视长期结果，而不只看眼前反馈。关键要点分类和回归属于监督学习，聚类和降维通常属于无监督学习。强化学习的关键不是拟合一个静态数据表，而是在环境反馈中优化策略。方法选择应从业务问题出发，而不是从软件菜单或算法名称出发。学习提醒：判断一个项目适用哪类机器学习，先问三个问题：有没有标签？目标是预测还是发现结构？是否涉及连续决策？7.3 大数据与人工智能 机器学习的关系图 3：视频 7.3 可识别画面截帧（用于辅助定位课程内容）核心总结：本节解释大数据、人工智能与机器学习之间的关系，并通过“数据规模”和“自动化程度”两个维度区分不同研究和应用类型。可识别画面显示课程把研究分为四类：小数据且高自动化、小数据且低自动化、大数据且高自动化、大数据且低自动化。核心思想是：AI 并不等同于大数据，大数据也不必然产生智能，二者需要通过机器学习、统计建模和业务目标连接起来。关键概念表内容拆解先澄清三个概念：大数据是资源，机器学习是方法，人工智能是能力或系统表现。用数据规模和自动化程度构成二维分类框架，避免把所有数据分析都称为 AI。说明小数据也可以高度自动化，大数据也可能仍然依赖人工判断。强调方法选择要服务于问题类型和自动化目标。关键要点大数据、机器学习和 AI 是相关但不相同的概念。数据规模大不代表模型一定好，自动化程度高也不代表判断一定可靠。真正的数据科学项目需要同时考虑数据、方法、流程和决策落地。学习提醒：可以把三者关系记为：大数据提供材料，机器学习提供学习机制，AI 体现系统能力。7.4 人工智能的优势与局限图 4：视频 7.4 可识别画面截帧（用于辅助定位课程内容）核心总结：本节讨论人工智能的优势与局限。画面中出现图像/视频增强、Topaz、Denoise AI、Topaz Sharpen AI、Photoshop Neural Filters 等应用，说明 AI 已经能在视觉增强、识别、生成和自动处理方面提升效率。但课程同时强调，AI 的能力有边界：模型依赖训练数据，可能产生偏差，结果并不总是可解释，也不一定适合高风险场景的完全自动决策。关键概念表内容拆解先通过图像增强等具体应用展示 AI 的实际能力。再解释这些能力来自模型学习到的数据模式，而不是人类式理解。进一步指出 AI 的局限：训练数据错误、场景变化或目标定义不清都会影响结果。最后强调 AI 应作为辅助决策工具，而不是无条件替代人的判断。关键要点AI 很擅长处理模式识别和复杂特征组合，但不天然理解背景和责任。AI 结果需要验证，尤其是在高风险、低容错或价值判断强的场景中。优势与局限必须一起学习，避免神化或否定 AI。学习提醒：使用 AI 时要同时问：它提高了什么效率？它可能在哪些地方出错？出错后由谁负责？7.5 机器学习的五个学派图 5：视频 7.5 可识别画面截帧（用于辅助定位课程内容）核心总结：本节介绍机器学习的五个学派。画面中出现 Evolutionists，说明课程至少覆盖了演化主义学派，并用“适者生存、突变、交叉、遗传算法”等思想解释模型如何在搜索空间中寻找较优方案。五大学派通常可理解为符号主义、连接主义、演化主义、贝叶斯主义和类比主义，它们分别强调规则、神经连接、进化搜索、概率更新和相似性学习。关键概念表内容拆解先说明机器学习并非只有神经网络一种思想来源。分别介绍不同学派对“学习”的理解：规则推理、权重调整、进化搜索、概率更新、相似性匹配。通过演化主义示例说明算法可以通过变异、交叉和选择逐步接近更优解。提示不同学派在现代 AI 中常被组合使用。关键要点五大学派提供了理解机器学习算法思想来源的框架。神经网络属于连接主义，但不是机器学习的全部。不同学派各有优势，实际项目中常形成混合方法。学习提醒：记忆五大学派时，不要背名词；要对应它们解决问题的基本隐喻：规则、连接、进化、概率、相似。7.6 人工神经网络及神经网络类型图 6：视频 7.6 可识别画面截帧（用于辅助定位课程内容）核心总结：本节系统介绍人工神经网络及其类型。画面中出现 Forward-forward Algorithm vs. Backpropagation，提到 Geoffrey Hinton 及前向-前向算法，说明课程不仅讲传统反向传播，也关注神经网络训练思想的变化。核心内容包括输入层、隐藏层、输出层，权重、激活函数、误差、反向传播，以及不同网络结构适用的数据类型。关键概念表内容拆解先解释神经网络的基本构成：输入层、隐藏层、输出层。说明节点之间的连接权重如何决定信息传递强度。介绍反向传播：模型先预测，再根据误差调整权重。扩展到不同网络类型及其适用场景，并提到新的训练思想。关键要点神经网络的本质是通过多层非线性变换学习复杂映射。隐藏层越多，模型表达能力通常越强，但训练难度和过拟合风险也增加。理解反向传播有助于理解神经网络为什么能“学习”。学习提醒：学习神经网络时，先抓住“输入—加权变换—激活—输出—误差修正”这条主线。7.7 对数据分析的影响图 7：视频 7.7 可识别画面截帧（用于辅助定位课程内容）核心总结：本节讨论人工神经网络对数据分析的影响。可识别画面显示 Structure of ANN，说明典型神经网络由输入层、隐藏层和输出层构成。如果有多个隐藏层，就可称为深度学习。课程强调，神经网络改变了传统数据分析的思路：从强调参数解释和线性关系，转向更强调预测能力、复杂特征变换和非线性关系捕捉。关键概念表内容拆解从 ANN 结构入手，解释输入层、隐藏层、输出层的功能。说明隐藏层本质上在进行数据转换和特征组合。比较神经网络和传统统计模型：前者更强预测，后者更易解释。提醒在数据分析中不能只追求复杂模型，还要考虑解释、验证与业务可用性。关键要点神经网络使数据分析从“解释显著性”扩展到“学习复杂模式”。隐藏层可以自动生成特征，但也增加了黑箱性。现代数据分析需要在预测准确性和解释可理解性之间权衡。学习提醒：当模型用于决策时，不能只看准确率，还要考虑是否能解释、是否稳定、是否符合业务常识。7.8 普通最小二乘法回归与 Lambda 平滑法比较图 8：视频 7.8 可识别画面截帧（用于辅助定位课程内容）核心总结：本节比较普通最小二乘法回归与 Lambda 平滑法。可识别画面显示 JMP Graph Builder 中的散点图和平滑曲线，说明课程通过可视化方式比较线性回归与平滑方法的差异。OLS 假设关系可以用固定函数形式表示，Lambda 平滑更灵活，能够刻画非线性趋势，但解释性和泛化风险需要谨慎评估。关键概念表内容拆解先展示散点图，观察变量之间是否呈现简单线性趋势。加入 OLS 线性拟合，观察整体方向和残差模式。加入 Lambda 平滑曲线，比较其对局部非线性变化的捕捉能力。讨论平滑方法的优势和风险：更灵活，但不等于更可靠。关键要点OLS 的优势是简洁、可解释；局限是难以捕捉复杂非线性。Lambda 平滑更适合探索数据形状，但需要控制曲线复杂度。模型比较不能只看视觉贴合，还要看验证集表现和理论合理性。学习提醒：如果平滑曲线明显优于直线，要进一步确认这种非线性是稳定规律还是样本噪声。7.9 人工神经网络演示图 9：视频 7.9 可识别画面截帧（用于辅助定位课程内容）核心总结：本节为人工神经网络软件演示。可识别画面出现 Profiler 和建模结果界面，说明课程重点在于展示如何通过软件完成神经网络模型建立、训练、验证和结果查看。学习重点不只是点菜单，而是理解每一步背后的建模含义：设定响应变量、选择输入变量、划分训练/验证数据、配置网络结构、观察模型表现。关键概念表内容拆解进入软件建模模块，选择神经网络或相关预测模型。指定响应变量和输入变量，确认变量类型。设置训练、验证或测试数据划分。运行模型后查看误差、预测表现和 Profiler 分析。关键要点神经网络演示的核心不是菜单路径，而是完整建模流程。训练结果必须结合验证结果判断，不能只看训练集拟合。Profiler 有助于理解模型输出，但不能完全解决黑箱问题。学习提醒：软件演示建议按“变量设定—数据划分—模型训练—结果解释—验证评估”的顺序复盘。7.10 多个输入变量图 10：视频 7.10 可识别画面截帧（用于辅助定位课程内容）核心总结：本节讨论多个输入变量的建模问题。可识别画面为 PIAAC 2016 多输入变量案例，内容涉及性别、自我效能、测试表现等变量关系。课程强调，当输入变量增多时，模型不再只是两变量关系，而要考虑变量组合、交互、非线性和不同人群之间的差异。神经网络在处理多输入、多关系时具有优势，但也更需要验证和解释。关键概念表内容拆解以 PIAAC 案例引入多变量预测问题。说明单个变量可能不足以解释或预测复杂结果。展示多输入变量下模型如何整合多种信息。讨论多变量模型的风险：变量冗余、共线性、过拟合和解释困难。关键要点多个输入变量可以提升预测信息量，但也增加模型复杂度。要关注变量之间的组合效应，而不是孤立看单个变量。多输入神经网络适合复杂预测，但必须配合验证集和合理解释。学习提醒：输入变量不是越多越好；关键是变量是否有信息量，模型是否能在新数据上稳定表现。7.11 示例 3图 11：视频 7.11 可识别画面截帧（用于辅助定位课程内容）核心总结：本节为神经网络案例三。可识别画面显示“Predicts one or more response variables using a flexible function of the input variables”，说明软件将神经网络定位为使用输入变量的灵活函数来预测一个或多个响应变量的方法。课程重点在于通过案例巩固：响应变量、输入变量、验证方式、隐藏层与模型评估之间的关系。关键概念表内容拆解打开案例数据并进入神经网络建模界面。将目标变量放入响应变量区域，将预测变量放入输入变量区域。设置训练、验证或模型选择相关参数。运行模型并查看预测、误差和变量影响相关结果。关键要点神经网络可以用灵活函数拟合复杂输入与输出关系。案例操作要关注变量角色是否设置正确。隐藏层和验证方式是影响模型可靠性的关键设置。学习提醒：做案例时，不要只追求模型跑出来；要能解释为什么这样设置变量、为什么这样评价模型。7.12 SPSS 演示图 12：视频 7.12 可识别画面截帧（用于辅助定位课程内容）核心总结：本节展示在 SPSS 中进行神经网络分析。可识别画面显示 SPSS 数据表和建模对话框，说明课程关注从数据导入到模型设定、变量选择、训练分区、输出结果查看的完整流程。SPSS 的优势在于界面化操作清晰，适合初学者理解神经网络建模步骤；但仍需要学习者理解每个选项背后的统计与机器学习含义。关键概念表内容拆解在 SPSS 中打开数据集，确认变量类型和缺失情况。进入神经网络相关分析菜单，选择合适的模型类型。设置因变量、输入变量、分区和训练参数。运行模型后查看输出表、图形和预测结果。关键要点SPSS 演示强调神经网络的界面化建模流程。变量角色和数据分区设置错误会直接影响模型结论。软件输出需要结合任务目标解释，不能只机械读取默认结果。学习提醒：SPSS 操作复盘时，建议截图保留变量设置、训练设置和主要输出结果，便于写作业或复现。六、横向对比：传统统计、机器学习与神经网络七、学习复盘清单能否用自己的话区分人工智能、机器学习、大数据和数据科学？能否判断一个任务属于监督学习、无监督学习还是强化学习？能否解释神经网络的输入层、隐藏层和输出层分别做什么？能否说明 OLS 与 Lambda 平滑在模型假设、拟合灵活性和解释性上的差异？能否描述在 JMP 或 SPSS 中建立神经网络模型的基本步骤？能否说明为什么 AI 模型需要训练集、验证集或测试集？能否指出神经网络的优势与局限，而不是只看预测效果？八、最终学习建议本组视频建议按“概念框架—方法分类—神经网络结构—软件操作—模型评价”五步复习。第一轮学习重点放在理解概念和流程，不必急于记住所有软件按钮；第二轮学习应结合视频中的 JMP/SPSS 操作界面，把变量角色、训练/验证划分、模型输出解释整理成自己的操作清单；第三轮学习再回到模型比较，理解为什么 OLS、平滑方法和神经网络在不同问题中会有不同适用性。对作业或考试而言，最容易得分的表达方式是：先说明问题类型，再说明选择的模型方法，接着解释模型如何学习，最后评价结果是否可靠、是否可解释、是否存在过拟合或数据偏差风险。</p>
+<h2 id="dsci6200-week-8-文本挖掘nlp-与情感分析" id="week-8-nlp">Week 8: 文本挖掘、NLP 与情感分析</h2>
+<p>与大语言模型、语言理解难点、NLP 处理流程、Google Ngram/Trends、潜在类别分析、JMP Pro 情感分析，以及用 AI 聊天机器人辅助文本挖掘。第一层逻辑：文本挖掘解决的是“非结构化文本如何变成可分析数据”的问题。第二层逻辑：NLP 提供文本清洗、分词、向量化、语义理解与生成能力，是文本挖掘的重要技术基础。第三层逻辑：JMP、JMP Pro、Google Ngram、Google Trends 和 AI 聊天机器人分别代表传统软件、趋势工具和新型智能助手三类实践路径。第四层逻辑：所有文本分析结果都需要结合语境、数据来源、模型限制和人工判断进行解释。二、知识地图三、分视频智能纪要1. 8.1.1 什么是文本挖掘核心结论：文本挖掘是从非结构化或半结构化文本中提取有用信息、模式和意义的过程。它把邮件、社交媒体、网页、评论、问答等自然语言材料转化为可计算、可分析的数据。课程要点：文本不同于传统数值型表格数据，原始形式通常是语句、段落或文档。文本挖掘的关键目标不是“读完文本”，而是把文本转化为可以统计、分类、聚类、趋势分析或预测的结构化特征。课程通过“May 2010、23 million viewers、American Idol”等问题提示：文本中包含实体、时间、事件、人物关系和预测线索。概念/方法速查：智能章节：关键画面参考：8.1.1 什么是文本挖掘2. 8.1.2 文本挖掘与数据挖掘的关系核心结论：文本挖掘可以理解为数据挖掘在非结构化文本场景中的扩展。两者共享分类、聚类、关联、预测等分析目标，但文本挖掘多了一步“文本转化为数据”的前处理任务。课程要点：数据挖掘通常面对已经整理成表格的结构化数据；文本挖掘首先要处理自然语言中的上下文、歧义和表达差异。文本挖掘不是数据挖掘的替代，而是数据挖掘方法在文本资料上的应用与改造。视频用维恩图强调两者交叉：文本挖掘需要数据挖掘算法，也需要自然语言处理能力。概念/方法速查：智能章节：关键画面参考：8.1.2 文本挖掘与数据挖掘的关系3. 8.2 文本挖掘的先驱核心结论：文本挖掘的发展并非只来自计算机科学，也受到定性研究、内容分析、概念图和早期认知研究的影响。课程通过先驱人物说明：在算法出现之前，人们已经在尝试系统化地整理和解释文本意义。课程要点：定性研究中的编码、主题归纳、内容分析，是文本挖掘的思想来源之一。Joseph D. Novak 的概念图强调概念之间的联系，有助于理解文本知识结构。Don R. Swanson 的文献发现思路说明：分散在不同文本中的知识可以被连接起来，形成新的发现。概念/方法速查：智能章节：关键画面参考：8.2 文本挖掘的先驱4. 8.3 自然语言处理与大语言模型核心结论：自然语言处理关注机器如何处理、理解和生成自然语言。大语言模型是基于海量语料训练的 AI 系统，能够完成文本生成、摘要、问答、改写、分类等任务，但其能力建立在统计学习与语言模式建模之上。课程要点：LLM 是在大量文本语料上训练的 AI 系统，能够捕捉复杂语言模式。课程提到 GPT-4 等模型规模巨大，参数量与训练数据规模远超传统 NLP 模型。聊天机器人把 LLM 的能力产品化，使文本挖掘任务可以通过自然语言提示词进行。概念/方法速查：智能章节：关键画面参考：8.3 自然语言处理与大语言模型5. 8.4 自然语言处理的挑战(1)核心结论：自然语言处理的主要难点在于语言具有上下文依赖、多义性、指代、隐喻、讽刺和背景知识依赖。人类看似自然的理解过程，对机器来说需要复杂的语义、句法和语境推断。课程要点：同一句话在不同上下文中可能有不同含义。Garden path sentences 表明句法结构可能误导初始理解，需要重新解析。AI 理解语言不仅要识别词，还要理解词与场景、人物、时间和文化背景之间的关系。概念/方法速查：智能章节：关键画面参考：8.4 自然语言处理的挑战(1)6. 8.4 自然语言处理的挑战核心结论：该文件与“8.4 自然语言处理的挑战(1)”时长一致，关键画面主题也高度一致，可视为同一讲题的复核版本。学习时建议合并理解：重点掌握语境、多义、句法误导和常识推断四类挑战。课程要点：本节重点不是新增算法，而是帮助理解 NLP 为什么难。自然语言不能只靠关键词匹配处理，必须结合上下文和语义结构。该部分可与 8.5 的 NLP 处理步骤一起复习：先理解问题，再选择处理流程和模型。概念/方法速查：智能章节：关键画面参考：8.4 自然语言处理的挑战7. 8.5 自然语言处理的步骤核心结论：NLP 项目通常包括文本收集、清洗、分词/标记化、去停用词、词形处理、向量化、建模与评估等步骤。现代模型如 BERT 与 CNN 等方案可以改善传统词袋模型对上下文和语序处理不足的问题。课程要点：文本预处理决定后续分析质量，包括清洗噪声、标准化大小写、分词、去停用词等。BERT 通过上下文表征改善一词多义问题；CNN 可以捕捉局部文本模式，用于分类等任务。Garden path sentences 等例子说明，简单词频统计不能完全解决语义理解问题。概念/方法速查：智能章节：关键画面参考：8.5 自然语言处理的步骤8. 8.6 谷歌词频统计与趋势核心结论：Google Ngram 与 Google Trends 可以用来观察词语、概念或社会议题在不同时间中的出现频率与关注度变化。它们适合做文化变迁、科学范式、社会兴趣和公共议题的趋势分析。课程要点：Ngram 基于书籍语料统计词或短语在出版物中的相对频率。Google Trends 反映搜索关注度，适合观察当下或近期公众兴趣。这类工具适合发现趋势，但不等同于因果证明；解释时需要结合语料来源和社会背景。概念/方法速查：智能章节：关键画面参考：8.6 谷歌词频统计与趋势9. 8.7 潜在类别分析核心结论：潜在类别分析用于从观测变量中识别看不见的类别结构。它可以把文本、问卷或行为数据中的样本划分为若干潜在群体，帮助解释不同群体的文本主题、态度或响应模式。课程要点：潜在类别不是直接观测到的标签，而是模型根据数据模式推断出的类别。在 JMP 中可以查看不同类别的概率、变量响应模式和类别规模。它与聚类相似，但更强调概率模型和潜在结构解释。概念/方法速查：智能章节：关键画面参考：8.7 潜在类别分析10. 8.8 在 JMP Pro 中进行情感分析核心结论：情感分析用于判断文本表达的正向、负向或中性态度。JMP Pro 可以对文本进行导入、分词、情感词识别、情感汇总和可视化，帮助从大量开放文本中提取态度倾向。课程要点：情感分析的结果通常包括正向、负向、中性词或句子的数量与比例。JMP Pro 可以通过文本探索、词频、情感摘要、图表等方式展示结果。情感分析需要注意否定词、讽刺、上下文和领域词典不匹配的问题。概念/方法速查：智能章节：关键画面参考：8.8 在 JMP Pro 中进行情感分析11. 8.9 用于文本挖掘的人工智能聊天机器人核心结论：AI 聊天机器人可以作为低成本的文本挖掘辅助工具，帮助完成文本清洗、摘要、主题归纳、分类标签设计、情感判断和结果解释。但其输出需要通过数据、人工复核和明确提示词约束来提高可靠性。课程要点：过去文本挖掘通常需要购买专业软件或编写程序，现在 LLM 可以通过提示词完成部分任务。课程示例中通过上传 CSV/Excel 文件，并用明确提示词要求输出主题、描述和案例。AI 工具适合提高效率，但不能替代方法选择、结果验证和专业判断。概念/方法速查：智能章节：关键画面参考：8.9 用于文本挖掘的人工智能聊天机器人四、关键学习要点五、常见概念对照表六、学习复盘建议复习顺序建议：先理解 8.1.1-8.1.2 的文本挖掘定义与边界，再学习 8.3-8.5 的 NLP 与 LLM，最后看 8.6-8.9 的工具实践。答题时可以采用“定义 - 方法 - 应用 - 局限”的结构。例如解释情感分析时，先说它是什么，再说如何做，最后说明否定词、讽刺和语境问题。做项目时不要直接把 AI 输出当结论，应把 AI 视为辅助工具：先明确字段和任务，再要求表格化输出，最后进行人工复核。理解文本挖掘与数据挖掘的关系时，重点抓住“非结构化文本转结构化特征”这一桥梁。七、文件清单与处理备注处理备注：本次上传包含“8.4 自然语言处理的挑战(1)”与“8.4 自然语言处理的挑战”两个近似文件，二者时长均约 05:03，关键画面高度一致。本纪要将其均列入文档，但内容上按“主讲版本 + 复核版本”的方式处理，以避免重复堆叠。</p>
+<p>八、课件补充：NLP挑战详解与情感分析方法</p>
+<blockquote>
+<p><strong>来源</strong>：Week 8 课件（PPT slides）+ 合并版智能纪要<br>
+<strong>补充目的</strong>：在智能纪要基础上，补充课件中的经典案例、解决方案模型和技术细节</p>
+</blockquote>
+<h4 id="810-nlp">8.10 NLP挑战：经典案例集</h4>
+<h5 id="lexical-ambiguity">词汇歧义（Lexical Ambiguity）</h5>
+<p>同一单词在不同语境中具有完全不同的含义：</p>
+<table>
+<thead>
+<tr>
+<th>例句</th>
+<th>含义A</th>
+<th>含义B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"I <strong>book</strong> a ticket to Paris"</td>
+<td>预订（动词）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"Hanna read Dr. Yu's boring <strong>book</strong>"</td>
+<td>—</td>
+<td>书籍（名词）</td>
+</tr>
+<tr>
+<td>"Peter is a <strong>senior</strong> at APU"</td>
+<td>大四学生</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"Alex received a <strong>senior</strong> discount"</td>
+<td>老年（的）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"Paul is a <strong>senior</strong> manager"</td>
+<td>高级（的）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"<strong>Sex</strong> in demographic data"</td>
+<td>性别</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"<strong>Sex</strong> education"</td>
+<td>性（的）</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>🔑 <strong>核心洞察</strong>：传统NLP需要依赖上下文消歧；BERT通过双向上下文编码可有效处理多义词。</p>
+</blockquote>
+<h5 id="garden-path-sentences">句法歧义与花园小径句（Garden Path Sentences）</h5>
+<p>句子开头诱导读者产生一种理解，但到结尾时意思完全不同：</p>
+<ul>
+<li><strong>"The spy saw the man with the binoculars."</strong> → 间谍看到了那个拿着望远镜的人</li>
+<li><strong>"The bird saw the man with the binoculars."</strong> → 鸟看见了那个拿着望远镜的人</li>
+<li><strong>"The man saw the bird with the binoculars."</strong> → 那人用望远镜看见了鸟</li>
+</ul>
+<blockquote>
+<p>同一结构，主语不同导致"with the binoculars"的附着对象不同。</p>
+</blockquote>
+<h5 id="_1">经典标题歧义案例</h5>
+<table>
+<thead>
+<tr>
+<th>标题</th>
+<th>可能的误解</th>
+<th>实际含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Soviet Virgin Lands Short of Goal Again"</td>
+<td>维珍航空在俄罗斯降落失败</td>
+<td>苏联开垦荒地运动未达目标</td>
+</tr>
+<tr>
+<td>"British Left Waffles on Falkland Islands"</td>
+<td>英国人离开时留下华夫饼</td>
+<td>英国左翼在福克兰群岛问题上犹豫不决</td>
+</tr>
+</tbody>
+</table>
+<h5 id="nlp">其他NLP难题示例</h5>
+<table>
+<thead>
+<tr>
+<th>句子</th>
+<th>难点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Eye drops off shelf"</td>
+<td>"drops off" 可以理解为"掉落"或"下架"</td>
+</tr>
+<tr>
+<td>"Farmer Bill Dies in House"</td>
+<td>"House" 是众议院还是房屋？</td>
+</tr>
+<tr>
+<td>"Teacher strikes idle kids"</td>
+<td>"strikes" 是罢工还是打击？"idle" 是懒惰的还是无所事事的？</td>
+</tr>
+<tr>
+<td>"Kicking baby considered to be healthy"</td>
+<td>是踢婴儿这个行为健康，还是被踢的婴儿健康？</td>
+</tr>
+<tr>
+<td>"Two sisters reunite after eighteen years at checkout counter"</td>
+<td>十八年是在收银台分开的？</td>
+</tr>
+</tbody>
+</table>
+<h4 id="811">8.11 情感分析的四大挑战</h4>
+<h5 id="1-sarcasm">1. 讽刺（Sarcasm）</h5>
+<p>讽刺性表达可以欺骗常规文本挖掘软件：</p>
+<blockquote>
+<p>"教授太棒了！我根本没学习。整个学期我都闭着眼睛，但仍然得了A！"</p>
+</blockquote>
+<p><strong>解决方案：卷积神经网络（CNN）</strong><br>
+- CNN对局部特征建模以学习全局特征，能够<strong>发现矛盾</strong><br>
+- "I <strong>love</strong> the <strong>pain</strong> of breakup" — 正面词"love"与负面词"pain"形成矛盾信号<br>
+- "I <strong>work so hard</strong> to be so <strong>poor</strong>" — 努力与贫穷的矛盾<br>
+- "Truly, you have a <strong>dizzying</strong> intellect" — 看似赞美实为讽刺</p>
+<h5 id="2-negation">2. 否定（Negation）</h5>
+<p>正极性被负极性逆转：</p>
+<blockquote>
+<p>"<strong>No one</strong> thinks it is good." — 虽然"好"是积极词，但"没有人"改变了内涵<br>
+"Parking on a hill with <strong>no curb</strong>." — "no" 改变了安全性的判断</p>
+</blockquote>
+<p><strong>解决方案：BERT</strong><br>
+- 过去的NLP会忽略"no"等否定词<br>
+- BERT通过双向注意力机制，能够捕捉否定词与情感词之间的关系</p>
+<h5 id="3-valence-shifting">3. 情感倾向转变（Valence-Shifting）</h5>
+<p>同一词在不同语境中情感极性发生转变：<br>
+- "This is a <strong>missed</strong> opportunity" — "missed"为负面<br>
+- "The medicine <strong>kills</strong> cancer cells" — "kills"为正面</p>
+<h5 id="4-irrealis">4. 非现实语气（Irrealis）</h5>
+<p>条件句暗示反事实情景，难以判断肯定还是否定：</p>
+<blockquote>
+<p>"如果Wi-Fi网络速度再快一点就更好了" — 学生可能满意现有速度，也可能不满意</p>
+</blockquote>
+<h4 id="812">8.12 关键解决方案模型对比</h4>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>解决的问题</th>
+<th>核心机制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BERT</strong>（2018-2019，Google）</td>
+<td>一词多义、否定词、上下文依赖</td>
+<td>双向阅读（同时考虑左右上下文）；1750亿参数</td>
+</tr>
+<tr>
+<td><strong>CNN</strong>（卷积神经网络）</td>
+<td>讽刺检测、局部矛盾</td>
+<td>对局部特征建模以发现全局矛盾模式</td>
+</tr>
+<tr>
+<td><strong>Transformer</strong>（2017，Google）</td>
+<td>词语间上下文关系</td>
+<td>自注意力机制</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>💡 <strong>BERT的关键突破</strong>：在"2019 Brazil traveler to USA need a visa"中，"to"的方向性被旧NLP误解为"美国→巴西"，BERT通过双向上下文正确理解为"巴西→美国"。</p>
+</blockquote>
+<h4 id="813">8.13 文本挖掘与数据挖掘关系图</h4>
+<pre><code>        ┌──────────────────────┐
+        │      数据挖掘         │
+        │  (分类/聚类/关联/预测) │
+        │                      │
+        │   ┌──────────────┐   │
+        │   │   文本挖掘    │   │
+        │   │ (NLP + DM)   │   │
+        │   │              │   │
+        │   │ 非结构化文本  │   │
+        │   │ → 结构化特征  │   │
+        │   └──────────────┘   │
+        │                      │
+        └──────────────────────┘
+</code></pre>
+<p>九、Week 8 综合复习清单</p>
+<ul>
+<li>[ ] 用自己的话定义文本挖掘，并说明它与数据挖掘的关系</li>
+<li>[ ] 列举NLP面临的四类挑战：上下文依赖、歧义、句法误导、常识推断</li>
+<li>[ ] 解释Garden Path Sentence及其对NLP的启示</li>
+<li>[ ] 说明TF-IDF的原理及其在文本分类中的作用</li>
+<li>[ ] 区分Stemming和Lemmatization</li>
+<li>[ ] 解释Word2Vec的Skip-gram和CBOW架构</li>
+<li>[ ] 说明BERT如何解决一词多义问题</li>
+<li>[ ] 列举情感分析的四大挑战（讽刺/否定/情感转变/非现实语气）及各自的解决方案</li>
+<li>[ ] 比较Google Ngram和Google Trends的异同</li>
+<li>[ ] 说明潜在类别分析在文本挖掘中的应用</li>
+<li>[ ] 描述JMP Pro进行情感分析的基本流程</li>
+<li>[ ] 说明AI聊天机器人辅助文本挖掘的优势和局限</li>
+</ul>
+<p>📚 课堂补充 · DSCI6000 Week-7 分类模型来源：DSCI6000 应用统计学与数据科学 · 第7章智能纪要（合并版）<br>
+涵盖：线性判别分析(LDA)、支持向量机(SVM)、决策树与提升树<br>
+更新时间：2026-06-22智能纪要：第7章分类模型线性判别分析（LDA）｜支持向量机（SVM）｜决策树与提升树合并版课程学习纪要｜共 6 个视频｜总时长约 01:17:26一、基本信息表视频清单与时长二、AI 生成声明三、目录导览核心总结：先建立三类分类方法的学习主线，再解释它们的适用条件与风险。数据与结果表：汇总 LDA、SVM、普通决策树、提升树在示例中的关键指标。智能章节：按视频编号和时间戳定位每段内容，便于回看。分视频详细纪要：逐个视频拆解概念、公式、操作和结论。关键要点、金句与复习清单：用于课后复盘和考试前快速回顾。四、核心总结4.1 一句话总览本组视频围绕“分类模型”展开：LDA 从贝叶斯后验概率和正态分布假设出发建立线性判别边界；SVM 从最大间隔和支持向量出发寻找稳健分类超平面，并通过软间隔与核函数处理不可线性分割问题；决策树通过递归二分拆分特征空间，进一步用剪枝、随机森林与提升树缓解过拟合并提升泛化表现。4.2 课程主线4.3 五个核心结论LDA 是带有概率解释的生成式分类器：它先建模各类别下 X 的分布，再用贝叶斯公式计算后验概率；当各类别近似多元正态且协方差矩阵相同，线性判别边界更稳定。LDA 示例提醒：准确率不能单独代表模型有效性。Framingham 示例中测试准确率达到 0.848，但阳性类别（TenYearCHD=1）的召回率只有 0.067，说明模型几乎漏掉了多数阳性样本。SVM 的核心不是“拟合所有点”，而是寻找最大间隔边界；真正决定边界的是最靠近边界的支持向量，软间隔允许少量违反以换取泛化能力。核函数可以把非线性边界转化为高维空间中的线性分割，但复杂核并不天然更好。Heart 数据示例中，线性 SVM 的测试准确率为 0.814，而另一个核设置下降到 0.627。单棵决策树可解释性强但容易过拟合；提升树通过多个小树逐步修正错误，在 Heart 示例中测试准确率从普通树的 0.746 提升到 0.847，并高于同一示例中的 SVM 0.814。五、数据表格与模型结果汇总5.1 示例数据集5.2 模型结果摘要表5.3 LDA 线性判别系数（7.2）六、关键画面摘录图 1：LDA 中的贝叶斯决策边界示意（7.1，约 11:15）图 2：LDA 示例结果：训练/测试划分与混淆矩阵（7.2，约 06:00）图 3：SVM 最大间隔超平面与优化约束（7.3，约 04:30）图 4：SVM Heart 示例性能指标（7.4，约 03:45）图 5：决策树剪枝与复杂度惩罚思想（7.5，约 09:00）图 6：提升树示例性能，准确率、召回率与真负率均提升（7.6，约 06:00）七、智能章节索引（带时间戳）八、分视频详细纪要8.1 视频 7.1：线性判别分析介绍及概述核心内容课程从分类问题出发：对于给定输入 x，比较各类别的后验概率 P(Y=i|X=x)，选择后验概率最大的类别。利用贝叶斯公式：P(Y=i|X=x)=f_i(x)π_i / Σ_j f_j(x)π_j，其中 f_i(x) 是类别 i 下的密度函数，π_i 是类别先验概率。在一维特征且各类别服从正态分布、共享方差 σ² 的条件下，判别函数可以化简为线性形式，因此得到“线性”判别分析。二分类时，决策边界出现在 δ_i(x)=δ_j(x) 的位置；如果类别先验比例或密度位置发生变化，边界也会移动。多特征情形使用多元高斯密度，若所有类别共享同一个协方差矩阵 Σ，仍然得到线性判别边界；若协方差矩阵不同，则会出现二次项，转向二次判别分析（QDA）。重点公式与概念优点与局限优点：参数估计比逻辑回归更稳定，尤其当样本较小、类别近似正态且类别分离不完全时，LDA 往往较稳健。局限：不适合直接处理类别型预测变量；当数据不能较好线性分开，或各类别分布明显违反共同协方差假设时，性能会下降。8.2 视频 7.2：线性判别分析示例数据与操作示例使用 Framingham Heart Study 数据。课件中显示数据包含 4,240 条记录、15 个特征，目标是预测 10 年内冠心病 TenYearCHD。JASP 操作路径为 Machine Learning 模块中的 Linear Discriminant Classification。示例选择 Age、totChol、sysBP、diaBP、BMI、heartRate、glucose 等变量，并将 TenYearCHD 设为目标变量。课件显示模型使用 20% holdout test data；最终可识别的样本划分为 Train=3062、Test=765、Total=3827。假设检查结果结果解释测试准确率为 0.848，但这主要受到类别不平衡影响：测试集中 0 类占比约 0.844，1 类占比约 0.156。混淆矩阵显示：Observed 0 中 641 个被预测为 0、5 个被预测为 1；Observed 1 中 111 个被预测为 0、8 个被预测为 1。阳性类别（1）的召回率只有 0.067，意味着大量真正会发生 CHD 的样本被预测为非 CHD。课件明确指出：准确率不差，但 class 1 的 recall 很差，预测为无心脏病但实际发展为心脏病的风险高。判别系数显示 age、sysBP、glucose 是相对更强的正向贡献变量；但系数方向需要结合类别编码和变量标准化设置解释。8.3 视频 7.3：支持向量机介绍及概述核心内容SVM 首先从 Maximal Margin Classifier 出发：当两个类别可以用直线或超平面分开时，选择距离最近样本点最远的那条边界。最大间隔超平面用 f(x)=β0+β1x1+...+βpxp 表示。预测时，f(x)&gt;0 判为 +1，f(x)&lt;0 判为 -1。支持向量是距离决策边界最近的样本点，它们决定分类边界；远离边界的样本对边界影响较小。软间隔 SVM 允许少量样本违反间隔或被误分，通过松弛变量和约束成本在“间隔宽度”和“分类错误”之间折中。当数据无法被直线分割时，可以使用核函数。核函数本质上通过内积形式把样本映射到更高维空间，让原本弯曲的边界在高维空间中变成线性可分。核函数要点8.4 视频 7.4：支持向量机示例数据与操作示例使用 ISLP Heart 数据，二元结果变量为 AHD。数据包含 303 名患者，AHD=Yes 表示存在心脏病，AHD=No 表示没有心脏病；预测变量包括 Age、Sex、Chol 等 13 个指标。在 JASP 中选择 Support Vector Machine Classification，勾选需要纳入的特征，并将 AHD 设为目标变量。线性设置下，课件可识别结果为 Violation cost=0.020、Support Vectors=122、n(Train)=190、n(Validation)=48、n(Test)=59、Validation Accuracy=0.896、Test Accuracy=0.814。结果解释线性 SVM 的测试准确率、总体召回率均为 0.814，真负率为 0.809，AUC 为 0.809，说明模型在该示例中表现较均衡。尝试其他核函数或参数后，示例中准确率降为 0.627，真负率降为 0.560，说明“换复杂模型”并不必然改善效果。SVM 的实践重点不只是选择模型名称，还包括核函数、成本参数、验证集划分、标准化和类别不平衡处理。8.5 视频 7.5：决策树介绍及概述回归树决策树属于监督学习方法，输入特征 x1,x2,...,xp，输出响应 y。树模型把数据按照特征值拆成不同分支。回归树用于预测连续型响应变量。课件以棒球运动员薪资预测为例，树结构包括根节点、内部节点、终端节点/叶节点和分支。回归树的每个叶节点对应一个区域，该区域内所有样本使用同一个预测值，通常为区域内响应变量的平均值。分裂采用贪婪策略：每一步选择最能降低 RSS 的特征和切分点，并在子区域内递归重复。剪枝与过拟合如果树过于复杂，训练集预测可能很好，但测试集表现可能变差，这就是过拟合。剪枝的目标是在拟合误差和模型复杂度之间折中。成本复杂度剪枝可写成 RSS + α|T| 的形式，α 控制对叶节点数量的惩罚。课件中通过交叉验证曲线选择最合适的叶节点数量，示例提到当 m=3 时树最优。分类树与信息增益分类树用于预测类别型响应变量。每个终端区域的预测类别通常是该区域中最常见的类别。分类树的分裂准则可以是分类错误率、Gini 指数或熵。Gini 和 entropy 都衡量节点不纯度，节点越纯，指标越接近 0。信息增益等于分裂前父节点的熵减去分裂后子节点的加权熵。信息增益越大，说明该分裂越能提高节点纯度。改进树模型的常见方法包括剪枝、Bagging、随机森林和 Boosting。8.6 视频 7.6：带提升的决策树分类示例普通决策树示例示例继续使用 ISLP Heart 数据，以 AHD 作为目标变量。JASP 操作路径为 Machine Learning 模块中的 Decision Tree Classification。普通决策树结果显示：Splits=50、n(Train)=190、n(Validation)=48、n(Test)=59、Validation Accuracy=0.875、Test Accuracy=0.746。性能指标为 Accuracy=0.746、Recall=0.745、True Negative Rate=0.748。课件将其与 SVM 的 0.814 进行比较，普通决策树较弱。提升树示例切换到 Boosting Classification 后，模型可识别参数为 Trees=14、Shrinkage=0.100、n(Train)=190、n(Validation)=48、n(Test)=59、Validation Accuracy=0.771、Test Accuracy=0.847。提升树结果显示 Accuracy=0.847、Recall=0.847、True Negative Rate=0.843，课件标注“All improved”。与 SVM 的 Accuracy=0.814、Recall=0.814、True Negative Rate=0.809 相比，本次示例中提升树表现更好。需要注意：这是特定数据划分和参数设置下的结果，实际建模仍应使用交叉验证或重复抽样确认稳定性。九、模型选择与实践建议十、关键决策/学习要点（5条）做分类模型时，不要把 Accuracy 当成唯一指标；类别不平衡场景必须同时看 Recall、True Negative Rate、Precision、F1、AUC 和混淆矩阵。LDA 需要关注模型假设，尤其是多元正态和共同协方差；假设不满足时，不一定立即放弃，但必须与其他方法比较。SVM 的核心调参不是机械选择 kernel，而是用验证集平衡 margin、错误代价和泛化表现。决策树的价值在于可解释规则，但单棵树容易过拟合；剪枝、随机森林和提升树是提高稳定性的关键扩展。同一模型在不同数据集、不同划分、不同指标下的结论可能不同；严谨比较应基于同一数据、同一切分策略和同一评价指标。十一、容易误解的点十二、金句时刻（课程内容提炼）十三、复习清单能写出 LDA 的贝叶斯后验概率表达式，并说明 f_i(x)、π_i、δ_i(x) 分别代表什么。能解释 LDA 为什么是“线性”判别，以及何时会变成 QDA。能用混淆矩阵解释 accuracy、recall、true negative rate，并指出类别不平衡的风险。能说明 SVM 的最大间隔、支持向量、软间隔、核函数各自解决什么问题。能解释决策树的递归二分、RSS、Gini、entropy、information gain 和 pruning。能根据示例判断：什么时候普通树不如 SVM，什么时候提升树可能改善模型。十四、结论本组视频的核心价值在于把三类经典分类方法串成一条清晰主线：LDA 强调概率假设和后验最大化，SVM 强调最大间隔和边界稳健性，决策树强调规则切分和可解释性，而提升树进一步通过集成学习提升预测表现。学习时应把“模型原理—假设条件—操作流程—评价指标—业务风险”连在一起，而不是只记住某个模型的测试准确率。项目内容纪要主题第7章分类模型：LDA、SVM、决策树与提升树视频范围7.1 线性判别分析介绍及概述；7.2 线性判别分析示例；7.3 支持向量机介绍及概述；7.4 支持向量机示例；7.5 决策树介绍及概述；7.6 带提升的决策树分类示例课程类型机器学习/统计学习方法课程；以概念讲解、公式推导、JASP操作示例和模型性能解释为主总时长约 01:17:26整理日期2026-06-20整理目的用于课程学习、复盘、模型对比、作业/考试前复习整理依据视频课件画面、可识别英文文本、公式、JASP界面与模型结果表；未进行人工逐字听写校验视频时长定位7.1 线性判别分析介绍及概述14:38理论讲解7.2 线性判别分析示例08:27JASP示例7.3 支持向量机介绍及概述17:32理论讲解7.4 支持向量机示例06:13JASP示例7.5 决策树介绍及概述19:10理论讲解7.6 带提升的决策树分类示例11:27JASP示例| AI 生成声明 本纪要由 AI 根据上传视频中的可识别画面、课件文字、公式、图表、JASP 操作界面和模型结果表自动整理生成。由于未进行人工逐字听写校验，讲师口播中的补充说明、临场解释或部分细节可能存在遗漏；若视频中存在声音不清、字幕缺失、画面缩放较小、公式显示不完整等情况，相关内容以“可识别信息”为准。本文中的“金句时刻”为基于课程内容的学习型提炼，不代表讲师逐字原话。 |学习阶段对应视频核心问题形成的能力概率判别7.1、7.2如何用 P(Y=kX=x) 判定类别？LDA 的线性边界从哪里来？理解后验概率、判别函数、参数估计与模型假设间隔判别7.3、7.4如何找到让类别分得最“安全”的边界？样本不可完全分开时怎么办？理解最大间隔、支持向量、软间隔、核函数与参数调优规则判别7.5、7.6如何把复杂特征空间拆成一组可解释规则？如何避免树过拟合？理解递归二分、RSS/Gini/Entropy、信息增益、剪枝、提升树| 阅读提示 不同视频使用的数据集并不完全一致：7.2 的 LDA 示例使用 Framingham Heart Study 数据；7.4 与 7.6 的 SVM/决策树示例使用 ISLP Heart 数据。因此，LDA 与 SVM/决策树之间的数值不可直接横向排名；SVM、普通决策树、提升树之间的对比更接近同一示例内比较。 |数据集出现位置可识别信息用途Framingham Heart Study7.2 LDA 示例课件显示原始数据包含 4,240 条记录、15 个特征；目标变量为 10 年冠心病 TenYearCHD演示 LDA 建模、假设检验与性能解释ISLP Heart 数据7.4 SVM 示例；7.6 决策树/提升树示例303 名患者；二元结果 AHD，Yes 表示存在心脏病，No 表示没有心脏病；13 个预测变量，如 Age、Sex、Chol 等演示 SVM、普通决策树与提升树分类效果模型视频任务/数据样本划分或参数测试准确率关键指标解读LDA7.2Framingham / TenYearCHDTrain=3062；Test=765；Total=38270.848平均召回 0.848；阳性类召回 0.067；AUC 0.718总体准确率高，但对阳性类识别很弱，存在严重漏判风险SVM（线性设置）7.4ISLP Heart / AHDTrain=190；Validation=48；Test=59；支持向量=1220.814Recall=0.814；TNR=0.809；AUC=0.809整体表现均衡，是后续决策树比较基准SVM（其他核/设置）7.4ISLP Heart / AHDTest=590.627Recall=0.627；TNR=0.560复杂设置不一定更好，需要验证集与参数调优普通决策树7.6ISLP Heart / AHDTrain=190；Validation=48；Test=59；Splits=500.746Recall=0.745；TNR=0.748；Validation Accuracy=0.875低于 SVM，说明单棵树可能不够稳健提升树 Boosting7.6ISLP Heart / AHDTrees=14；Shrinkage=0.100；Train=190；Validation=48；Test=590.847Recall=0.847；TNR=0.843；AUC=0.907；F1=0.847指标整体改善，示例中优于普通树和 SVM变量LD1系数方向解读age0.612正向，年龄增加会把判别结果推向目标类别方向sysBP0.510正向，收缩压对判别贡献较大glucose0.330正向，血糖在模型中具有较明显贡献totChol0.067正向，但幅度较小diaBP-0.006负向且幅度很小BMI-0.020负向且幅度较小heartRate-0.063负向序号位置章节主题详细内容17.1 00:00-01:30LDA 课程导入与贝叶斯分类框架把分类问题写成后验概率最大化问题：比较 P(Y=iX=x)，选择概率最高的类别。27.1 02:15-06:45一维 LDA：正态密度、判别函数与线性边界在共同方差假设下，由正态密度和先验概率推导出线性判别函数 δ_i(x)。37.1 07:30-14:32参数估计、多维 LDA 与优缺点用样本估计先验、均值和方差/协方差；多维情形使用多元高斯分布；总结 LDA 的稳定性、假设约束与局限。47.2 00:00-08:21Framingham 数据上的 LDA 实操在 JASP 中选择变量、检查假设、读取模型准确率、混淆矩阵、召回率和判别系数，重点识别“高准确率但低阳性召回”的问题。57.3 00:00-07:30SVM 最大间隔与支持向量通过最大化类别之间的间隔确定超平面，支持向量是决定边界的关键样本。67.3 08:15-17:27软间隔与核函数允许少量分类违反来提升泛化；通过内积和核函数把非线性问题转化为高维空间中的线性分割。77.4 00:00-06:07SVM Heart 示例与核选择比较线性 SVM 测试准确率 0.814；另一个核/设置降到 0.627，说明参数和核函数需要验证。87.5 00:00-10:00回归树：递归二分、RSS 与剪枝树模型把特征空间切成多个区域，预测值为区域均值；剪枝通过复杂度惩罚缓解过拟合。97.5 11:00-19:04分类树：节点纯度、Gini、Entropy 与信息增益分类树按节点纯度选择分裂；信息增益衡量分裂前后熵的下降。107.6 00:00-11:21提升树分类示例普通树测试准确率 0.746，提升树提高到 0.847；模型复杂度增加后需同时关注泛化验证。概念表达学习含义后验概率P(Y=iX=x)=f_i(x)π_i / Σ_j f_j(x)π_j分类的直接目标是选择后验概率最大的类别。一维高斯假设XY=i ~ N(μ_i, σ²)共同方差是线性判别边界成立的关键假设。判别函数δ_i(x)=xμ_i/σ² - μ_i²/(2σ²)+log(π_i)选择 δ_i(x) 最大的类别。多维 LDAXY=i ~ N(μ_i, Σ)多维情况下仍依赖均值向量和共同协方差矩阵。检查项课件结果含义Inequality of class meansOK类别均值存在差异，模型有可区分信息。Equality of covariance matricesNo共同协方差假设不满足，LDA 的理论条件受挑战。Multivariate normalityNo多元正态假设不满足，需谨慎解释结果。综合判断Fail / Try different method and compare不能只看准确率，应尝试其他模型并比较。核函数常见表达/含义适用理解线性核K(x,x′)=xᵀx′适合近似线性分割，解释简单，过拟合风险较低。多项式核通过多项式项扩展特征空间可以表达弯曲边界，但阶数越高越需调参。径向核/RBFK(x,x′)=exp(-γx-x′²)可形成局部非线性边界；γ 与成本参数需要配合验证。应用场景建议模型选择原因注意事项样本较小、变量连续、类别近似正态且边界较线性LDA参数少、估计稳定、解释性较好检查协方差相等与多元正态；不能只看准确率边界较清晰但希望提升泛化能力线性 SVM最大间隔思想可降低边界对噪声的敏感性调成本参数；标准化变量；检查支持向量数量明显非线性边界核 SVM、随机森林、提升树能够表达曲线边界与复杂交互使用验证集/交叉验证调参，防止复杂模型过拟合需要业务规则可解释单棵决策树或浅树路径清晰，便于解释每个分裂规则限制树深、剪枝；关注测试集表现追求预测性能且可接受解释性下降Boosting / Random Forest集成多个弱学习器，通常更稳健关注学习率、树数、验证集稳定性和变量重要性常见误解修正理解误解正确理解LDA 准确率 0.848 就说明模型很好不一定。阳性类召回率只有 0.067，说明该模型对少数类识别很弱。SVM 使用复杂核一定比线性核好不一定。示例中其他核/设置准确率降到 0.627，明显差于线性设置的 0.814。决策树越深越好树越深越可能记住训练数据，需要剪枝或复杂度惩罚。Boosting 一定优于所有模型示例中提升树最好，但实际是否更优取决于数据、参数、交叉验证和业务成本。系数正负可以直接当作因果关系判别系数只反映模型中的分类方向和权重，不等于因果效应。金句英文表达学习点评中文提炼English点评高准确率不等于高识别能力。High accuracy is not the same as high detection power.LDA 示例中 0.848 的准确率掩盖了阳性召回率 0.067 的问题。SVM 的边界，真正由离边界最近的少数样本决定。An SVM boundary is decided by the few points closest to the boundary.这就是支持向量的核心作用，也是最大间隔思想的直观解释。一棵树容易记住训练数据，一组提升树更像在逐步修正判断。A single tree can memorize; boosting learns by correcting mistakes step by step.普通树到提升树的性能提升，体现了集成学习的价值。</p>
+<hr>
+<blockquote>
+<p>本内容由 Coze AI 生成，请遵循相关法律法规及《人工智能生成合成内容标识办法》使用与传播。</p>
+</blockquote>
+            </div>
+        </section>
+        
+            </div>
+        </main>
+    </div>
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeBtn');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                btn.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                btn.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        (function() {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeBtn').textContent = '☀️';
+            }
+        })();
+        function toggleCourse(courseId) {
+            const sections = document.getElementById('nav-' + courseId);
+            const toggle = document.getElementById('toggle-' + courseId);
+            sections.classList.toggle('expanded');
+            toggle.style.transform = sections.classList.contains('expanded') ? 'rotate(180deg)' : '';
+        }
+        function navigateTo(anchorId) {
+            const el = document.getElementById(anchorId);
+            if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            if (window.innerWidth <= 768) { closeSidebar(); }
+        }
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('active');
+        }
+        window.addEventListener('scroll', function() {
+            const btn = document.getElementById('backToTop');
+            btn.classList.toggle('visible', window.scrollY > 300);
+        });
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        const navItems = document.querySelectorAll('.nav-item');
+        const headings = document.querySelectorAll('.markdown-body h2[id], .markdown-body h3[id]');
+        function updateActiveNav() {
+            let current = '';
+            headings.forEach(h => { if (h.getBoundingClientRect().top <= 100) current = h.id; });
+            navItems.forEach(item => {
+                item.classList.toggle('active', item.getAttribute('href') === '#' + current);
+                if (item.getAttribute('href') === '#' + current) {
+                    const courseNav = item.closest('.nav-course');
+                    if (courseNav) {
+                        const sections = courseNav.querySelector('.nav-sections');
+                        if (sections && !sections.classList.contains('expanded')) {
+                            sections.classList.add('expanded');
+                        }
+                    }
+                }
+            });
+        }
+        window.addEventListener('scroll', updateActiveNav);
+        function handleSearch(query) {
+            if (query.length < 2) {
+                document.querySelectorAll('.course-section').forEach(s => s.style.display = '');
+                document.querySelectorAll('.nav-item').forEach(n => n.style.display = '');
+                return;
+            }
+            const q = query.toLowerCase();
+            // Filter nav items
+            document.querySelectorAll('.nav-course').forEach(course => {
+                let hasMatch = false;
+                course.querySelectorAll('.nav-item').forEach(item => {
+                    const match = item.textContent.toLowerCase().includes(q);
+                    item.style.display = match ? '' : 'none';
+                    if (match) hasMatch = true;
+                });
+                course.style.display = hasMatch ? '' : 'none';
+                if (hasMatch) {
+                    const sections = course.querySelector('.nav-sections');
+                    if (sections) sections.classList.add('expanded');
+                }
+            });
+            // Highlight in content
+            document.querySelectorAll('.course-section').forEach(section => {
+                const text = section.textContent.toLowerCase();
+                section.style.display = text.includes(q) ? '' : 'none';
+            });
+        }
+        // Expand all nav courses on load
+        document.querySelectorAll('.nav-sections').forEach(s => s.classList.add('expanded'));
+    </script>
+</body>
+</html>
