@@ -155,18 +155,41 @@ c.classList.toggle('all-hidden',v.length===0&&q.length>0);
 });
 }
 function setupSpy(){
-const secs=document.querySelectorAll('.content-section');
 const links=document.querySelectorAll('.nav-link');
-const obs=new IntersectionObserver(entries=>{
-entries.forEach(e=>{
-if(e.isIntersecting){
-const id=e.target.id;
-links.forEach(l=>l.classList.remove('active'));
-const a=document.querySelector(`.nav-link[data-target="${id}"]`);
-if(a){a.classList.add('active');a.scrollIntoView({block:'nearest'})}
+// Simple scroll-based spy: check which section is at top of viewport on scroll
+let ticking=false;
+function updateSpy(){
+  const secs=document.querySelectorAll('.content-section');
+  const scrollY=window.scrollY+100;
+  let currentId='';
+  secs.forEach(s=>{
+    if(s.offsetTop<=scrollY)currentId=s.id;
+  });
+  if(currentId){
+    links.forEach(l=>l.classList.remove('active'));
+    const a=document.querySelector(`.nav-link[data-target="${currentId}"]`);
+    if(a){a.classList.add('active');
+      // Scroll nav sidebar to show active link (no loop risk)
+      const nav=document.querySelector('.sidebar-nav');
+      if(nav){const r=a.getBoundingClientRect();const nr=nav.getBoundingClientRect();
+        if(r.top<nr.top||r.bottom>nr.bottom)a.scrollIntoView({block:'nearest',behavior:'smooth'})}
+    }
+  }
+  ticking=false;
+}
+window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(updateSpy)}},{passive:true});
+// Also update on nav click
+document.querySelectorAll('.nav-link').forEach(link=>{
+  link.addEventListener('click',function(){
+    const target=this.getAttribute('data-target');
+    if(target){
+      links.forEach(l=>l.classList.remove('active'));
+      this.classList.add('active');
+      setTimeout(()=>renderModule(target),50);
+    }
+  });
 });
-},{rootMargin:'-10% 0px -80% 0px'});
-secs.forEach(s=>obs.observe(s));
+updateSpy();
 }
 setTimeout(()=>document.getElementById('loading').classList.add('done'),300);
 });
